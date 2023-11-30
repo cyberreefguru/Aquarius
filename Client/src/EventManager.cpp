@@ -33,10 +33,10 @@ void EventManager::initialize()
     }
 
     status = addEventHandler([](void *arg,
-                                      esp_event_base_t base,
-                                      int32_t id,
-                                      void *data)
-                                   { eventManager.defaultEventHandler(arg, base, id, data); });
+                                esp_event_base_t base,
+                                int32_t id,
+                                void *data)
+                             { eventManager.defaultEventHandler(arg, base, id, data); });
     if (status != ESP_OK)
     {
         Log.fatalln("Error adding event handler");
@@ -45,7 +45,6 @@ void EventManager::initialize()
     {
         Log.infoln("Added event handler!");
     }
-
 
     Log.infoln("Event manager initialization complete");
 }
@@ -63,4 +62,6 @@ esp_err_t EventManager::addEventHandler(esp_event_handler_t eventHandler)
 void EventManager::defaultEventHandler(void *args, esp_event_base_t base, int32_t id, void *data)
 {
     Log.infoln("Event: %s", Helper::toString((Event)id));
+    Log.infoln("WIFI: %d, MQTT: %d, RSSI: %d, Active: %d, Processing: %d", stateManager.wifi, stateManager.mqtt,
+               stateManager.rssi, stateManager.active, stateManager.processing);
 }

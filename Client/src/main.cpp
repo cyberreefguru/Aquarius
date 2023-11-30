@@ -26,21 +26,20 @@ void setup()
   // can post events as required
   eventManager.initialize();
 
+  // Set up state manager - tracks state changes
+  stateManager.initialize();
+
   // Set up and initialize LEDs
   indicatorManager.initialize();
 
   // Initialize display
   display.initialize();
 
-  // Set up state manager
-  stateManager.initialize();
-
   // Initialize command manager
   commandManager.initialize();
 
   // Fire initialization event
   eventManager.postEvent(Event::INITIALIZING);
-
   
   // Initialize WIFI and MQTT
   messageBroker.initialize();

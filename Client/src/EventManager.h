@@ -10,6 +10,7 @@
 #include <Arduino.h>
 #include <ArduinoLog.h>
 #include "Event.h"
+#include "StateManager.h"
 #include "Helper.h"
 
 #include <functional>

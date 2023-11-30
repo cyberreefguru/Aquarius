@@ -28,6 +28,10 @@ void Display::initialize()
     ssd1306.setTextSize(1);
     ssd1306.setTextColor(SSD1306_WHITE);
 
+    setStatusMessage( Helper::toString(Event::INITIALIZING));
+    setNetworkStatus();
+    setMemory(true);
+
     eventManager.addEventHandler([](void *arg, esp_event_base_t base, int32_t id, void *data)
                                  { display.eventHandler(arg, base, id, data); });
 
@@ -52,17 +56,16 @@ void Display::eventHandler(void *arg, esp_event_base_t base, int32_t id, void *d
     switch (event)
     {
     case Event::INITIALIZING:
-        setStatusMessage("Initializing");
+        setStatusMessage("Initializing", true);
         break;
     case Event::WAITING:
-        setStatusMessage("Waiting");
-        setNetworkStatus();
+        setStatusMessage("Waiting", true);
         break;
     case Event::MSG_RECEIVED:
-        setStatusMessage("Msg Received");
+        setStatusMessage("Msg Received", true);
         break;
     case Event::PROCESSING:
-        setStatusMessage("Processing");
+        setStatusMessage("Processing", true);
         break;
     case Event::ACTIVE:
         break;
@@ -70,59 +73,64 @@ void Display::eventHandler(void *arg, esp_event_base_t base, int32_t id, void *d
         break;
     case Event::WIFI_DOWN:
         setStatusMessage("WIFI ERROR");
-        setNetworkStatus();
-        break;
-    case Event::MQTT_DOWN:
-        setStatusMessage("MQTT ERROR");
-        setNetworkStatus();
-        setIpAddress();
+        setNetworkStatus(true);
         break;
     case Event::WIFI_UP:
         setStatusMessage("WIFI UP");
-        setNetworkStatus();
-        setIpAddress();
+        setNetworkStatus(true);
+        break;
+    case Event::MQTT_DOWN:
+        setStatusMessage("MQTT ERROR");
+        setNetworkStatus(true);
         break;
     case Event::MQTT_UP:
         setStatusMessage("MQTT UP");
-        setNetworkStatus();
-        setIpAddress();
+        setNetworkStatus(true);
         break;
     case Event::ERROR:
-        setStatusMessage("Error!");
+        setStatusMessage("ERROR", true);
         break;
     default:
         break;
     }
-    ssd1306.display();
 }
 
+/***
+ * Display task updates the display when things change.
+*/
 void Display::displayTask(void *pvParameters)
 {
     Log.infoln("Starting display task.");
-
-    setStatusMessage(Helper::toString(Event::INITIALIZING));
-    setNetworkStatus();
-    setIpAddress();
+    uint8_t clicks = 0;
 
     for (;;)
     {
-        vTaskDelay(pdMS_TO_TICKS(1000));
-        setNetworkStatus();
-        setMemory();
-        ssd1306.display();
+        vTaskDelay(pdMS_TO_TICKS(100));
+        clicks++;
+        if( clicks >= 10 )
+        {
+            setNetworkStatus();
+            setMemory(true);
+            clicks = 0;
+        }
+        if( refresh )
+        {
+            ssd1306.display();
+            refresh = false;
+        }
     }
 }
-void Display::setStatusMessage(const char *msg)
+
+void Display::setStatusMessage(const char *msg, bool refresh)
 {
-    // statusMessage = msg;
     clearRow(STATUS_ROW);
     setCursor(STATUS_ROW, STATUS_COL);
     ssd1306.print("Status: ");
     ssd1306.print(msg);
-    // ssd1306.display(); // actually display all of the above
+    this->refresh = refresh;
 }
 
-void Display::setNetworkStatus()
+void Display::setNetworkStatus(bool refresh)
 {
     clearRow(WIFI_ROW);
     if (WIFI_ROW != MQTT_ROW)
@@ -149,26 +157,30 @@ void Display::setNetworkStatus()
     {
         ssd1306.print("Up");
     }
-    // ssd1306.display(); // actually display all of the above
-}
 
-void Display::setIpAddress()
-{
     clearRow(IP_ADDRESS_ROW);
     setCursor(IP_ADDRESS_ROW, IP_ADDRESS_COL);
     ssd1306.print("IP: ");
-    ssd1306.print(WiFi.localIP());
-    // ssd1306.display(); // actually display all of the above
+    if( stateManager.wifi == false )
+    {
+        ssd1306.print("0.0.0.0");
+    }
+    else
+    {
+        ssd1306.print(WiFi.localIP());
+    }
+    this->refresh = refresh;
 }
 
-void Display::setMemory()
+void Display::setMemory(bool refresh)
 {
     clearRow(MEMORY_ROW);
     setCursor(MEMORY_ROW, MEMORY_COL);
     ssd1306.print("MEMORY: ");
     ssd1306.print(ESP.getFreeHeap());
-    ssd1306.print("KB");
+    this->refresh = refresh;
 }
+
 void Display::clearRow(uint8_t row)
 {
     uint8_t start = row * FONT_HEIGHT;

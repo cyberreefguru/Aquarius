@@ -34,6 +34,7 @@ void StateManager::initialize()
 void StateManager::eventHandler(void *arg, esp_event_base_t base, int32_t id, void *data)
 {
     Event event = (Event)id;
+    // Log.infoln("StateManager - Event: %s", Helper::toString(event));
     lastEvent = event;
     switch (event)
     {
@@ -54,7 +55,6 @@ void StateManager::eventHandler(void *arg, esp_event_base_t base, int32_t id, vo
         break;
     case Event::WIFI_UP:
         wifi=true;
-        rssi = WiFi.RSSI();
         break;
     case Event::MQTT_DOWN:
         mqtt = false;
@@ -65,15 +65,19 @@ void StateManager::eventHandler(void *arg, esp_event_base_t base, int32_t id, vo
     default:
         break;
     }
+    // Log.infoln("WIFI: %d, MQTT: %d, RSSI: %d, Processing: %d", wifi, mqtt, rssi, processing);
 }
 
 void StateManager::stateTask(void *pvParameters)
 {
     Log.infoln("Starting state task.");
-    uint32_t time = millis();
     for (;;)
     {
+        if( WiFi.status() == WL_CONNECTED )
+        {
+            rssi = WiFi.RSSI();
+            // Log.infoln("WIFI: %d, MQTT: %d, RSSI: %d, Processing: %d", wifi, mqtt, rssi, processing);
+        }
         vTaskDelay(pdMS_TO_TICKS(1000));
-        rssi = WiFi.RSSI();
     }
 }
