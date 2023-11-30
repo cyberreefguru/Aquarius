@@ -19,13 +19,13 @@ void EventManager::initialize()
     Log.infoln("Initializing event manager");
 
     eventLoopArgs.queue_size = 5;
-    eventLoopArgs.task_name = "system_loop"; // Task will be created
+    eventLoopArgs.task_name = "event_loop"; // Task will be created
     eventLoopArgs.task_priority = uxTaskPriorityGet(NULL);
     eventLoopArgs.task_stack_size = 2048;
     eventLoopArgs.task_core_id = tskNO_AFFINITY;
     if (esp_event_loop_create(&eventLoopArgs, &eventLoopHandler) != ESP_OK)
     {
-        Log.fatal("Unable to create event loop");
+        Log.fatalln("Unable to create event loop");
     }
     else
     {
@@ -49,19 +49,10 @@ void EventManager::initialize()
 
     Log.infoln("Event manager initialization complete");
 }
-esp_err_t EventManager::postEvent(State state)
-{
-    return esp_event_post_to(eventLoopHandler, SYSTEM_EVENT, +state, nullptr, 0, 0);
-}
-
-esp_err_t EventManager::postEvent(Command command)
-{
-    return esp_event_post_to(eventLoopHandler, SYSTEM_EVENT, +command, nullptr, 0, 0);
-}
 
 esp_err_t EventManager::postEvent(Event event)
 {
-    return esp_event_post_to(eventLoopHandler, SYSTEM_EVENT, +event.getEventType(), nullptr, 0, 0);
+    return esp_event_post_to(eventLoopHandler, SYSTEM_EVENT, +event, nullptr, 0, 0);
 }
 
 esp_err_t EventManager::addEventHandler(esp_event_handler_t eventHandler)
@@ -71,5 +62,5 @@ esp_err_t EventManager::addEventHandler(esp_event_handler_t eventHandler)
 
 void EventManager::defaultEventHandler(void *args, esp_event_base_t base, int32_t id, void *data)
 {
-    Log.infoln("System Event: %s", Helper::toString((State)id));
+    Log.infoln("Event: %s", Helper::toString((Event)id));
 }

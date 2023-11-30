@@ -136,50 +136,41 @@ const char* Helper::toString(WiFiEvent_t w)
 }
 
 
-const char* Helper::toString(State val)
+const char* Helper::toString(Event e)
 {
-    switch (val)
+    switch (e)
     {
-    case State::ACTIVE:
+    case Event::ACTIVE:
         return "ACTIVE";
         break;
-    case State::DEACTIVE:
+    case Event::DEACTIVE:
         return "DEACTIVE";
         break;
-    case State::ERROR:
+    case Event::ERROR:
         return "ERROR";
         break;
-    case State::INITIALIZING:
+    case Event::INITIALIZING:
         return "INITIALIZING";
         break;
-    case State::MQTT_DOWN:
+    case Event::MQTT_DOWN:
         return "MQTT_DOWN";
         break;
-    case State::MQTT_UP:
+    case Event::MQTT_UP:
         return "MQTT_UP";
         break;
-    case State::PROCESSING:
+    case Event::PROCESSING:
         return "PROCESSING";
         break;
-    case State::RECEIVED:
-        return "RECEIVED";
-        break;
-    case State::RECEIVING:
-        return "RECEIVING";
-        break;
-    case State::SENDING:
-        return "SENDING";
-        break;
-    case State::SENT:
-        return "SENT";
-        break;
-    case State::WAITING:
+    case Event::WAITING:
         return "WAITING";
         break;
-    case State::WIFI_DOWN:
+    case Event::MSG_RECEIVED:
+        return "MSG_RECEIVED";
+        break;
+    case Event::WIFI_DOWN:
         return "WIFI_DOWN";
         break;
-    case State::WIFI_UP:
+    case Event::WIFI_UP:
         return "WIFI_UP";
         break;
     default:

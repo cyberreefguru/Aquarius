@@ -13,6 +13,7 @@
 
 #include "Event.h"
 #include "EventManager.h"
+#include "StateManager.h"
 #include "Color.h"
 
 extern "C"
@@ -33,13 +34,13 @@ class IndicatorManager
 public:
     IndicatorManager();
     void initialize();
+
+protected:
     void clearStatusIndicator(uint32_t color);
     void setStatusIndicator(uint32_t color);
     void setSystemIndicator(uint32_t color);
     void setIndicators(uint32_t color);
     void setIndicators(uint32_t status, uint32_t state);
-
-protected:
     void show();
     void show(uint32_t color);
     void show(uint32_t status, uint32_t state);

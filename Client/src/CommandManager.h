@@ -30,10 +30,14 @@ public:
 protected:
     void eventHandler(void *args, esp_event_base_t base, int32_t id, void *data);
     void commandTask( void * pvParameters );
-    TaskHandle_t commandTaskHandle = NULL;
+    TaskHandle_t commandTaskHandle = nullptr;
+
+    QueueHandle_t commandQueueHandle = nullptr;
+
 
 private:
-
+    bool cmd = false;
+    
 };
 
 // end of add your includes here

@@ -13,59 +13,67 @@ StateManager::StateManager() {}
 
 void StateManager::initialize()
 {
-    state = State::INITIALIZING;
     eventManager.addEventHandler([](void *arg, esp_event_base_t base, int32_t id, void *data)
                                        { stateManager.eventHandler(arg, base, id, data); });
+
+    Log.infoln("Creating state task.");
+    BaseType_t xReturned = xTaskCreate(
+        [](void *pvParameters)
+        { stateManager.stateTask(pvParameters); },
+        "state_task",
+        1024,
+        (void *)1,
+        tskIDLE_PRIORITY,
+        &stateTaskHandle);
+    if (xReturned != pdPASS)
+    {
+        Log.errorln("FAILED TO CREATE STATE TASK");
+    }
 }
 
 void StateManager::eventHandler(void *arg, esp_event_base_t base, int32_t id, void *data)
 {
-    state = (State)id;
-    switch (state)
+    Event event = (Event)id;
+    lastEvent = event;
+    switch (event)
     {
-    case State::ACTIVE:
-        indicatorManager.setSystemIndicator(Color::Green);
+    case Event::WAITING:
+        processing = false;
         break;
-    case State::DEACTIVE:
-        indicatorManager.setSystemIndicator(Color::Black);
+    case Event::PROCESSING:
+        processing = true;
         break;
-    case State::WIFI_DOWN:
+    case Event::ACTIVE:
+        active = true;
+        break;
+    case Event::DEACTIVE:
+        active = false;
+        break;
+    case Event::WIFI_DOWN:
         wifi = false;
-        indicatorManager.setStatusIndicator(Color::Magenta);
         break;
-    case State::MQTT_DOWN:
-        mqtt = false;
-        indicatorManager.setStatusIndicator(Color::Purple);
-        break;
-    case State::WIFI_UP:
+    case Event::WIFI_UP:
         wifi=true;
-        indicatorManager.setStatusIndicator(Color::Blue);
+        rssi = WiFi.RSSI();
         break;
-    case State::MQTT_UP:
+    case Event::MQTT_DOWN:
+        mqtt = false;
+        break;
+    case Event::MQTT_UP:
         mqtt = true;
-        indicatorManager.setStatusIndicator(Color::Blue);
-        break;
-    case State::RECEIVING:
-    case State::PROCESSING:
-    case State::SENDING:
-        indicatorManager.setStatusIndicator(Color::Blue);
-        break;
-    case State::INITIALIZING:
-        indicatorManager.setStatusIndicator(Color::Orange);
-        break;
-    case State::WAITING:
-        indicatorManager.setStatusIndicator(Color::Green);
-        break;
-    case State::ERROR:
-        indicatorManager.setSystemIndicator(Color::Red);
         break;
     default:
         break;
     }
 }
 
-State StateManager::getState()
+void StateManager::stateTask(void *pvParameters)
 {
-    return state;
+    Log.infoln("Starting state task.");
+    uint32_t time = millis();
+    for (;;)
+    {
+        vTaskDelay(pdMS_TO_TICKS(1000));
+        rssi = WiFi.RSSI();
+    }
 }
-

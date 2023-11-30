@@ -46,22 +46,49 @@ void IndicatorManager::initialize()
 
 void IndicatorManager::eventHandler(void *arg, esp_event_base_t base, int32_t id, void *data)
 {
-    State state = (State)id;
-    switch (state)
+    Event event = (Event)id;
+    switch (event)
     {
-    case State::RECEIVING:
-    case State::PROCESSING:
-    case State::SENDING:
+    case Event::INITIALIZING:
+        setStatusIndicator(Color::Orange);
+        break;
+    case Event::MSG_RECEIVED:
         flashMode = Mode::Flash;
         flashRate = 250;
+        setStatusIndicator(Color::Blue);
         break;
-    case State::WAITING:
+    case Event::WAITING:
         flashMode = Mode::HeartBeat;
         flashRate = 150;
+        setStatusIndicator(Color::Green);
         break;
-    case State::ERROR:
+    case Event::PROCESSING:
+        flashMode = Mode::Flash;
+        flashRate = 250;
+        setStatusIndicator(Color::Blue);
+        break;
+    case Event::WIFI_DOWN:
+        setStatusIndicator(Color::Magenta);
+        break;
+    case Event::WIFI_UP:
+        setStatusIndicator(Color::Blue);
+        break;
+    case Event::MQTT_DOWN:
+        setStatusIndicator(Color::Purple);
+        break;
+    case Event::MQTT_UP:
+        setStatusIndicator(Color::Blue);
+        break;
+    case Event::ACTIVE:
+        setSystemIndicator(Color::Green);
+        break;
+    case Event::DEACTIVE:
+        setSystemIndicator(Color::Black);
+        break;
+    case Event::ERROR:
         flashMode = Mode::Flash;
         flashRate = 100;
+        setSystemIndicator(Color::Red);
         break;
     default:
         break;
@@ -72,9 +99,18 @@ void IndicatorManager::flashTask(void *pvParameters)
 {
     Log.infoln("Starting flash task. Mode=%d.", flashMode);
     uint8_t hbCounter = 0;
+    uint32_t time = millis();
+
     for (;;)
     {
-        if(flashMode == Mode::Solid)
+        uint32_t t = millis();
+        if( t > (time + 1000))
+        {
+            int32_t rssi = WiFi.RSSI();
+            stateManager.rssi = rssi;
+            time = t;
+        }
+        if (flashMode == Mode::Solid)
         {
             show();
             vTaskDelay(pdMS_TO_TICKS(flashRate));

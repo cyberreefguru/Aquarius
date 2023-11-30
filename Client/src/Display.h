@@ -35,11 +35,15 @@ protected:
     Adafruit_SSD1306 ssd1306;
 
 private:
-    void setState(const char * msg);
+    const char * statusMessage;
+    void setStatusMessage(const char * msg);
     void setNetworkStatus();
     void setIpAddress();
+    void setMemory();
     void clearRow(uint8_t row);
     void setCursor(uint8_t row, uint8_t col);
+    void displayTask( void * pvParameters );
+    TaskHandle_t displayTaskHandle = NULL;
 
 
 };

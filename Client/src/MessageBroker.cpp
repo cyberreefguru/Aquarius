@@ -60,12 +60,12 @@ void MessageBroker::onWifiEvent(WiFiEvent_t event, WiFiEventInfo_t info)
     case SYSTEM_EVENT_STA_GOT_IP:
         Log.traceln("IP address: ");
         Log.traceln(WiFi.localIP());
-        eventManager.postEvent(State::WIFI_UP);
+        eventManager.postEvent(Event::WIFI_UP);
         connectToMqtt();
         break;
     case SYSTEM_EVENT_STA_DISCONNECTED:
         Log.traceln("WiFi lost connection");
-        eventManager.postEvent(State::WIFI_DOWN);
+        eventManager.postEvent(Event::WIFI_DOWN);
         xTimerStop(mqttReconnectTimer, 0); // ensure we don't reconnect to MQTT while reconnecting to Wi-Fi
         xTimerStart(wifiReconnectTimer, 0);
         break;
@@ -100,12 +100,12 @@ void MessageBroker::onMqttConnect(bool sessionPresent)
     // uint16_t packetIdPub2 = client.publish("test/lol", 2, true, "test 3");
     // Log.trace("Publishing at QoS 2, packetId: ");
     // Log.traceln("%d", packetIdPub2);
-    eventManager.postEvent(State::MQTT_UP);
+    eventManager.postEvent(Event::MQTT_UP);
 }
 
 void MessageBroker::onMqttDisconnect(AsyncMqttClientDisconnectReason reason)
 {
-    eventManager.postEvent(State::MQTT_DOWN);
+    eventManager.postEvent(Event::MQTT_DOWN);
     Log.errorln("Disconnected from MQTT.");
     if (WiFi.isConnected())
     {
@@ -120,6 +120,10 @@ void MessageBroker::onMqttSubscribe(uint16_t packetId, uint8_t qos)
     Log.traceln("%d", packetId);
     Log.trace("  qos: ");
     Log.traceln("%d", qos);
+    if( packetId == 4 )
+    {
+        eventManager.postEvent(Event::WAITING);
+    }
 }
 
 void MessageBroker::onMqttUnsubscribe(uint16_t packetId)
@@ -131,7 +135,6 @@ void MessageBroker::onMqttUnsubscribe(uint16_t packetId)
 
 void MessageBroker::onMqttMessage(char *topic, char *payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total)
 {
-    eventManager.postEvent(State::PROCESSING);
     Log.traceln("Publish received.");
     Log.trace("  topic: ");
     Log.traceln("%s", topic);
@@ -147,6 +150,7 @@ void MessageBroker::onMqttMessage(char *topic, char *payload, AsyncMqttClientMes
     Log.traceln("%d", index);
     Log.trace("  total: ");
     Log.traceln("%d", total);
+    eventManager.postEvent(Event::MSG_RECEIVED);
 }
 
 void MessageBroker::onMqttPublish(uint16_t packetId)

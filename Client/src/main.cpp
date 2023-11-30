@@ -1,11 +1,13 @@
 #include <Arduino.h>
 #include <ArduinoLog.h>
 // #include <WiFi.h>
-#include "StateManager.h"
+#include "EventManager.h"
 #include "MessageBroker.h"
 #include "Event.h"
 #include "EventManager.h"
 #include "IndicatorManager.h"
+#include "CommandManager.h"
+
 #include "Display.h"
 
 // IPAddress server(192, 168, 30, 210);
@@ -33,22 +35,28 @@ void setup()
   // Set up state manager
   stateManager.initialize();
 
-  // Fire initialization event
-  eventManager.postEvent(State::INITIALIZING);
+  // Initialize command manager
+  commandManager.initialize();
 
+  // Fire initialization event
+  eventManager.postEvent(Event::INITIALIZING);
+
+  
   // Initialize WIFI and MQTT
   messageBroker.initialize();
   
-  eventManager.postEvent(State::WAITING);
+  //eventManager.postEvent(Event::WAITING);
 
   Log.infoln("Initialization complete");
 }
 
 void loop()
 {
-  int32_t rssi = WiFi.RSSI();
-  stateManager.rssi = rssi;
-  Log.infoln("Signal Strength %d", rssi);
-  eventManager.postEvent(State::WAITING);
-  delay(1000);
+  vTaskDelete(nullptr);
+  // int32_t rssi = WiFi.RSSI();
+  // stateManager.rssi = rssi;
+  //Log.infoln("Signal Strength %d", stateManager.rssi);
+  // eventManager.postEvent(Event::WAITING);
+  //vTaskDelay(1000);
+  // delay(1000);
 }

@@ -9,12 +9,12 @@
 #pragma once
 
 #include <WiFi.h>
-#include "Event.h"
+#include "EventManager.h"
 
 class Helper
 {
 public:
     Helper();
     static const char * toString(WiFiEvent_t w);
-    static const char * toString(State s);
+    static const char * toString(Event e);
 };

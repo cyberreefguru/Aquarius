@@ -25,16 +25,20 @@ class StateManager
 public:
     StateManager();
     void initialize();
-    void eventHandler(void *arg, esp_event_base_t base, int32_t id, void *data);
-    State getState();
 
-    State state;
+    Event lastEvent = Event::INITIALIZING;
+    bool processing = false;
+    bool active = false;
     bool wifi = false;
     int32_t rssi = 0;
     bool mqtt = false;
 
 protected:
+    void eventHandler(void *arg, esp_event_base_t base, int32_t id, void *data);
+
 private:
+    TaskHandle_t stateTaskHandle = NULL;
+    void stateTask(void *pvParameters);
     // State state;
     // bool wifi = false;
     // int32_t rssi = 0;
