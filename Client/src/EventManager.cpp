@@ -54,6 +54,11 @@ esp_err_t EventManager::postEvent(Event event)
     return esp_event_post_to(eventLoopHandler, SYSTEM_EVENT, +event, nullptr, 0, 0);
 }
 
+esp_err_t EventManager::postEvent(Event event, char* payload, uint32_t size)
+{
+    return esp_event_post_to(eventLoopHandler, SYSTEM_EVENT, +event, payload, size, 0);
+}
+
 esp_err_t EventManager::addEventHandler(esp_event_handler_t eventHandler)
 {
     return esp_event_handler_register_with(eventLoopHandler, SYSTEM_EVENT, ESP_EVENT_ANY_ID, eventHandler, nullptr);

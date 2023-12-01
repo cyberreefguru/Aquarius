@@ -178,3 +178,50 @@ const char* Helper::toString(Event e)
         break;
     }
 }
+
+const char* Helper::toString(CommandType c)
+{
+    switch (c)
+    {
+    case CommandType::ACTION:
+        return "ACTION";
+        break;
+    case CommandType::RESPONSE:
+        return "RESPONSE";
+        break;
+    case CommandType::LOG:
+        return "LOG";
+        break;
+    default:
+        return "UNkNOWN";
+        break;
+    }
+}
+
+const char* Helper::toString(ActionType a)
+{
+    switch (a)
+    {
+    case ActionType::ACTIVATE:
+        return "ACTIVATE";
+        break;
+    case ActionType::DEACTIVATE:
+        return "DEACTIVATE";
+        break;
+    case ActionType::GET_PARAM:
+        return "GET_PARAM";
+        break;
+    case ActionType::SET_PARAM:
+        return "SET_PARAM";
+        break;
+    case ActionType::GET_STATUS:
+        return "GET_STATUS";
+        break;
+    case ActionType::REGISTER:
+        return "REGISTER";
+        break;
+    default:
+        return "UNkNOWN";
+        break;
+    }
+}

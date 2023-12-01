@@ -135,7 +135,9 @@ void MessageBroker::onMqttUnsubscribe(uint16_t packetId)
 
 void MessageBroker::onMqttMessage(char *topic, char *payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total)
 {
-    Log.traceln("Publish received.");
+    char new_payload[len+1];
+    new_payload[len] = '\0';
+    strncpy(new_payload, payload, len);
     Log.trace("  topic: ");
     Log.traceln("%s", topic);
     Log.trace("  qos: ");
@@ -150,7 +152,9 @@ void MessageBroker::onMqttMessage(char *topic, char *payload, AsyncMqttClientMes
     Log.traceln("%d", index);
     Log.trace("  total: ");
     Log.traceln("%d", total);
-    eventManager.postEvent(Event::MSG_RECEIVED);
+    Log.traceln(" payload: %s", new_payload);
+
+    eventManager.postEvent(Event::MSG_RECEIVED, new_payload, len+1);
 }
 
 void MessageBroker::onMqttPublish(uint16_t packetId)

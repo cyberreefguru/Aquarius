@@ -10,10 +10,11 @@
 #include <Arduino.h>
 #include <ArduinoLog.h>
 #include <Adafruit_NeoPixel.h>
+#include <ArduinoJson.h>
 
+#include "Command.h"
 #include "Event.h"
 #include "EventManager.h"
-#include "Color.h"
 
 extern "C"
 {
@@ -36,8 +37,11 @@ protected:
 
 
 private:
-    bool cmd = false;
-    
+    char eventData[CMD_MAX_SIZE];
+    void parse();
+    void doAction(Command& c);
+    void doResponse(Command& c);
+    void doLog(Command& c);
 };
 
 // end of add your includes here

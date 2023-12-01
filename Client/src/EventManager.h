@@ -31,6 +31,7 @@ public:
     EventManager();
     void initialize();
     esp_err_t postEvent(Event event);
+    esp_err_t postEvent(Event event, char* payload, uint32_t size);
     esp_err_t addEventHandler(esp_event_handler_t _hand);
     void defaultEventHandler(void *args, esp_event_base_t base, int32_t id, void *data);
 
