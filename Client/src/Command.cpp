@@ -28,20 +28,19 @@ const JsonDocument &Command::toJson(char *buff)
         }
         else
         {
-                    Log.infoln("Checking for parameters");
-
+            Log.infoln("Checking for parameters");
             if (jsonDocument.containsKey(KEY_PARAMS))
             {
-                    Log.infoln("Parsing parameters");
-                err = deserializeJson(parameters, jsonDocument[KEY_PARAMS]);
+                Log.infoln("Parsing parameters");
+                const char *params = jsonDocument[KEY_PARAMS];
+                err = deserializeJson(parameters, params);
                 if (err)
                 {
-                    Log.errorln("Failed to parse parameters: '%s'", jsonDocument[KEY_PARAMS]);
+                    Log.errorln("Failed to parse parameters: '%s'", params);
                 }
                 else
                 {
-                                        Log.infoln("Parsed parameters");
-
+                    Log.infoln("Parsed parameters");
                 }
             }
             else

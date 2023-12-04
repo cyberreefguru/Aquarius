@@ -74,9 +74,8 @@ void CommandManager::commandTask(void *pvParameters)
             Log.infoln("Command received: %s", eventData);
             eventManager.postEvent(Event::PROCESSING);
             Command c = Command();
-            Log.infoln("Created command; parsing");
             c.toJson(eventData);
-            Log.infoln("Parsed command");
+            Log.traceln("Parsed command");
 
             CommandType t = c.getType();
             ActionType a = c.getAction();
@@ -95,8 +94,9 @@ void CommandManager::commandTask(void *pvParameters)
                 break;
             }
             vTaskDelay(5000);
-            Log.infoln("Posting waiting");
+            Log.traceln("Posting waiting");
             eventManager.postEvent(Event::WAITING);
+            Log.infoln("Command Task Memory: %d", uxTaskGetStackHighWaterMark(NULL));
         }
         // vTaskDelay(5000);
     }

@@ -96,14 +96,13 @@ public:
     uint32_t fromJson(char* buffer); // turn into char[]
     const JsonDocument& toJson(char* buff); // turn into jsondocument
     
-// private:
-
+private:
+    StaticJsonDocument<CMD_MAX_PARAM_SIZE> parameters;
+    StaticJsonDocument<CMD_MAX_SIZE> jsonDocument;
     // CommandType type = CommandType::NONE;
     // ActionType action = ActionType::NONE;
     // uint8_t sourceId = 0;
     // uint8_t targetId = 0;
-    StaticJsonDocument<CMD_MAX_PARAM_SIZE> parameters;
     // uint32_t time = 0;
-    StaticJsonDocument<CMD_MAX_SIZE> jsonDocument;
 
 };

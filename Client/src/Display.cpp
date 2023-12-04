@@ -112,6 +112,7 @@ void Display::displayTask(void *pvParameters)
             setNetworkStatus();
             setMemory(true);
             clicks = 0;
+            // Log.infoln("Display Task Memory: %d", uxTaskGetStackHighWaterMark(NULL));
         }
         if( refresh )
         {
