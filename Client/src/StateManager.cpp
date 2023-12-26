@@ -54,6 +54,7 @@ void StateManager::eventHandler(void *arg, esp_event_base_t base, int32_t id, vo
         wifi = false;
         break;
     case Event::WIFI_UP:
+        rssi = WiFi.RSSI();
         wifi=true;
         break;
     case Event::MQTT_DOWN:

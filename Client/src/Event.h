@@ -23,6 +23,7 @@ enum class Event
     MSG_RECEIVED,
     PROCESSING,
     SENT,
+    NODE_ID_CHANGE,
     ERROR
 };
 inline constexpr unsigned operator+ (Event const val) { return static_cast<unsigned>(val); }

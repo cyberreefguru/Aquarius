@@ -29,10 +29,10 @@ const JsonDocument &Command::toJson(char *buff)
         else
         {
             Log.infoln("Checking for parameters");
-            if (jsonDocument.containsKey(KEY_PARAMS))
+            if (jsonDocument.containsKey(KEY_CMD_PARAMS))
             {
                 Log.infoln("Parsing parameters");
-                const char *params = jsonDocument[KEY_PARAMS];
+                const char *params = jsonDocument[KEY_CMD_PARAMS];
                 err = deserializeJson(parameters, params);
                 if (err)
                 {
@@ -59,52 +59,52 @@ const JsonDocument &Command::toJson(char *buff)
 
 CommandType Command::getType()
 {
-    return (CommandType)jsonDocument[KEY_TYPE].as<int>();
+    return (CommandType)jsonDocument[KEY_CMD_TYPE].as<int>();
 }
 
 void Command::setType(CommandType t)
 {
-    jsonDocument[KEY_TYPE] = (int)t;
+    jsonDocument[KEY_CMD_TYPE] = (int)t;
 }
 
 ActionType Command::getAction()
 {
-    return (ActionType)jsonDocument[KEY_ACTION].as<int>();
+    return (ActionType)jsonDocument[KEY_CMD_ACTION].as<int>();
 }
 
 void Command::setAction(ActionType a)
 {
-    jsonDocument[KEY_ACTION] = (int)a;
+    jsonDocument[KEY_CMD_ACTION] = (int)a;
 }
 
 uint8_t Command::getSourceId()
 {
-    return jsonDocument[KEY_SOURCE_ID];
+    return jsonDocument[KEY_CMD_SOURCE_ID];
 }
 
 void Command::setSourceId(uint8_t id)
 {
-    jsonDocument[KEY_SOURCE_ID] = id;
+    jsonDocument[KEY_CMD_SOURCE_ID] = id;
 }
 
 uint8_t Command::getTargetId()
 {
-    return jsonDocument[KEY_TARGET_ID];
+    return jsonDocument[KEY_CMD_TARGET_ID];
 }
 
 void Command::setTargetId(uint8_t id)
 {
-    jsonDocument[KEY_TARGET_ID] = id;
+    jsonDocument[KEY_CMD_TARGET_ID] = id;
 }
 
 uint32_t Command::getTime()
 {
-    return jsonDocument[KEY_TIME];
+    return jsonDocument[KEY_CMD_TIME];
 }
 
 void Command::setTime(uint32_t t)
 {
-    jsonDocument[KEY_TIME] = t;
+    jsonDocument[KEY_CMD_TIME] = t;
 }
 
 const JsonDocument &Command::getParameters()

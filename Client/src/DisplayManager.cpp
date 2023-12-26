@@ -1,11 +1,11 @@
-#include "Display.h"
+#include "DisplayManager.h"
 
-Display display;
+DisplayManager displayManager;
 
 #define FONT_HEIGHT 8
 #define FONT_WIDTH 6
 #define STATUS_ROW 0
-#define STATUS_COL 0
+#define STATUS_COL 8
 #define WIFI_ROW 2
 #define WIFI_COL 0
 #define MQTT_ROW 2
@@ -14,12 +14,14 @@ Display display;
 #define IP_ADDRESS_COL 0
 #define MEMORY_ROW 6
 #define MEMORY_COL 0
+#define NODE_ROW 0
+#define NODE_COL 0
 
-Display::Display()
+DisplayManager::DisplayManager()
 {
 }
 
-void Display::initialize()
+void DisplayManager::initialize()
 {
     ssd1306 = Adafruit_SSD1306(128, 64, &Wire);
     ssd1306.begin(SSD1306_SWITCHCAPVCC, 0x3C); // Address 0x3C for 128x32
@@ -28,19 +30,20 @@ void Display::initialize()
     ssd1306.setTextSize(1);
     ssd1306.setTextColor(SSD1306_WHITE);
 
+    setNode();
     setStatusMessage( Helper::toString(Event::INITIALIZING));
     setNetworkStatus();
     setMemory(true);
 
     eventManager.addEventHandler([](void *arg, esp_event_base_t base, int32_t id, void *data)
-                                 { display.eventHandler(arg, base, id, data); });
+                                 { displayManager.eventHandler(arg, base, id, data); });
 
     Log.infoln("Creating display task.");
     BaseType_t xReturned = xTaskCreate(
         [](void *pvParameters)
-        { display.displayTask(pvParameters); },
+        { displayManager.displayTask(pvParameters); },
         "display_task",
-        1024,
+        2048,
         (void *)1,
         tskIDLE_PRIORITY,
         &displayTaskHandle);
@@ -50,7 +53,13 @@ void Display::initialize()
     }
 }
 
-void Display::eventHandler(void *arg, esp_event_base_t base, int32_t id, void *data)
+void DisplayManager::setSize(DisplaySize size)
+{
+    this->size = size;
+    prefManager.set(KEY_DISPLAY_SIZE, (uint8_t)(size));
+}
+
+void DisplayManager::eventHandler(void *arg, esp_event_base_t base, int32_t id, void *data)
 {
     Event event = (Event)id;
     switch (event)
@@ -87,6 +96,9 @@ void Display::eventHandler(void *arg, esp_event_base_t base, int32_t id, void *d
         setStatusMessage("MQTT UP");
         setNetworkStatus(true);
         break;
+    case Event::NODE_ID_CHANGE:
+        setNode(true);
+        break;
     case Event::ERROR:
         setStatusMessage("ERROR", true);
         break;
@@ -96,9 +108,9 @@ void Display::eventHandler(void *arg, esp_event_base_t base, int32_t id, void *d
 }
 
 /***
- * Display task updates the display when things change.
+ * DisplayManager task updates the display when things change.
 */
-void Display::displayTask(void *pvParameters)
+void DisplayManager::displayTask(void *pvParameters)
 {
     Log.infoln("Starting display task.");
     uint8_t clicks = 0;
@@ -112,7 +124,6 @@ void Display::displayTask(void *pvParameters)
             setNetworkStatus();
             setMemory(true);
             clicks = 0;
-            // Log.infoln("Display Task Memory: %d", uxTaskGetStackHighWaterMark(NULL));
         }
         if( refresh )
         {
@@ -122,16 +133,17 @@ void Display::displayTask(void *pvParameters)
     }
 }
 
-void Display::setStatusMessage(const char *msg, bool refresh)
+void DisplayManager::setStatusMessage(const char *msg, bool refresh)
 {
-    clearRow(STATUS_ROW);
+    clearRow(STATUS_ROW, STATUS_COL, STATUS_ROW, 21);
+    // clearRow(STATUS_ROW);
     setCursor(STATUS_ROW, STATUS_COL);
-    ssd1306.print("Status: ");
+    //ssd1306.print("-");
     ssd1306.print(msg);
     this->refresh = refresh;
 }
 
-void Display::setNetworkStatus(bool refresh)
+void DisplayManager::setNetworkStatus(bool refresh)
 {
     clearRow(WIFI_ROW);
     if (WIFI_ROW != MQTT_ROW)
@@ -139,6 +151,7 @@ void Display::setNetworkStatus(bool refresh)
         clearRow(MQTT_ROW);
     }
     setCursor(WIFI_ROW, WIFI_COL);
+    
     ssd1306.print("WIFI: ");
     if (stateManager.wifi == false)
     {
@@ -173,29 +186,55 @@ void Display::setNetworkStatus(bool refresh)
     this->refresh = refresh;
 }
 
-void Display::setMemory(bool refresh)
+void DisplayManager::setMemory(bool refresh)
 {
-    clearRow(MEMORY_ROW);
+    clearRow(MEMORY_ROW, MEMORY_COL, MEMORY_ROW, 21);
     setCursor(MEMORY_ROW, MEMORY_COL);
-    ssd1306.print("MEMORY: ");
-    ssd1306.print(ESP.getFreeHeap());
+    ssd1306.print("MEM: ");
+    uint32_t m = ESP.getFreeHeap();
+    if( m > 10000000)
+    {
+    ssd1306.print(m/1000);
+    ssd1306.print("K");
+    }
+    else
+    {
+    ssd1306.print(m);
+    }
     this->refresh = refresh;
 }
 
-void Display::clearRow(uint8_t row)
+void DisplayManager::setNode(bool refresh)
 {
-    uint8_t start = row * FONT_HEIGHT;
-    uint8_t end = start + FONT_HEIGHT - 1;
-
-    for (uint8_t y = start; y <= end; y++)
-    {
-        for (uint8_t x = 0; x < 127; x++)
-        {
-            ssd1306.drawPixel(x, y, BLACK);
-        }
-    }
+    clearRow(NODE_ROW, NODE_COL, NODE_ROW, 8);
+    setCursor(NODE_ROW, NODE_COL);
+    ssd1306.print("ID ");
+    ssd1306.printf("%3.3d",prefManager.getId());
+    ssd1306.print(": ");
+    this->refresh = refresh;
 }
-void Display::setCursor(uint8_t row, uint8_t col)
+
+
+void DisplayManager::clearRow(uint8_t row)
+{
+    ssd1306.fillRect(0, row * FONT_HEIGHT, 128, FONT_HEIGHT, BLACK);
+}
+
+void DisplayManager::clearRow(uint8_t srow, uint8_t scol, uint8_t erow, uint8_t ecol)
+{
+
+    uint8_t xstart = scol*FONT_WIDTH;
+    uint8_t width = (ecol - scol + 1)*FONT_WIDTH;
+
+    uint8_t ystart = srow * FONT_HEIGHT;
+    uint8_t height = (erow - srow + 1)*FONT_HEIGHT;
+
+    ssd1306.fillRect(xstart, ystart, width, height, BLACK);
+
+}
+
+
+void DisplayManager::setCursor(uint8_t row, uint8_t col)
 {
     uint8_t r = row * FONT_HEIGHT;
     uint8_t c = col * FONT_WIDTH;
