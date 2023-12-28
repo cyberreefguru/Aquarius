@@ -6,6 +6,14 @@
  */
 #include "Helper.h"
 
+const void Helper::fatal(const char * msg)
+{
+    Log.fatalln(msg);
+    eventManager.postEvent(Event::ERROR);
+    while (1);
+}
+
+
 const char* Helper::toString(WiFiEvent_t w)
 {
     switch (w) {
@@ -172,6 +180,15 @@ const char* Helper::toString(Event e)
         break;
     case Event::WIFI_UP:
         return "WIFI_UP";
+        break;
+    case Event::CONFIGURE:
+        return "CONFIGURE";
+        break;
+    case Event::NODE_ID_CHANGE:
+        return "NODE_ID_CHANGE";
+        break;
+    case Event::IO_INTERRUPT:
+        return "IO_INTERRUPT";
         break;
     default:
         return "UNKNOWN";

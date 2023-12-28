@@ -22,8 +22,8 @@ void StateManager::initialize()
         { stateManager.stateTask(pvParameters); },
         "state_task",
         1024,
-        (void *)1,
-        tskIDLE_PRIORITY,
+        NULL,
+        tskIDLE_PRIORITY+1,
         &stateTaskHandle);
     if (xReturned != pdPASS)
     {

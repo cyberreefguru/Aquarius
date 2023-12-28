@@ -35,8 +35,8 @@ void IndicatorManager::initialize()
         { indicatorManager.flashTask(pvParameters); },
         "flash_task",
         1024,
-        (void *)1,
-        tskIDLE_PRIORITY,
+        NULL,
+        tskIDLE_PRIORITY+1,
         &flashTaskHandle);
     if (xReturned != pdPASS)
     {

@@ -20,10 +20,7 @@ void CommandManager::initialize()
     commandQueueHandle = xQueueCreate(5, CMD_MAX_SIZE);
     if (commandQueueHandle == NULL)
     {
-        Log.fatalln("Failed to create command queue");
-        eventManager.postEvent(Event::ERROR);
-        while (1)
-            ;
+        Helper::fatal("Failed to create command queue");
     }
 
     Log.infoln("Creating command task.");
@@ -32,12 +29,12 @@ void CommandManager::initialize()
         { commandManager.commandTask(pvParameters); },
         "command_task",
         2048,
-        (void *)1,
-        tskIDLE_PRIORITY,
+        NULL,
+        tskIDLE_PRIORITY+1,
         &commandTaskHandle);
     if (xReturned != pdPASS)
     {
-        Log.errorln("FAILED TO CREATE COMMAND TASK");
+        Helper::fatal("FAILED TO CREATE COMMAND TASK");
     }
 }
 
@@ -94,7 +91,7 @@ void CommandManager::commandTask(void *pvParameters)
                 break;
             }
             vTaskDelay(5000);
-            Log.traceln("Posting waiting");
+            Log.traceln("Post waiting");
             eventManager.postEvent(Event::WAITING);
             Log.infoln("Command Task Memory: %d", uxTaskGetStackHighWaterMark(NULL));
         }

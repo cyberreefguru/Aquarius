@@ -15,12 +15,12 @@ class Button
 public:
     Button();
     void initialize(uint8_t pin);
-    bool get();
-    void set();
-    void reset();
-    
-protected:
-uint8_t pin;
-    bool value;
+
+    uint8_t pin;
+    bool lastState;
     uint32_t lastTrigger;
+
+protected:
+private:
+
 };

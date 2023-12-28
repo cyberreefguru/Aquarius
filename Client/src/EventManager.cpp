@@ -49,6 +49,11 @@ void EventManager::initialize()
     Log.infoln("Event manager initialization complete");
 }
 
+esp_err_t EventManager::postInterruptEvent(Event event)
+{
+    return esp_event_post_to(eventLoopHandler, SYSTEM_EVENT, +event, nullptr, 0, 0);
+}
+
 esp_err_t EventManager::postEvent(Event event)
 {
     return esp_event_post_to(eventLoopHandler, SYSTEM_EVENT, +event, nullptr, 0, 0);
@@ -66,7 +71,7 @@ esp_err_t EventManager::addEventHandler(esp_event_handler_t eventHandler)
 
 void EventManager::defaultEventHandler(void *args, esp_event_base_t base, int32_t id, void *data)
 {
-    Log.infoln("Event: %s", Helper::toString((Event)id));
-    Log.infoln("WIFI: %d, MQTT: %d, RSSI: %d, Active: %d, Processing: %d", stateManager.wifi, stateManager.mqtt,
+    Log.infoln("EM - Event: %s", Helper::toString((Event)id));
+    Log.infoln("EM - WIFI: %d, MQTT: %d, RSSI: %d, Active: %d, Processing: %d", stateManager.wifi, stateManager.mqtt,
                stateManager.rssi, stateManager.active, stateManager.processing);
 }

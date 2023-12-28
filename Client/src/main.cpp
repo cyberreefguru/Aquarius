@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <ArduinoLog.h>
-// #include <WiFi.h>
+#include <Adafruit_MCP23X17.h>
+
 #include "EventManager.h"
 #include "MessageBroker.h"
 #include "Event.h"
@@ -8,10 +9,14 @@
 #include "IndicatorManager.h"
 #include "CommandManager.h"
 #include "PreferenceManager.h"
+#include "PortManager.h"
 
 #include "DisplayManager.h"
 
 // IPAddress server(192, 168, 30, 210);
+
+// Adafruit_MCP23X17 gpio;
+
 
 /**
  * Sets up the hardware and software
@@ -29,6 +34,9 @@ void setup()
   // This should be set up before other managers
   // so they can post events as required
   eventManager.initialize();
+
+  // // Initialize IO Ports
+  // portManager.initialize();
 
   // Set up state manager - tracks state changes
   stateManager.initialize();
@@ -48,12 +56,55 @@ void setup()
   // Initialize WIFI and MQTT
   messageBroker.initialize();
 
+  // Initialize ports
+  portManager.initialize();
+
+
   // eventManager.postEvent(Event::WAITING);
+
+    // if (!gpio.begin_I2C())
+    // {
+    //     Log.fatalln("Unable to initialize GPIO I2C");
+    //     while (1);
+    // }
+    // else
+    // {
+    //   Log.infoln("GPIO initialized!");
+    // }
+    // for (uint8_t i = 0; i<8; i++)
+    // {
+    //     Log.infoln("Configuring %i pin", i);
+    //     gpio.pinMode(i, OUTPUT);
+    // }
+    // Log.infoln("GPIO Configured!");
+
+    // // gpio.pinMode(0, OUTPUT);
+    // // gpio.pinMode(1, OUTPUT);
+    // // gpio.pinMode(7, OUTPUT);
+    // gpio.digitalWrite(1,0);
+    // gpio.writeGPIOA(0x00);
 
   Log.infoln("Initialization complete");
 }
 
 void loop()
 {
-  vTaskDelete(nullptr);
+    portManager.set(0, HIGH);
+    portManager.set(7, LOW);
+    // // uint16_t p = portManager.get();
+    // // Log.infoln("high: value: %x", p);
+    // gpio.digitalWrite(7, HIGH);
+    //  gpio.digitalWrite(0, LOW);
+   delay(500);
+    portManager.set(0, LOW);
+    portManager.set(7, HIGH);
+    // // p = portManager.get();
+    // // Log.infoln("low: value: %x", p);
+    // gpio.digitalWrite(7, LOW);
+    //  gpio.digitalWrite(0, HIGH);
+    delay(500);
+    //Log.infoln("port value: %X", portManager.get());
+
+    //vTaskDelete(nullptr);
 }
+

@@ -32,9 +32,7 @@ protected:
     void eventHandler(void *args, esp_event_base_t base, int32_t id, void *data);
     void commandTask( void * pvParameters );
     TaskHandle_t commandTaskHandle = nullptr;
-
     QueueHandle_t commandQueueHandle = nullptr;
-
 
 private:
     char eventData[CMD_MAX_SIZE];

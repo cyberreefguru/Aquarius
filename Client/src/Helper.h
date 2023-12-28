@@ -11,12 +11,14 @@
 #include <WiFi.h>
 #include "Event.h"
 #include "Command.h"
+#include "EventManager.h"
 
 
 class Helper
 {
 public:
     Helper();
+    static const void fatal(const char * msg);
     static const char * toString(WiFiEvent_t w);
     static const char * toString(Event e);
     static const char * toString(CommandType c);

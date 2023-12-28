@@ -44,8 +44,8 @@ void DisplayManager::initialize()
         { displayManager.displayTask(pvParameters); },
         "display_task",
         2048,
-        (void *)1,
-        tskIDLE_PRIORITY,
+        NULL,
+        tskIDLE_PRIORITY+1,
         &displayTaskHandle);
     if (xReturned != pdPASS)
     {

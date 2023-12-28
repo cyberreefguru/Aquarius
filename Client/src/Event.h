@@ -19,11 +19,13 @@ enum class Event
     MQTT_DOWN,
     MQTT_UP,
     INITIALIZING,
+    CONFIGURE,
     WAITING,
     MSG_RECEIVED,
     PROCESSING,
     SENT,
     NODE_ID_CHANGE,
-    ERROR
+    ERROR,
+    IO_INTERRUPT
 };
 inline constexpr unsigned operator+ (Event const val) { return static_cast<unsigned>(val); }
