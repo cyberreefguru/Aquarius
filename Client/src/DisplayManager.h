@@ -39,6 +39,7 @@ protected:
 
 private:
     bool refresh = false;
+    void setUpTime(uint32_t startTime);
     void setStatusMessage(const char * msg, bool refresh=false);
     void setNetworkStatus(bool refresh=false);
     void setMemory(bool refresh=false);

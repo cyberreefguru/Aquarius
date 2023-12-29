@@ -16,6 +16,9 @@ DisplayManager displayManager;
 #define MEMORY_COL 0
 #define NODE_ROW 0
 #define NODE_COL 0
+#define UPTIME_ROW 7
+#define UPTIME_COL 0
+
 
 DisplayManager::DisplayManager()
 {
@@ -114,6 +117,7 @@ void DisplayManager::displayTask(void *pvParameters)
 {
     Log.infoln("Starting display task.");
     uint8_t clicks = 0;
+    uint32_t startTime = millis();
 
     for (;;)
     {
@@ -121,6 +125,7 @@ void DisplayManager::displayTask(void *pvParameters)
         clicks++;
         if( clicks >= 10 )
         {
+            setUpTime(startTime);
             setNetworkStatus();
             setMemory(true);
             clicks = 0;
@@ -131,6 +136,27 @@ void DisplayManager::displayTask(void *pvParameters)
             refresh = false;
         }
     }
+}
+
+void DisplayManager::setUpTime(uint32_t startTime)
+{
+    uint32_t now = millis();
+    uint32_t upTime = millis() - startTime;
+
+    uint32_t inSeconds = upTime/1000;
+    uint8_t seconds = inSeconds % 60;
+    uint32_t inMins = inSeconds/60;
+    uint8_t mins = inMins %60;
+    uint8_t inHours = inMins/60;
+    uint8_t hours = inHours % 24;
+    uint32_t days = inHours/24;
+
+    char buf[32];
+    snprintf(buf, 32, "Uptime:%04dd %02d:%02d:%02d", days, hours, mins, seconds);
+    clearRow(UPTIME_ROW, UPTIME_COL, UPTIME_ROW, 21);
+    setCursor(UPTIME_ROW, UPTIME_COL);
+    ssd1306.print(buf);
+    this->refresh = refresh;
 }
 
 void DisplayManager::setStatusMessage(const char *msg, bool refresh)
