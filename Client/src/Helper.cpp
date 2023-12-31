@@ -9,7 +9,7 @@
 const void Helper::fatal(const char * msg)
 {
     Log.fatalln(msg);
-    eventManager.postEvent(Event::ERROR);
+    actionEventManager.postEvent(ActionEvent::ERROR);
     while (1);
 }
 
@@ -139,106 +139,6 @@ const char* Helper::toString(WiFiEvent_t w)
             break;
         default: 
             return "UNKNOWN";
-        break;
-    }
-}
-
-
-const char* Helper::toString(Event e)
-{
-    switch (e)
-    {
-    case Event::ACTIVE:
-        return "ACTIVE";
-        break;
-    case Event::DEACTIVE:
-        return "DEACTIVE";
-        break;
-    case Event::ERROR:
-        return "ERROR";
-        break;
-    case Event::INITIALIZING:
-        return "INITIALIZING";
-        break;
-    case Event::MQTT_DOWN:
-        return "MQTT_DOWN";
-        break;
-    case Event::MQTT_UP:
-        return "MQTT_UP";
-        break;
-    case Event::PROCESSING:
-        return "PROCESSING";
-        break;
-    case Event::WAITING:
-        return "WAITING";
-        break;
-    case Event::MSG_RECEIVED:
-        return "MSG_RECEIVED";
-        break;
-    case Event::WIFI_DOWN:
-        return "WIFI_DOWN";
-        break;
-    case Event::WIFI_UP:
-        return "WIFI_UP";
-        break;
-    case Event::CONFIGURE:
-        return "CONFIGURE";
-        break;
-    case Event::NODE_ID_CHANGE:
-        return "NODE_ID_CHANGE";
-        break;
-    case Event::IO_INTERRUPT:
-        return "IO_INTERRUPT";
-        break;
-    default:
-        return "UNKNOWN";
-        break;
-    }
-}
-
-const char* Helper::toString(CommandType c)
-{
-    switch (c)
-    {
-    case CommandType::ACTION:
-        return "ACTION";
-        break;
-    case CommandType::RESPONSE:
-        return "RESPONSE";
-        break;
-    case CommandType::LOG:
-        return "LOG";
-        break;
-    default:
-        return "UNkNOWN";
-        break;
-    }
-}
-
-const char* Helper::toString(ActionType a)
-{
-    switch (a)
-    {
-    case ActionType::ACTIVATE:
-        return "ACTIVATE";
-        break;
-    case ActionType::DEACTIVATE:
-        return "DEACTIVATE";
-        break;
-    case ActionType::GET_PARAM:
-        return "GET_PARAM";
-        break;
-    case ActionType::SET_PARAM:
-        return "SET_PARAM";
-        break;
-    case ActionType::GET_STATUS:
-        return "GET_STATUS";
-        break;
-    case ActionType::REGISTER:
-        return "REGISTER";
-        break;
-    default:
-        return "UNkNOWN";
         break;
     }
 }

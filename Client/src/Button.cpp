@@ -2,32 +2,13 @@
 
 Button::Button(){}
 
-void Button::initialize(uint8_t pin)
+void Button::initialize(uint8_t pin, ButtonAction action)
 {
     this->pin = pin;
+    this->action = action;
     lastTrigger = 0;
     lastState = HIGH;
+    Log.traceln("pin=%d, action=%d", pin, action);
 }
-
-// bool Button::get()
-// {
-//     return value;
-// }
-
-// void Button::set()
-// {
-//     uint32_t t = millis();
-//     if( (t - lastTrigger) > 250 )
-//     {
-//         lastTrigger = t;
-//         value = true;
-//     }
-// }
-
-// void Button::reset()
-// {
-//     value = false;
-// }
-
 
 

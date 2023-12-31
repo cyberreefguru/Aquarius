@@ -3,19 +3,15 @@
  *
  *  Created on: Nov 25, 2023
  *      Author: cyberreefguru
+ * 
+ *  Representation of an RGB pixel (Red, Green, Blue)
+ *  Sheepishly stolen from FastLED -- check them out: https://fastled.io
  */
 
 #pragma once
 
 #include <Arduino.h>
 #include <ArduinoLog.h>
-
-// struct COLOR
-// {
-//     const char* name;
-//     Color color;
-// } color_t;
-
 
 /// Representation of an RGB pixel (Red, Green, Blue)
 /// Sheepishly stolen from FastLED -- check them out: https://fastled.io

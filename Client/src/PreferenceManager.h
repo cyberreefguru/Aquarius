@@ -99,7 +99,6 @@ public:
     void reset();
 
     uint8_t getId();
-    uint32_t getDelay();
 
     char *getWifiSsid();
     char *getWifiPassword();
@@ -174,7 +173,7 @@ public:
     // constexpr unsigned operator+ (DisplaySize s) const { return s.size; }
     constexpr bool isLarge() const { return size == Large; }
 
-    // inline constexpr unsigned operator+ (Event const val) { return static_cast<unsigned>(val); }
+    // inline constexpr unsigned operator+ (ActionEvent const val) { return static_cast<unsigned>(val); }
 private:
     SizeType size;
 };

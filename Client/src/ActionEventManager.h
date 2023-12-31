@@ -1,5 +1,5 @@
 /*
- * EventManager.h
+ * ActionEventManager.h
  *
  *  Created on: Nov 20, 2023
  *      Author: cyberreefguru
@@ -9,7 +9,7 @@
 
 #include <Arduino.h>
 #include <ArduinoLog.h>
-#include "Event.h"
+#include "ActionEvent.h"
 #include "StateManager.h"
 #include "Helper.h"
 
@@ -23,16 +23,16 @@ extern "C"
 #include "esp_event.h"
 }
 
-ESP_EVENT_DECLARE_BASE(SYSTEM_EVENT);
+ESP_EVENT_DECLARE_BASE(ACTION_BASE);
 
-class EventManager
+class ActionEventManager
 {
 public:
-    EventManager();
+    ActionEventManager();
     void initialize();
-    esp_err_t postEvent(Event event);
-    esp_err_t postInterruptEvent(Event event);
-    esp_err_t postEvent(Event event, char* payload, uint32_t size);
+    esp_err_t postEvent(ActionEvent event);
+    esp_err_t postInterruptEvent(ActionEvent event);
+    esp_err_t postEvent(ActionEvent event, char* payload, uint32_t size);
     esp_err_t addEventHandler(esp_event_handler_t _hand);
     void defaultEventHandler(void *args, esp_event_base_t base, int32_t id, void *data);
 
@@ -47,7 +47,7 @@ private:
     {
 #endif
 
-    extern EventManager eventManager;
+    extern ActionEventManager actionEventManager;
 
 #ifdef __cplusplus
 } // extern "C"

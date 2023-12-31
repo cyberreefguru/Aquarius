@@ -10,9 +10,11 @@
 #include <Arduino.h>
 #include <ArduinoLog.h>
 #include <Adafruit_NeoPixel.h>
-#include "Event.h"
-#include "IndicatorManager.h"
+
 #include "Color.h"
+#include "ActionEvent.h"
+#include "DisplayManager.h"
+#include "IndicatorManager.h"
 
 extern "C"
 {
@@ -26,23 +28,29 @@ public:
     StateManager();
     void initialize();
 
-    Event lastEvent = Event::INITIALIZING;
+    ActionEvent lastEvent = ActionEvent::INITIALIZING;
+    uint32_t startTime = 0;
+    bool configure = false;
     bool processing = false;
     bool active = false;
     bool wifi = false;
-    int32_t rssi = 0;
     bool mqtt = false;
+    int32_t rssi = 0;
 
 protected:
-    void eventHandler(void *arg, esp_event_base_t base, int32_t id, void *data);
 
 private:
     TaskHandle_t stateTaskHandle = NULL;
+    void eventHandler(void *arg, esp_event_base_t base, int32_t id, void *data);
     void stateTask(void *pvParameters);
-    // State state;
-    // bool wifi = false;
-    // int32_t rssi = 0;
-    // bool mqtt = false;
+
+    void setStateDisplayBase();
+    void setUpTime(bool refresh = false);
+    void setStatusMessage(const char * msg, bool refresh=false);
+    void setNetworkStatus(bool refresh=false);
+    void setMemory(bool refresh=false);
+    void setNode(bool refresh=false);
+
 };
 
 // end of add your includes here

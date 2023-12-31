@@ -1,5 +1,5 @@
 /*
- * Event.h
+ * ActionEvent.h
  *
  *  Created on: Nov 26, 2023
  *      Author: cyberreefguru
@@ -22,6 +22,24 @@ enum class CommandType
     NONE,
 } ;
 inline constexpr unsigned operator+ (CommandType const val) { return static_cast<unsigned>(val); }
+inline const char* operator++(CommandType c)
+{
+    switch (c)
+    {
+    case CommandType::ACTION:
+        return "ACTION";
+        break;
+    case CommandType::RESPONSE:
+        return "RESPONSE";
+        break;
+    case CommandType::LOG:
+        return "LOG";
+        break;
+    default:
+        return "UNkNOWN";
+        break;
+    }
+}
 
 enum class ActionType
 {
@@ -34,6 +52,35 @@ enum class ActionType
     NONE,
 } ;
 inline constexpr unsigned operator+ (ActionType const val) { return static_cast<unsigned>(val); }
+inline const char* operator++(ActionType a)
+{
+    switch (a)
+    {
+    case ActionType::ACTIVATE:
+        return "ACTIVATE";
+        break;
+    case ActionType::DEACTIVATE:
+        return "DEACTIVATE";
+        break;
+    case ActionType::GET_PARAM:
+        return "GET_PARAM";
+        break;
+    case ActionType::SET_PARAM:
+        return "SET_PARAM";
+        break;
+    case ActionType::GET_STATUS:
+        return "GET_STATUS";
+        break;
+    case ActionType::REGISTER:
+        return "REGISTER";
+        break;
+    default:
+        return "UNkNOWN";
+        break;
+    }
+}
+
+
 
 enum class Status
 {
@@ -41,6 +88,21 @@ enum class Status
     ERROR,
 };
 inline constexpr unsigned operator+ (Status const val) { return static_cast<unsigned>(val); }
+inline const char* operator++(Status a)
+{
+    switch (a)
+    {
+    case Status::OK:
+        return "OK";
+        break;
+    case Status::ERROR:
+        return "ERROR";
+        break;
+    default:
+        return "UNkNOWN";
+        break;
+    }
+}
 
 enum class LogLevel
 {
@@ -52,6 +114,33 @@ enum class LogLevel
     FATAL,
 };
 inline constexpr unsigned operator+ (LogLevel const val) { return static_cast<unsigned>(val); }
+inline const char* operator++(LogLevel a)
+{
+    switch (a)
+    {
+    case LogLevel::TRACE:
+        return "TRACE";
+        break;
+    case LogLevel::DEBUG:
+        return "DEBUG";
+        break;
+    case LogLevel::INFO:
+        return "INFO";
+        break;
+    case LogLevel::WARN:
+        return "WARN";
+        break;
+    case LogLevel::ERROR:
+        return "ERROR";
+        break;
+    case LogLevel::FATAL:
+        return "FATAL";
+        break;
+    default:
+        return "UNkNOWN";
+        break;
+    }
+}
 
 // {\"cmd\": 2, \"k\": \"test key\", \"v\": \"test value\",\"t\": \"test string\"}
 

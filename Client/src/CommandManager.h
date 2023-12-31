@@ -13,8 +13,8 @@
 #include <ArduinoJson.h>
 
 #include "Command.h"
-#include "Event.h"
-#include "EventManager.h"
+#include "ActionEvent.h"
+#include "ActionEventManager.h"
 
 extern "C"
 {

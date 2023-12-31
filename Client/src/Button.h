@@ -10,15 +10,18 @@
 #include <Arduino.h>
 #include <ArduinoLog.h>
 
+#include "ButtonEvent.h"
+
 class Button
 {
 public:
     Button();
-    void initialize(uint8_t pin);
+    void initialize(uint8_t pin, ButtonAction action);
 
     uint8_t pin;
     bool lastState;
     uint32_t lastTrigger;
+    ButtonAction action;
 
 protected:
 private:

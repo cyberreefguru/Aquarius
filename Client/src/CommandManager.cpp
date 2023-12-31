@@ -13,7 +13,7 @@ CommandManager::CommandManager() {}
 
 void CommandManager::initialize()
 {
-    eventManager.addEventHandler([](void *arg, esp_event_base_t base, int32_t id, void *data)
+    actionEventManager.addEventHandler([](void *arg, esp_event_base_t base, int32_t id, void *data)
                                  { commandManager.eventHandler(arg, base, id, data); });
 
     Log.infoln("Creating queue");
@@ -40,11 +40,11 @@ void CommandManager::initialize()
 
 void CommandManager::eventHandler(void *arg, esp_event_base_t base, int32_t id, void *data)
 {
-    Event event = (Event)id;
-    // Log.infoln("Command Manager: %s", Helper::toString(event));
+    ActionEvent event = (ActionEvent)id;
+    // Log.infoln("Command Manager: %s", ++event);
     switch (event)
     {
-    case Event::MSG_RECEIVED:
+    case ActionEvent::MSG_RECEIVED:
         Log.infoln("message: %s", data);
         if (xQueueSend(commandQueueHandle, data, portMAX_DELAY) != pdPASS)
         {
@@ -69,15 +69,15 @@ void CommandManager::commandTask(void *pvParameters)
         if (xQueueReceive(commandQueueHandle, &eventData, portMAX_DELAY) == pdPASS)
         {
             Log.infoln("Command received: %s", eventData);
-            eventManager.postEvent(Event::PROCESSING);
+            actionEventManager.postEvent(ActionEvent::PROCESSING);
             Command c = Command();
             c.toJson(eventData);
             Log.traceln("Parsed command");
 
             CommandType t = c.getType();
             ActionType a = c.getAction();
-            Log.infoln("Command Type: %d, '%s'", t, Helper::toString(t));
-            Log.infoln("Action Type: %d, '%s'", a, Helper::toString(a));
+            Log.infoln("Command Type: %d, '%s'", t, ++t);
+            Log.infoln("Action Type: %d, '%s'", a, ++a);
             switch (t)
             {
             case CommandType::ACTION:
@@ -92,7 +92,7 @@ void CommandManager::commandTask(void *pvParameters)
             }
             vTaskDelay(5000);
             Log.traceln("Post waiting");
-            eventManager.postEvent(Event::WAITING);
+            actionEventManager.postEvent(ActionEvent::WAITING);
             Log.infoln("Command Task Memory: %d", uxTaskGetStackHighWaterMark(NULL));
         }
         // vTaskDelay(5000);
@@ -109,7 +109,7 @@ void CommandManager::commandTask(void *pvParameters)
 void CommandManager::doAction(Command &c)
 {
     ActionType a = c.getAction();
-    Log.infoln("Action: %s", Helper::toString(a));
+    Log.infoln("Action: %s", ++a);
     switch (a)
     {
     case ActionType::ACTIVATE:

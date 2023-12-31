@@ -12,8 +12,8 @@
 #include <Adafruit_MCP23X17.h>
 #include <FunctionalInterrupt.h>
 
-#include "Event.h"
-#include "EventManager.h"
+// #include "ActionEvent.h"
+#include "InputEventManager.h"
 #include "Button.h"
 
 #define INTR_PIN D0
@@ -41,10 +41,9 @@ protected:
     uint8_t process = false;
     Adafruit_MCP23X17 gpio;
     Button button[5];
-    //uint8_t values;
+
     void IRAM_ATTR isr();
 
-    void eventHandler(void *arg, esp_event_base_t base, int32_t id, void *data);
     void debounceTask(void *parameter);
     TaskHandle_t debounceTaskHandle = NULL;
     QueueHandle_t debounceQueueHandle = nullptr;

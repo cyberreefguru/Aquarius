@@ -60,12 +60,12 @@ void MessageBroker::onWifiEvent(WiFiEvent_t event, WiFiEventInfo_t info)
     case SYSTEM_EVENT_STA_GOT_IP:
         Log.traceln("IP address: ");
         Log.traceln(WiFi.localIP());
-        eventManager.postEvent(Event::WIFI_UP);
+        actionEventManager.postEvent(ActionEvent::WIFI_UP);
         connectToMqtt();
         break;
     case SYSTEM_EVENT_STA_DISCONNECTED:
         Log.traceln("WiFi lost connection");
-        eventManager.postEvent(Event::WIFI_DOWN);
+        actionEventManager.postEvent(ActionEvent::WIFI_DOWN);
         xTimerStop(mqttReconnectTimer, 0); // ensure we don't reconnect to MQTT while reconnecting to Wi-Fi
         xTimerStart(wifiReconnectTimer, 0);
         break;
@@ -100,12 +100,12 @@ void MessageBroker::onMqttConnect(bool sessionPresent)
     // uint16_t packetIdPub2 = client.publish("test/lol", 2, true, "test 3");
     // Log.trace("Publishing at QoS 2, packetId: ");
     // Log.traceln("%d", packetIdPub2);
-    eventManager.postEvent(Event::MQTT_UP);
+    actionEventManager.postEvent(ActionEvent::MQTT_UP);
 }
 
 void MessageBroker::onMqttDisconnect(AsyncMqttClientDisconnectReason reason)
 {
-    eventManager.postEvent(Event::MQTT_DOWN);
+    actionEventManager.postEvent(ActionEvent::MQTT_DOWN);
     Log.errorln("Disconnected from MQTT.");
     if (WiFi.isConnected())
     {
@@ -122,7 +122,7 @@ void MessageBroker::onMqttSubscribe(uint16_t packetId, uint8_t qos)
     Log.traceln("%d", qos);
     if( packetId == 4 )
     {
-        eventManager.postEvent(Event::WAITING);
+        actionEventManager.postEvent(ActionEvent::WAITING);
     }
 }
 
@@ -154,7 +154,7 @@ void MessageBroker::onMqttMessage(char *topic, char *payload, AsyncMqttClientMes
     Log.traceln("%d", total);
     Log.traceln(" payload: %s", new_payload);
 
-    eventManager.postEvent(Event::MSG_RECEIVED, new_payload, len+1);
+    actionEventManager.postEvent(ActionEvent::MSG_RECEIVED, new_payload, len+1);
 }
 
 void MessageBroker::onMqttPublish(uint16_t packetId)

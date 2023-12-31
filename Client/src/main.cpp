@@ -2,14 +2,15 @@
 #include <ArduinoLog.h>
 #include <Adafruit_MCP23X17.h>
 
-#include "EventManager.h"
+#include "ActionEventManager.h"
 #include "MessageBroker.h"
-#include "Event.h"
-#include "EventManager.h"
+#include "ActionEvent.h"
+#include "ActionEventManager.h"
 #include "IndicatorManager.h"
 #include "CommandManager.h"
 #include "PreferenceManager.h"
 #include "PortManager.h"
+#include "MenuManager.h"
 
 #include "DisplayManager.h"
 
@@ -33,10 +34,13 @@ void setup()
   // Set up event manager
   // This should be set up before other managers
   // so they can post events as required
-  eventManager.initialize();
+  actionEventManager.initialize();
 
-  // // Initialize IO Ports
-  // portManager.initialize();
+  // Set up input manager
+  inputEventManager.initialize();
+
+  // Initialize display
+  displayManager.initialize();
 
   // Set up state manager - tracks state changes
   stateManager.initialize();
@@ -44,23 +48,23 @@ void setup()
   // Set up and initialize LEDs
   indicatorManager.initialize();
 
-  // Initialize display
-  displayManager.initialize();
-
   // Initialize command manager
   commandManager.initialize();
-
-  // Fire initialization event
-  eventManager.postEvent(Event::INITIALIZING);
-
-  // Initialize WIFI and MQTT
-  messageBroker.initialize();
 
   // Initialize ports
   portManager.initialize();
 
+  // Initialize menu
+  menuManager.initialize();
 
-  // eventManager.postEvent(Event::WAITING);
+  // Fire initialization event
+  actionEventManager.postEvent(ActionEvent::INITIALIZING);
+
+  // Initialize WIFI and MQTT
+  messageBroker.initialize();
+
+
+  // actionEventManager.postEvent(ActionEvent::WAITING);
 
     // if (!gpio.begin_I2C())
     // {

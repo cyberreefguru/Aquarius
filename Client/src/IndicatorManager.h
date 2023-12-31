@@ -11,8 +11,8 @@
 #include <ArduinoLog.h>
 #include <Adafruit_NeoPixel.h>
 
-#include "Event.h"
-#include "EventManager.h"
+#include "ActionEvent.h"
+#include "ActionEventManager.h"
 #include "StateManager.h"
 #include "Color.h"
 

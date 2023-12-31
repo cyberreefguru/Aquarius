@@ -25,7 +25,7 @@ void IndicatorManager::initialize()
     // delay(250);
     setIndicators(Color::Orange, Color::Black);
 
-    eventManager.addEventHandler([](void *arg, esp_event_base_t base, int32_t id, void *data)
+    actionEventManager.addEventHandler([](void *arg, esp_event_base_t base, int32_t id, void *data)
                                  { indicatorManager.eventHandler(arg, base, id, data); });
 
     flashMode = Mode::Solid;
@@ -46,46 +46,51 @@ void IndicatorManager::initialize()
 
 void IndicatorManager::eventHandler(void *arg, esp_event_base_t base, int32_t id, void *data)
 {
-    Event event = (Event)id;
+    ActionEvent event = (ActionEvent)id;
     switch (event)
     {
-    case Event::INITIALIZING:
+    case ActionEvent::INITIALIZING:
         setStatusIndicator(Color::Orange);
         break;
-    case Event::MSG_RECEIVED:
+    case ActionEvent::MSG_RECEIVED:
         flashMode = Mode::Flash;
         flashRate = 250;
         setStatusIndicator(Color::Blue);
         break;
-    case Event::WAITING:
+    case ActionEvent::WAITING:
         flashMode = Mode::HeartBeat;
         flashRate = 150;
         setStatusIndicator(Color::Green);
         break;
-    case Event::PROCESSING:
+    case ActionEvent::PROCESSING:
         flashMode = Mode::Flash;
         flashRate = 250;
         setStatusIndicator(Color::Blue);
         break;
-    case Event::WIFI_DOWN:
+    case ActionEvent::WIFI_DOWN:
         setStatusIndicator(Color::Magenta);
         break;
-    case Event::WIFI_UP:
+    case ActionEvent::WIFI_UP:
         setStatusIndicator(Color::Blue);
         break;
-    case Event::MQTT_DOWN:
+    case ActionEvent::MQTT_DOWN:
         setStatusIndicator(Color::Purple);
         break;
-    case Event::MQTT_UP:
+    case ActionEvent::MQTT_UP:
         setStatusIndicator(Color::Blue);
         break;
-    case Event::ACTIVE:
+    case ActionEvent::ACTIVE:
         setSystemIndicator(Color::Green);
         break;
-    case Event::DEACTIVE:
+    case ActionEvent::DEACTIVE:
         setSystemIndicator(Color::Black);
         break;
-    case Event::ERROR:
+    case ActionEvent::CONFIGURE:
+        flashMode = Mode::Flash;
+        flashRate = 250;
+        setStatusIndicator(Color::Cyan);
+        break;
+    case ActionEvent::ERROR:
         flashMode = Mode::Flash;
         flashRate = 100;
         setSystemIndicator(Color::Red);

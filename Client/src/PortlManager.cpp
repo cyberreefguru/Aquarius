@@ -31,11 +31,11 @@ void PortManager::initialize()
         gpio.setupInterruptPin(i, CHANGE);
     }
 
-    button[0].initialize(8);
-    button[1].initialize(9);
-    button[2].initialize(10);
-    button[3].initialize(11);
-    button[4].initialize(12);
+    button[0].initialize(8, ButtonAction::DOWN);
+    button[1].initialize(9, ButtonAction::RIGHT);
+    button[2].initialize(10, ButtonAction::UP);
+    button[3].initialize(11, ButtonAction::PUSH);
+    button[4].initialize(12, ButtonAction::LEFT);
 
     // Enable GPIO interrupts
     gpio.setupInterrupts(true, false, CHANGE);
@@ -44,18 +44,6 @@ void PortManager::initialize()
     gpio.clearInterrupts();
 
     attachInterrupt(digitalPinToInterrupt(INTR_PIN), std::bind(&PortManager::isr, this), FALLING);
-
-    // eventManager.addEventHandler([](void *arg, esp_event_base_t base, int32_t id, void *data)
-    //                             { portManager.eventHandler(arg, base, id, data); });
-
-    // values = gpio.readGPIOAB();
-
-    // Log.infoln("Creating port debounce queue");
-    // debounceQueueHandle = xQueueCreate(10, 1);
-    // if (debounceQueueHandle == NULL)
-    // {
-    //     Helper::fatal("Failed to create debounce queue");
-    // }
 
     Log.infoln("Creating debounce task.");
     BaseType_t xReturned = xTaskCreate(
@@ -76,9 +64,6 @@ void PortManager::initialize()
 
 void IRAM_ATTR PortManager::isr()
 {
-    // process = true;
-    // xQueueSend(debounceQueueHandle, &process, portMAX_DELAY);
-
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     vTaskNotifyGiveFromISR(debounceTaskHandle, &xHigherPriorityTaskWoken);
 
@@ -96,49 +81,8 @@ void PortManager::debounceTask(void *parameter)
     uint8_t ticks = 0;
     uint8_t portValue = gpio.readGPIOB();
 
-    // Read baseline value
-    // values = gpio.readGPIOB();
-    // Log.infoln("port value: %X", values);
-
     while (1)
     {
-        // delay(100);
-        // uint8_t v = gpio.readGPIOB();
-        // // test if some thing has changed
-        // if( v != portValue)
-        // {
-        //     // Log.infoln("v: %X, read: %X", portValue, v);
-        //     // Current port value != saved value so something changed
-        //     // Increment tick counter
-        //     ticks++;
-        //     if( ticks > 2 )
-        //     {
-        //         // Value has been constant for >200ms
-        //         // Trap value and signal change
-        //         portValue = v;
-        //         ticks = 0;
-        //         // Log.infoln("Port Changed - v: %X, read: %X", portValue, v);
-
-        //         values = v;
-        //         // Fire event
-        //         eventManager.postEvent(Event::IO_INTERRUPT);
-        //     }
-        // }
-
-        // if (xQueueReceive(debounceQueueHandle, &process, portMAX_DELAY) == pdPASS)
-        // {
-        //     Log.infoln("Processing interrupt");
-        //     uint8_t p = gpio.getLastInterruptPin();
-        //     uint16_t v = gpio.readGPIOAB();
-        //     Log.infoln("Last Interrupt Pin: %d", p);
-        //     Log.infoln("port value: %X", v);
-        //     // values |= 0x01<<p;
-        //     gpio.clearInterrupts();
-        //     eventManager.postEvent(Event::IO_INTERRUPT);
-        //     process = false;
-        //     Log.infoln("Interrupt complete");
-        // }
-
         threadNotification = xTaskNotifyWait(pdTRUE, ULONG_MAX, &notifiedValue, portMAX_DELAY);
         if (threadNotification == pdPASS)
         {
@@ -146,12 +90,12 @@ void PortManager::debounceTask(void *parameter)
             uint16_t allPins = gpio.getCapturedInterrupt();
             gpio.clearInterrupts();
 
-            Log.infoln("Pin: %d, Pins: %X", pin, allPins);
+            // Log.traceln("Pin: %d, Pins: %X", pin, allPins);
 
             // Loop through buttons to set state
             for (uint i = 0; i < 5; i++)
             {
-                if (button[i].pin = pin)
+                if (button[i].pin == pin)
                 {
                     handleButtonAction(&button[i], allPins);
                     break;
@@ -163,11 +107,10 @@ void PortManager::debounceTask(void *parameter)
 
 void PortManager::handleButtonAction(Button *b, uint16_t allPins)
 {
-
     uint32_t now = millis();
     uint16_t state = (((allPins) & (1 << (b->pin))) != 0 ? HIGH : LOW);
 
-    Log.infoln("Button Action: pin=%d, all=%X, state=%d", b->pin, allPins, state);
+    // Log.traceln("Button Action: pin=%d, action=(%d, %s), all=%X, state=%d", b->pin, b->action, ++(b->action), allPins, state);
 
     if (b->lastState != state)
     {
@@ -175,7 +118,7 @@ void PortManager::handleButtonAction(Button *b, uint16_t allPins)
         if (now - b->lastTrigger < 20)
         {
             // Too fast; debounce
-            Log.infoln("Debounce %d", b->pin);
+            Log.traceln("Debounce %d", b->pin);
             b->lastTrigger = now;
             return;
         }
@@ -183,7 +126,7 @@ void PortManager::handleButtonAction(Button *b, uint16_t allPins)
     else
     {
         // No change
-        Log.infoln("No state change: %d", b->pin);
+        Log.traceln("No state change: %d", b->pin);
         return;
     }
 
@@ -191,54 +134,26 @@ void PortManager::handleButtonAction(Button *b, uint16_t allPins)
     if (state == LOW)
     {
         // Pressed
-        Log.infoln("PRESSED: %d", b->pin);
+        // Log.traceln("PRESSED: %d, %d, %s", b->pin, b->action, ++(b->action));
+        if( now - b->lastState < 100 )
+        {
+            Log.traceln("Press too quickly, ingored");
+            b->lastTrigger = now;
+        }
+        else
+        {
+            inputEventManager.postEvent(ButtonEvent::PRESS, &b->action);
+        }
     }
     else
     {
         // Released
-        Log.infoln("RELEASED: %d", b->pin);
+        // Log.traceln("RELEASED: %d, %s", b->pin, ++b->action);
+        inputEventManager.postEvent(ButtonEvent::RELEASE, &b->action);
     }
 
     b->lastState = state;
     b->lastTrigger = now;
-}
-
-void PortManager::eventHandler(void *arg, esp_event_base_t base, int32_t id, void *data)
-{
-    Event event = (Event)id;
-    switch (event)
-    {
-    case Event::INITIALIZING:
-        break;
-    case Event::WAITING:
-        break;
-    case Event::MSG_RECEIVED:
-        break;
-    case Event::PROCESSING:
-        break;
-    case Event::ACTIVE:
-        break;
-    case Event::DEACTIVE:
-        break;
-    case Event::WIFI_DOWN:
-        break;
-    case Event::WIFI_UP:
-        break;
-    case Event::MQTT_DOWN:
-        break;
-    case Event::MQTT_UP:
-        break;
-    case Event::NODE_ID_CHANGE:
-        break;
-    case Event::ERROR:
-        break;
-    case Event::IO_INTERRUPT:
-        // Log.infoln("IO Interrupt: %X", values);
-        // values = 0;
-        break;
-    default:
-        break;
-    }
 }
 
 uint8_t PortManager::get()
