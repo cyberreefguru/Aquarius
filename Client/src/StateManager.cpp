@@ -33,8 +33,8 @@ void StateManager::stateTask(void *pvParameters)
     Log.infoln("Starting state task.");
 
     startTime = millis(); // Capture current time
-    setStateDisplayBase();
 
+    // Add event handler
     actionEventManager.addEventHandler([](void *arg, esp_event_base_t base, int32_t id, void *data)
                                        { stateManager.eventHandler(arg, base, id, data); });
 
@@ -44,41 +44,37 @@ void StateManager::stateTask(void *pvParameters)
         {
             rssi = WiFi.RSSI();
         }
+        vTaskDelay(pdMS_TO_TICKS(1000));
         if (configure == false)
         {
-            setNetworkStatus();
-            setUpTime(false);
-            setMemory(true);
-            vTaskDelay(pdMS_TO_TICKS(1000));
+            display();
         }
-        // Log.traceln("Status Task Update");
     }
 }
 
 void StateManager::eventHandler(void *arg, esp_event_base_t base, int32_t id, void *data)
 {
     ActionEvent event = (ActionEvent)id;
-    // Log.infoln("StateManager - ActionEvent: %s", ++event);
+
     switch (event)
     {
     case ActionEvent::INITIALIZING:
-        setStatusMessage("Initializing", true);
+        // setStatusMessage("Initializing", true);
         break;
     case ActionEvent::WAITING:
-        if( lastEvent == ActionEvent::CONFIGURE)
+        if (lastEvent == ActionEvent::CONFIGURE)
         {
-            displayManager.clear();
-            setStateDisplayBase();
+            initializeDisplay();
         }
-        setStatusMessage("Waiting", true);
+        // setStatusMessage("Waiting", true);
         processing = false;
         configure = false;
         break;
     case ActionEvent::MSG_RECEIVED:
-        setStatusMessage("Msg Received", true);
+        // setStatusMessage("Msg Received", true);
         break;
     case ActionEvent::PROCESSING:
-        setStatusMessage("Processing", true);
+        // setStatusMessage("Processing", true);
         processing = true;
         configure = false;
         break;
@@ -92,49 +88,76 @@ void StateManager::eventHandler(void *arg, esp_event_base_t base, int32_t id, vo
         break;
     case ActionEvent::WIFI_DOWN:
         wifi = false;
-        setStatusMessage("WIFI ERROR");
-        setNetworkStatus(true);
+        // setStatusMessage("WIFI ERROR");
+        // setNetworkStatus(false);
         break;
     case ActionEvent::WIFI_UP:
-        rssi = WiFi.RSSI();
+        // rssi = WiFi.RSSI();
         wifi = true;
-        setStatusMessage("WIFI UP");
-        setNetworkStatus(true);
+        // setStatusMessage("WIFI UP");
+        // setNetworkStatus(false);
         break;
     case ActionEvent::MQTT_DOWN:
         mqtt = false;
-        setStatusMessage("MQTT ERROR");
-        setNetworkStatus(true);
+        // setStatusMessage("MQTT ERROR");
+        // setNetworkStatus(false);
         break;
     case ActionEvent::MQTT_UP:
         mqtt = true;
-        setStatusMessage("MQTT UP");
-        setNetworkStatus(true);
+        // setStatusMessage("MQTT UP");
+        // setNetworkStatus(false);
         break;
     case ActionEvent::CONFIGURE:
+        // initializeDisplay();
         processing = false;
         configure = true;
     case ActionEvent::NODE_ID_CHANGE:
-        setNode(true);
+        // setNode(true);
         break;
     case ActionEvent::ERROR:
-        setStatusMessage("ERROR", true);
+        // setStatusMessage("ERROR", true);
         break;
     default:
         break;
     }
+    display();
     lastEvent = event;
+    displayManager.setRefresh(true);
 
     // Log.infoln("WIFI: %d, MQTT: %d, RSSI: %d, Processing: %d", wifi, mqtt, rssi, processing);
 }
 
-void StateManager::setStateDisplayBase()
+void StateManager::initializeDisplay()
 {
+    if (stateManager.configure == true)
+    {
+        Log.traceln("StateManager - initial display returning");
+        return;
+    }
+
     Log.traceln("Setting base status display");
     displayManager.clear();
-    displayManager.setCursor(0, 0);
     setNode(false);
-    setStatusMessage(++ActionEvent::INITIALIZING, false);
+    setStatusMessage(++lastEvent, false);
+    setNetworkStatus(false);
+    setMemory(false);
+    setUpTime(true);
+}
+
+void StateManager::display()
+{
+    if (stateManager.configure == true)
+    {
+        Log.traceln("StateManager - display returning");
+        return;
+    }
+
+    // Log.traceln("State Manager - updating display");
+    displayManager.setTextColor(WHITE, WHITE);
+
+    setNode(false);
+    setStatusMessage(++lastEvent, false);
+    setNetworkStatus(false);
     setMemory(false);
     setUpTime(true);
 }

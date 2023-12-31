@@ -16,14 +16,28 @@ void MenuManager::initialize()
 
     Log.infoln("Initializing menu manager");
 
+    status = actionEventManager.addEventHandler([](void *arg,
+                                                   esp_event_base_t base,
+                                                   int32_t id,
+                                                   void *data)
+                                                { menuManager.actionEventHandler(arg, base, id, data); });
+    if (status != ESP_OK)
+    {
+        Log.fatalln("Error adding action event handler");
+    }
+    else
+    {
+        Log.infoln("Added action event handler!");
+    }
+
     status = inputEventManager.addEventHandler([](void *arg,
                                                   esp_event_base_t base,
                                                   int32_t id,
                                                   void *data)
-                                               { menuManager.eventHandler(arg, base, id, data); });
+                                               { menuManager.inputEventHandler(arg, base, id, data); });
     if (status != ESP_OK)
     {
-        Log.fatalln("Error adding event handler");
+        Log.fatalln("Error adding input event handler");
     }
     else
     {
@@ -33,12 +47,25 @@ void MenuManager::initialize()
     Log.infoln("menu manager initialization complete");
 }
 
-void MenuManager::eventHandler(void *args, esp_event_base_t base, int32_t id, void *data)
+void MenuManager::actionEventHandler(void *args, esp_event_base_t base, int32_t id, void *data)
+{
+    ActionEvent ae = (ActionEvent)id;
+
+    if (ae == ActionEvent::CONFIGURE)
+    {
+        Log.infoln("MM - Setting configure");
+        state = 0;
+        stateManager.configure = true;
+        display();
+    }
+}
+
+void MenuManager::inputEventHandler(void *args, esp_event_base_t base, int32_t id, void *data)
 {
     currentEvent = (ButtonEvent)id;
     currentAction = *((ButtonAction *)data);
 
-    Log.infoln("MM - Event: %s, Action: %s, Mode: %d, State: %d", ++currentEvent, ++currentAction, stateManager.configure, state);
+    Log.infoln("MM - InputEvent: %s, Action: %s, Mode: %d, State: %d", ++currentEvent, ++currentAction, stateManager.configure, state);
 
     if (currentEvent == ButtonEvent::PRESS)
     {
@@ -46,16 +73,29 @@ void MenuManager::eventHandler(void *args, esp_event_base_t base, int32_t id, vo
         {
             // We have a button event, we're not doing anything, and we're not already in memu mode
             actionEventManager.postEvent(ActionEvent::CONFIGURE);
-            displayMainMenu();
         }
         else if (stateManager.configure == true)
         {
-            // We are in configure mode -- process button action
-            displayMainMenu();
-            // if (state == 0)
-            // {
-            //     displayMainMenu();
-            // }
+            if (currentAction == ButtonAction::PUSH)
+            {
+                if (activeLineNum == 5)
+                {
+                    state = 0;
+                    displayManager.clear();
+                    actionEventManager.postEvent(ActionEvent::WAITING);
+                    // return;
+                }
+                else
+                {
+                display();
+                }
+            }
+            else
+            {
+            display();
+
+            }
+
         }
         else
         {
@@ -64,9 +104,15 @@ void MenuManager::eventHandler(void *args, esp_event_base_t base, int32_t id, vo
     }
 }
 
-void MenuManager::displayMainMenu()
+void MenuManager::display()
 {
-    Log.traceln("Main Menu: state=%d, ln=%d", state, activeLineNum);
+    if (stateManager.configure == false)
+    {
+        Log.traceln("MenuManager - display returning");
+        return;
+    }
+
+    Log.traceln("MenuManager.display: state=%d, ln=%d", state, activeLineNum);
     if (state == 0)
     {
         state = 1; // Enter main menu state
@@ -96,34 +142,39 @@ void MenuManager::displayMainMenu()
                 activeLineNum--;
             }
         }
-        else if (currentAction == ButtonAction::PUSH)
-        {
-            // Figure out next state
-            // Perhaps a series of menu item objects makes sense
-            Log.traceln("Button pushed");
-            if (activeLineNum == 5)
-            {
-                state = 0;
-                displayManager.setTextColor(WHITE, WHITE);
-                displayManager.clear();
-                displayManager.setRefresh(true);
-                actionEventManager.postEvent(ActionEvent::WAITING);
-            }
-        }
+        // else if (currentAction == ButtonAction::PUSH)
+        // {
+        //     // Figure out next state
+        //     // Perhaps a series of menu item objects makes sense
+        //     Log.traceln("Button pushed");
+        //     if (activeLineNum == 5)
+        //     {
+        //         state = 0;
+        //         displayManager.setTextColor(WHITE, WHITE);
+        //         displayManager.clear();
+        //         displayManager.setRefresh(true);
+        //         stateManager.configure = false;
+        //         actionEventManager.postEvent(ActionEvent::WAITING);
+        //         // return;
+        //     }
+        // }
     }
-    displayManager.clear();
-    if (changed)
-        print(0, "Main Menu*", true);
-    else
-        print(0, "Main Menu", true);
+    if (stateManager.configure == true)
+    {
+        displayManager.clear();
+        if (changed)
+            print(0, "Main Menu*", true);
+        else
+            print(0, "Main Menu", true);
 
-    print(1, "> Node ID", true);
-    print(2, "> Actions", true);
-    print(3, "> Settings", true);
-    print(4, "> Save", true);
-    print(5, "> Exit", false);
+        print(1, "> Node ID", true);
+        print(2, "> Actions", true);
+        print(3, "> Settings", true);
+        print(4, "> Save", true);
+        print(5, "> Exit", false);
 
-    displayManager.setRefresh(true);
+        displayManager.setRefresh(true);
+    }
 }
 
 void MenuManager::print(uint8_t curLine, const char *m, bool nl)

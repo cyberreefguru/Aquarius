@@ -27,6 +27,8 @@ class StateManager
 public:
     StateManager();
     void initialize();
+    void initializeDisplay();
+    void display();
 
     ActionEvent lastEvent = ActionEvent::INITIALIZING;
     uint32_t startTime = 0;
@@ -44,7 +46,6 @@ private:
     void eventHandler(void *arg, esp_event_base_t base, int32_t id, void *data);
     void stateTask(void *pvParameters);
 
-    void setStateDisplayBase();
     void setUpTime(bool refresh = false);
     void setStatusMessage(const char * msg, bool refresh=false);
     void setNetworkStatus(bool refresh=false);

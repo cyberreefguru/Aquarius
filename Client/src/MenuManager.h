@@ -31,7 +31,10 @@ class MenuManager
 public:
     MenuManager();
     void initialize();
-    void eventHandler(void *args, esp_event_base_t base, int32_t id, void *data);
+    void display();
+
+    void inputEventHandler(void *args, esp_event_base_t base, int32_t id, void *data);
+    void actionEventHandler(void *args, esp_event_base_t base, int32_t id, void *data);
 
 private:
     ButtonEvent currentEvent = ButtonEvent::PRESS;
@@ -41,8 +44,6 @@ private:
     uint8_t item = 0;
     uint8_t activeLineNum = 0;
 
-
-    void displayMainMenu();
     void print(uint8_t curLine, const char * m, bool nl);
 
 };
