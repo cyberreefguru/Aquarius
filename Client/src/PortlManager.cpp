@@ -31,11 +31,11 @@ void PortManager::initialize()
         gpio.setupInterruptPin(i, CHANGE);
     }
 
-    button[0].initialize(8, ButtonAction::DOWN);
-    button[1].initialize(9, ButtonAction::RIGHT);
-    button[2].initialize(10, ButtonAction::UP);
-    button[3].initialize(11, ButtonAction::PUSH);
-    button[4].initialize(12, ButtonAction::LEFT);
+    button[0].initialize(8, ButtonEvent::DOWN);
+    button[1].initialize(9, ButtonEvent::RIGHT);
+    button[2].initialize(10, ButtonEvent::UP);
+    button[3].initialize(11, ButtonEvent::PUSH);
+    button[4].initialize(12, ButtonEvent::LEFT);
 
     // Enable GPIO interrupts
     gpio.setupInterrupts(true, false, CHANGE);
@@ -142,14 +142,14 @@ void PortManager::handleButtonAction(Button *b, uint16_t allPins)
         }
         else
         {
-            inputEventManager.postEvent(ButtonEvent::PRESS, &b->action);
+            inputEventManager.postEvent(ButtonAction::PRESS, &b->action);
         }
     }
     else
     {
         // Released
         // Log.traceln("RELEASED: %d, %s", b->pin, ++b->action);
-        inputEventManager.postEvent(ButtonEvent::RELEASE, &b->action);
+        inputEventManager.postEvent(ButtonAction::RELEASE, &b->action);
     }
 
     b->lastState = state;

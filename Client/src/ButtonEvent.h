@@ -7,20 +7,20 @@
 
 #pragma once
 
-enum class ButtonEvent
+enum class ButtonAction
 {
     PRESS=0,
     RELEASE,
 };
-inline constexpr unsigned operator+(ButtonEvent const val) { return static_cast<unsigned>(val); }
-inline const char* operator++(ButtonEvent const val)
+inline constexpr unsigned operator+(ButtonAction const val) { return static_cast<unsigned>(val); }
+inline const char* operator++(ButtonAction const val)
 {
     switch (val)
     {
-    case ButtonEvent::PRESS:
+    case ButtonAction::PRESS:
         return "PRESS";
         break;
-    case ButtonEvent::RELEASE:
+    case ButtonAction::RELEASE:
         return "RELEASE";
         break;
     default:
@@ -30,7 +30,7 @@ inline const char* operator++(ButtonEvent const val)
     // return static_cast<unsigned>(val);
 }
 
-enum class ButtonAction
+enum class ButtonEvent
 {
     UP=0,
     DOWN,
@@ -38,24 +38,24 @@ enum class ButtonAction
     RIGHT,
     PUSH,
 };
-inline constexpr unsigned operator+ (ButtonAction const val) { return static_cast<unsigned>(val); }
-inline const char* operator++(ButtonAction const val)
+inline constexpr unsigned operator+ (ButtonEvent const val) { return static_cast<unsigned>(val); }
+inline const char* operator++(ButtonEvent const val)
 {
     switch (val)
     {
-    case ButtonAction::UP:
+    case ButtonEvent::UP:
         return "UP";
         break;
-    case ButtonAction::DOWN:
+    case ButtonEvent::DOWN:
         return "DOWN";
         break;
-    case ButtonAction::LEFT:
+    case ButtonEvent::LEFT:
         return "LEFT";
         break;
-    case ButtonAction::RIGHT:
+    case ButtonEvent::RIGHT:
         return "RIGHT";
         break;
-    case ButtonAction::PUSH:
+    case ButtonEvent::PUSH:
         return "PUSH";
         break;
     default:

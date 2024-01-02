@@ -62,12 +62,12 @@ void MenuManager::actionEventHandler(void *args, esp_event_base_t base, int32_t 
 
 void MenuManager::inputEventHandler(void *args, esp_event_base_t base, int32_t id, void *data)
 {
-    currentEvent = (ButtonEvent)id;
-    currentAction = *((ButtonAction *)data);
+    currentEvent = (ButtonAction)id;
+    currentAction = *((ButtonEvent *)data);
 
     Log.infoln("MM - InputEvent: %s, Action: %s, Mode: %d, State: %d", ++currentEvent, ++currentAction, stateManager.configure, state);
 
-    if (currentEvent == ButtonEvent::PRESS)
+    if (currentEvent == ButtonAction::PRESS)
     {
         if (stateManager.processing == false && stateManager.configure == false)
         {
@@ -76,7 +76,7 @@ void MenuManager::inputEventHandler(void *args, esp_event_base_t base, int32_t i
         }
         else if (stateManager.configure == true)
         {
-            if (currentAction == ButtonAction::PUSH)
+            if (currentAction == ButtonEvent::PUSH)
             {
                 if (activeLineNum == 5)
                 {
@@ -120,7 +120,7 @@ void MenuManager::display()
     }
     else
     {
-        if (currentAction == ButtonAction::DOWN)
+        if (currentAction == ButtonEvent::DOWN)
         {
             if (activeLineNum == 5)
             {
@@ -131,7 +131,7 @@ void MenuManager::display()
                 activeLineNum++;
             }
         }
-        else if (currentAction == ButtonAction::UP)
+        else if (currentAction == ButtonEvent::UP)
         {
             if (activeLineNum == 1)
             {
@@ -142,7 +142,7 @@ void MenuManager::display()
                 activeLineNum--;
             }
         }
-        // else if (currentAction == ButtonAction::PUSH)
+        // else if (currentAction == ButtonEvent::PUSH)
         // {
         //     // Figure out next state
         //     // Perhaps a series of menu item objects makes sense

@@ -2,7 +2,7 @@
 
 Button::Button(){}
 
-void Button::initialize(uint8_t pin, ButtonAction action)
+void Button::initialize(uint8_t pin, ButtonEvent action)
 {
     this->pin = pin;
     this->action = action;

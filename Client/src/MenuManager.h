@@ -31,14 +31,17 @@ class MenuManager
 public:
     MenuManager();
     void initialize();
+    void push();
+    void pop();
+
     void display();
 
     void inputEventHandler(void *args, esp_event_base_t base, int32_t id, void *data);
     void actionEventHandler(void *args, esp_event_base_t base, int32_t id, void *data);
 
 private:
-    ButtonEvent currentEvent = ButtonEvent::PRESS;
-    ButtonAction currentAction = ButtonAction::DOWN;
+    ButtonAction currentEvent = ButtonAction::PRESS;
+    ButtonEvent currentAction = ButtonEvent::DOWN;
     bool changed = false;
     uint8_t state = 0;
     uint8_t item = 0;

@@ -16,12 +16,12 @@ class Button
 {
 public:
     Button();
-    void initialize(uint8_t pin, ButtonAction action);
+    void initialize(uint8_t pin, ButtonEvent action);
 
     uint8_t pin;
     bool lastState;
     uint32_t lastTrigger;
-    ButtonAction action;
+    ButtonEvent action;
 
 protected:
 private:
