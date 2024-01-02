@@ -22,27 +22,8 @@ void MenuItem::initialize(const char *title, MenuItem **items, uint8_t numItems)
     this->numItems = numItems;
 }
 
-void MenuItem::onActivate(bool b)
-{
-    // if (onActivateCallback != nullptr)
-    // {
-    //     onActivateCallback(item, b);
-    // }
-    // else
-    // {
-    active = b;
-    // }
-}
-
 void MenuItem::onDisplay()
 {
-    // Log.traceln("MenuItem.onDisplay - START");
-    // if (onDisplayCallback != nullptr)
-    // {
-    //     onDisplayCallback(item);
-    // }
-    // else
-    // {
     if (title != nullptr)
     {
         Log.traceln("MenuItem.title: %s, Active: %d", title, active);
@@ -66,10 +47,6 @@ void MenuItem::onDisplay()
 void MenuItem::onEvent(ButtonEvent be)
 {
     Log.traceln("MenuItem::onEvent - %s", ++be);
-    // if (onEventCallback != nullptr)
-    // {
-    //     onEventCallback(item, be);
-    // }
     switch (be)
     {
     case ButtonEvent::UP:

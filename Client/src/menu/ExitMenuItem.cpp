@@ -1,11 +1,11 @@
 /*
- * MenuItem.h
+ * ExitMenuItem.h
  *
  *  Created on: Dec  31, 2023
  *      Author: cyberreefguru
  */
 
-#include "menu/TextMenuItem.h"
+#include "MenuManager.h"
 
 ExitMenuItem::ExitMenuItem()
 {

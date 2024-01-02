@@ -20,8 +20,11 @@ MenuItem* mmItems[6] = {&nodeid, &targets, &colors, &sensor, &servo, &mexit};
 
 MenuManager::MenuManager()
 {
-    // mmsave.setEventCallback(std::bind(&MainMenu::save, this));
-    // mmexit.setEventCallback(std::bind(&MainMenu::exit, this));
+}
+
+MenuManager::~MenuManager()
+{
+    free(mainMenu);
 }
 
 void MenuManager::initialize()
@@ -58,8 +61,6 @@ void MenuManager::initialize()
         Log.infoln("Added input event handler!");
     }
 
-    // TODO: I'm not sure what is going on here, but it seems
-    // mmItems is being copied to mainMenu instead of passed via pointer
     mainMenu = new MenuItem();
     mainMenu->initialize("Main Menu", mmItems, sizeof(mmItems)/sizeof(mmItems[0]));
     mainMenu->items[0]->active = true;
@@ -102,7 +103,6 @@ void MenuManager::inputEventHandler(void *args, esp_event_base_t base, int32_t i
             menus.peek(&item);
             if (item != nullptr)
             {
-                Log.traceln("Calling onEvent(%s) for %s", ++currentEvent, item->title);
                 item->onEvent(currentEvent);
                 display();
             }

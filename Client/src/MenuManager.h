@@ -38,11 +38,11 @@ class MenuItem
 public:
 
     MenuItem(const char * title);
+    
     void initialize(const char * title, MenuItem **items, uint8_t numItems);
 
     virtual void onEvent(ButtonEvent be);
     void onDisplay();
-    void onActivate(bool b);
 
     // MenuItem (const MenuItem &) = delete;
     // MenuItem & operator = (const MenuItem &) = delete;
@@ -93,6 +93,7 @@ class MenuManager
 {
 public:
     MenuManager();
+    ~MenuManager();
     void initialize();
     void push(MenuItem* item);
     void pop();
