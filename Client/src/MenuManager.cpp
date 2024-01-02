@@ -8,7 +8,21 @@
 
 MenuManager menuManager;
 
-MenuManager::MenuManager() {}
+SimpleStack<MenuItem *> menus(5); // max 5 levels
+MenuItem nodeid = MenuItem("> Node ID");
+MenuItem targets = MenuItem("> Targets");
+MenuItem colors = MenuItem("> Colors");
+MenuItem sensor = MenuItem("> Sensor Threshold");
+MenuItem servo = MenuItem("> Servo Limits");
+ExitMenuItem mexit = ExitMenuItem();
+
+MenuItem* mmItems[6] = {&nodeid, &targets, &colors, &sensor, &servo, &mexit};
+
+MenuManager::MenuManager()
+{
+    // mmsave.setEventCallback(std::bind(&MainMenu::save, this));
+    // mmexit.setEventCallback(std::bind(&MainMenu::exit, this));
+}
 
 void MenuManager::initialize()
 {
@@ -44,6 +58,12 @@ void MenuManager::initialize()
         Log.infoln("Added input event handler!");
     }
 
+    // TODO: I'm not sure what is going on here, but it seems
+    // mmItems is being copied to mainMenu instead of passed via pointer
+    mainMenu = new MenuItem();
+    mainMenu->initialize("Main Menu", mmItems, sizeof(mmItems)/sizeof(mmItems[0]));
+    mainMenu->items[0]->active = true;
+    menus.push(mainMenu);
     Log.infoln("menu manager initialization complete");
 }
 
@@ -62,12 +82,12 @@ void MenuManager::actionEventHandler(void *args, esp_event_base_t base, int32_t 
 
 void MenuManager::inputEventHandler(void *args, esp_event_base_t base, int32_t id, void *data)
 {
-    currentEvent = (ButtonAction)id;
-    currentAction = *((ButtonEvent *)data);
+    currentAction = (ButtonAction)id;
+    currentEvent = *((ButtonEvent *)data);
 
     Log.infoln("MM - InputEvent: %s, Action: %s, Mode: %d, State: %d", ++currentEvent, ++currentAction, stateManager.configure, state);
 
-    if (currentEvent == ButtonAction::PRESS)
+    if (currentAction == ButtonAction::PRESS)
     {
         if (stateManager.processing == false && stateManager.configure == false)
         {
@@ -76,26 +96,16 @@ void MenuManager::inputEventHandler(void *args, esp_event_base_t base, int32_t i
         }
         else if (stateManager.configure == true)
         {
-            if (currentAction == ButtonEvent::PUSH)
+            Log.traceln("Configuration Mode - Passing event to menu system");
+            // Get the current menu item
+            MenuItem *item = nullptr;
+            menus.peek(&item);
+            if (item != nullptr)
             {
-                if (activeLineNum == 5)
-                {
-                    state = 0;
-                    displayManager.clear();
-                    actionEventManager.postEvent(ActionEvent::WAITING);
-                    // return;
-                }
-                else
-                {
+                Log.traceln("Calling onEvent(%s) for %s", ++currentEvent, item->title);
+                item->onEvent(currentEvent);
                 display();
-                }
             }
-            else
-            {
-            display();
-
-            }
-
         }
         else
         {
@@ -104,76 +114,96 @@ void MenuManager::inputEventHandler(void *args, esp_event_base_t base, int32_t i
     }
 }
 
+void MenuManager::push(MenuItem *item)
+{
+    if (item != nullptr)
+    {
+        Log.traceln("Push: %s", item->title);
+        menus.push(item);
+    }
+    else
+    {
+        Log.errorln("Pushed item is null!");
+    }
+}
+
+void MenuManager::pop()
+{
+    if (menus.getSize() == 1)
+    {
+        displayManager.clear();
+        actionEventManager.postEvent(ActionEvent::WAITING);
+        stateManager.configure = false;
+        return;
+    }
+
+    MenuItem *item;
+    menus.pop(&item);
+    if (&item != nullptr)
+    {
+        Log.traceln("Pop: %s", item->title);
+    }
+    else
+    {
+        Log.errorln("Popped item is null!");
+    }
+}
+
 void MenuManager::display()
 {
     if (stateManager.configure == false)
     {
-        Log.traceln("MenuManager - display returning");
+        Log.traceln("MenuManager - not in configuration mode; returning");
         return;
-    }
-
-    Log.traceln("MenuManager.display: state=%d, ln=%d", state, activeLineNum);
-    if (state == 0)
-    {
-        state = 1; // Enter main menu state
-        activeLineNum = 1;
     }
     else
     {
-        if (currentAction == ButtonEvent::DOWN)
+        // Get the current menu item
+        MenuItem *item = nullptr;
+        menus.peek(&item);
+        if (item == nullptr)
         {
-            if (activeLineNum == 5)
-            {
-                activeLineNum = 1;
-            }
-            else
-            {
-                activeLineNum++;
-            }
+            Log.errorln("ERROR - no menu item at the top of the list!");
+            return;
         }
-        else if (currentAction == ButtonEvent::UP)
-        {
-            if (activeLineNum == 1)
-            {
-                activeLineNum = 5;
-            }
-            else
-            {
-                activeLineNum--;
-            }
-        }
-        // else if (currentAction == ButtonEvent::PUSH)
-        // {
-        //     // Figure out next state
-        //     // Perhaps a series of menu item objects makes sense
-        //     Log.traceln("Button pushed");
-        //     if (activeLineNum == 5)
-        //     {
-        //         state = 0;
-        //         displayManager.setTextColor(WHITE, WHITE);
-        //         displayManager.clear();
-        //         displayManager.setRefresh(true);
-        //         stateManager.configure = false;
-        //         actionEventManager.postEvent(ActionEvent::WAITING);
-        //         // return;
-        //     }
-        // }
-    }
-    if (stateManager.configure == true)
-    {
-        displayManager.clear();
-        if (changed)
-            print(0, "Main Menu*", true);
         else
-            print(0, "Main Menu", true);
+        {
+            displayManager.clear();
+            displayManager.setCursor(0, 0);
 
-        print(1, "> Node ID", true);
-        print(2, "> Actions", true);
-        print(3, "> Settings", true);
-        print(4, "> Save", true);
-        print(5, "> Exit", false);
+            // Deactivate this item
+            // TODO: Keep it active or reactive it
+            item->active = false;
 
-        displayManager.setRefresh(true);
+            // item->onActivate(false);
+            // Display this item
+            item->onDisplay();
+
+            // Display any child items
+            if (item->numItems > 0)
+            {
+                // get active node
+                uint8_t active = item->getActiveIndex();
+                if (item->items[active]->active == false)
+                {
+                    // If no node was active, activate it
+                    item->items[active]->active = true;
+                }
+
+                uint8_t start = item->windowStart;
+                uint8_t end = item->numItems - 1;
+                Log.traceln("start=%d, end=%d, diff=%d", start, end);
+
+                // We can display 6 menu items on the screen at one time
+                // If number to show is > 6, then create window of 6 items
+                // to show.
+                for (uint8_t i = start; i < start + 6; i++)
+                {
+                    item->items[i]->onDisplay();
+                }
+            }
+            displayManager.setRefresh(true);
+        }
     }
 }
 

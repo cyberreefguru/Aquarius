@@ -4,13 +4,18 @@
  *  Created on: Dec  31, 2023
  *      Author: cyberreefguru
  */
-#include "MenuItem.h"
+#include "MenuManager.h"
 
 MenuItem::MenuItem()
 {
 }
 
-void MenuItem::initialize(const char *title, MenuItem *items, uint8_t numItems)
+MenuItem::MenuItem(const char *title)
+{
+    this->title = title;
+}
+
+void MenuItem::initialize(const char *title, MenuItem **items, uint8_t numItems)
 {
     this->title = title;
     this->items = items;
@@ -19,70 +24,178 @@ void MenuItem::initialize(const char *title, MenuItem *items, uint8_t numItems)
 
 void MenuItem::onActivate(bool b)
 {
+    // if (onActivateCallback != nullptr)
+    // {
+    //     onActivateCallback(item, b);
+    // }
+    // else
+    // {
     active = b;
+    // }
 }
 
 void MenuItem::onDisplay()
 {
-    if (onDisplayCallback == nullptr)
+    // Log.traceln("MenuItem.onDisplay - START");
+    // if (onDisplayCallback != nullptr)
+    // {
+    //     onDisplayCallback(item);
+    // }
+    // else
+    // {
+    if (title != nullptr)
     {
-        displayManager.clear();
-        if (title != nullptr)
-            displayManager.println(title);
-        if (numItems > 0 && items != nullptr)
+        Log.traceln("MenuItem.title: %s, Active: %d", title, active);
+        if (active)
         {
-            for (uint8_t i = 0; i < numItems; i++)
-            {
-                items[i].onDisplay();
-            }
+            displayManager.setTextColor(BLACK, WHITE);
         }
+        else
+        {
+           displayManager.setTextColor(WHITE);
+        }
+        displayManager.println(title);
+        displayManager.setTextColor(WHITE);
     }
     else
     {
-        onDisplayCallback();
+        Log.errorln("Menu Item has no title!");
     }
 }
 
 void MenuItem::onEvent(ButtonEvent be)
 {
-    if (onEventCallback != nullptr)
+    Log.traceln("MenuItem::onEvent - %s", ++be);
+    // if (onEventCallback != nullptr)
+    // {
+    //     onEventCallback(item, be);
+    // }
+    switch (be)
     {
-        Log.traceln("Event callback");
-        onEventCallback(be);
-    }
-    else
-    {
-
-        if (active)
+    case ButtonEvent::UP:
+        activatePrevious();
+        break;
+    case ButtonEvent::DOWN:
+        activateNext();
+        break;
+    case ButtonEvent::LEFT:
+        active = true;
+        menuManager.pop();
+        break;
+    case ButtonEvent::RIGHT:
+        if( numItems == 0 )
         {
-            Log.traceln("MenuItem active but no action.");
+            Log.warningln("No children to push!");
         }
         else
         {
-            if (numItems > 0 && items != nullptr)
-            {
-                for (uint8_t i = 0; i < numItems; i++)
-                {
-                    if (items[i].active)
-                    {
-                        items[i].onEvent(be);
-                    }
-                }
-            }
+            menuManager.push(getActive());
         }
+        break;
+    case ButtonEvent::PUSH:
+        if( numItems == 0 )
+        {
+            Log.warningln("No children to push!");
+        }
+        else
+        {
+            menuManager.push(getActive());
+        }
+        break;
+    default:
+        break;
     }
 }
 
-void MenuItem::setEventCallback(std::function<void(ButtonEvent be)> cb)
+MenuItem *MenuItem::getActive()
 {
-    this->onEventCallback = cb;
-}
-void MenuItem::setDisplayCallback(MenuCallback cb)
-{
-    this->onDisplayCallback = cb;
+    MenuItem *item = nullptr;
+
+    if (items != nullptr && numItems > 0)
+    {
+        for (uint8_t i = 0; i < numItems; i++)
+        {
+            if (items[i]->active)
+            {
+                item = items[i];
+                break;
+            }
+        }
+    }
+
+    return item;
 }
 
-void MenuItem::setActivateCallback(MenuCallback cb)
+uint8_t MenuItem::getActiveIndex()
 {
-    this->onActivateCallback = cb;
+    uint8_t index = 0;
+
+    if (items != nullptr && numItems > 0)
+    {
+        for (uint8_t i = 0; i < numItems; i++)
+        {
+            if (items[i]->active)
+            {
+                index = i;
+                // TODO - we may need to adjust window here
+                break;
+            }
+        }
+    }
+
+    return index;
+}
+
+void MenuItem::activateNext()
+{
+    if (numItems > 0)
+    {
+        uint8_t cur = getActiveIndex();
+        items[cur]->active = false;
+        if ((cur+1) == numItems)
+        {
+            cur=0;
+            windowStart = 0;
+        }
+        else
+        {
+            cur += 1;
+            if( cur == (windowStart+6) )
+            {
+                windowStart += 1;
+            }
+        }
+        items[cur]->active = true;
+    }
+    else
+    {
+        Log.warningln("No children items");
+    }
+}
+
+void MenuItem::activatePrevious()
+{
+    if (numItems > 0)
+    {
+        uint8_t cur = getActiveIndex();
+        items[cur]->active = false;
+        if (cur == 0)
+        {
+            cur=numItems-1;
+            windowStart = cur-5;
+        }
+        else
+        {
+            cur -= 1;
+            if( cur == (windowStart-1))
+            {
+                windowStart = cur;
+            }
+        }
+        items[cur]->active = true;
+    }
+    else
+    {
+        Log.warningln("No children items");
+    }
 }

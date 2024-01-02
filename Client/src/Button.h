@@ -21,7 +21,7 @@ public:
     uint8_t pin;
     bool lastState;
     uint32_t lastTrigger;
-    ButtonEvent action;
+    ButtonEvent event;
 
 protected:
 private:

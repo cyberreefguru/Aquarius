@@ -142,14 +142,14 @@ void PortManager::handleButtonAction(Button *b, uint16_t allPins)
         }
         else
         {
-            inputEventManager.postEvent(ButtonAction::PRESS, &b->action);
+            inputEventManager.postEvent(ButtonAction::PRESS, &b->event);
         }
     }
     else
     {
         // Released
         // Log.traceln("RELEASED: %d, %s", b->pin, ++b->action);
-        inputEventManager.postEvent(ButtonAction::RELEASE, &b->action);
+        inputEventManager.postEvent(ButtonAction::RELEASE, &b->event);
     }
 
     b->lastState = state;

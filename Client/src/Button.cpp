@@ -2,13 +2,13 @@
 
 Button::Button(){}
 
-void Button::initialize(uint8_t pin, ButtonEvent action)
+void Button::initialize(uint8_t pin, ButtonEvent event)
 {
     this->pin = pin;
-    this->action = action;
+    this->event = event;
     lastTrigger = 0;
     lastState = HIGH;
-    Log.traceln("pin=%d, action=%d", pin, action);
+    Log.traceln("pin=%d, action=%d", pin, event);
 }
 
 

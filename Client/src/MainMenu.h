@@ -10,7 +10,8 @@
 #include <Arduino.h>
 #include <ArduinoLog.h>
 
-#include "MenuItem.h"
+#include "MenuManager.h"
+#include "menu/TextMenuItem.h"
 #include "Helper.h"
 
 extern "C"

@@ -6,21 +6,21 @@
  */
 #include "MainMenu.h"
 
-TextMenuItem nodeid = TextMenuItem("Node ID");
-TextMenuItem targets = TextMenuItem("Targets");
-TextMenuItem colors = TextMenuItem("Colors");
-TextMenuItem sensor = TextMenuItem("Sensor Threshold");
-TextMenuItem servo = TextMenuItem("Servo Limits");
-TextMenuItem mmsave = TextMenuItem("Save");
-TextMenuItem mmexit = TextMenuItem("Exit");
+// TextMenuItem nodeid = TextMenuItem("Node ID");
+// TextMenuItem targets = TextMenuItem("Targets");
+// TextMenuItem colors = TextMenuItem("Colors");
+// TextMenuItem sensor = TextMenuItem("Sensor Threshold");
+// TextMenuItem servo = TextMenuItem("Servo Limits");
+// TextMenuItem mmsave = TextMenuItem("Save");
+// TextMenuItem mmexit = TextMenuItem("Exit");
 
-MenuItem menuItems[] = {nodeid, targets, colors, sensor, servo, mmsave, mmexit};
+// MenuItem mmItems[] = {nodeid, targets, colors, sensor, servo, mmsave, mmexit};
 
 MainMenu::MainMenu()
 {
-    this->items = menuItems;
-    mmsave.setEventCallback(std::bind(&MainMenu::save, this));
-    mmexit.setEventCallback(std::bind(&MainMenu::exit, this));
+    // this->items = mmItems;
+    // mmsave.setEventCallback(std::bind(&MainMenu::save, this));
+    // mmexit.setEventCallback(std::bind(&MainMenu::exit, this));
 }
 
 void MainMenu::save()

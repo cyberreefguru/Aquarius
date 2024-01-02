@@ -49,9 +49,9 @@ void InputEventManager::initialize()
     Log.infoln("input event manager initialization complete");
 }
 
-esp_err_t InputEventManager::postEvent(ButtonAction event, ButtonEvent *action)
+esp_err_t InputEventManager::postEvent(ButtonAction action, ButtonEvent *event)
 {
-    return esp_event_post_to(inputHandler, INPUT_BASE, +event, action, sizeof(ButtonEvent), 0);
+    return esp_event_post_to(inputHandler, INPUT_BASE, +action, event, sizeof(ButtonEvent*), 0);
 }
 
 esp_err_t InputEventManager::addEventHandler(esp_event_handler_t eventHandler)
@@ -63,5 +63,5 @@ void InputEventManager::defaultEventHandler(void *args, esp_event_base_t base, i
 {
     ButtonAction be = (ButtonAction)id;
     ButtonEvent *ba = (ButtonEvent*)data;
-    Log.infoln("IEM - Event: %s, Action: %s", ++be, ++(*ba));
+    // Log.infoln("IEM - Event: %s, Action: %s", ++be, ++(*ba));
 }
