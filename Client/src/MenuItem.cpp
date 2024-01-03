@@ -24,9 +24,11 @@ void MenuItem::initialize(const char *title, MenuItem **items, uint8_t numItems)
 
 void MenuItem::onDisplay()
 {
+    Log.traceln("MenuItem::onDisplay: BEGIN");
+
     if (title != nullptr)
     {
-        Log.traceln("MenuItem.title: %s, Active: %d", title, active);
+        //Log.traceln("MenuItem.onDisplay: %s, Active: %d", title, active);
         if (active)
         {
             displayManager.setTextColor(BLACK, WHITE);
@@ -42,6 +44,7 @@ void MenuItem::onDisplay()
     {
         Log.errorln("Menu Item has no title!");
     }
+    Log.traceln("MenuItem::onDisplay: END");
 }
 
 void MenuItem::onEvent(ButtonEvent be)
@@ -105,6 +108,7 @@ MenuItem *MenuItem::getActive()
 
 uint8_t MenuItem::getActiveIndex()
 {
+    // Log.traceln("Getting Active Index");
     uint8_t index = 0;
 
     if (items != nullptr && numItems > 0)
@@ -114,12 +118,14 @@ uint8_t MenuItem::getActiveIndex()
             if (items[i]->active)
             {
                 index = i;
+                // Log.traceln("Found Index: %d", index);
                 // TODO - we may need to adjust window here
                 break;
             }
         }
     }
 
+    // Log.traceln("Active Index: %d", index);
     return index;
 }
 

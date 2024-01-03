@@ -40,25 +40,8 @@ public:
     MenuItem(const char * title);
     
     void initialize(const char * title, MenuItem **items, uint8_t numItems);
-
     virtual void onEvent(ButtonEvent be);
-    void onDisplay();
-
-    // MenuItem (const MenuItem &) = delete;
-    // MenuItem & operator = (const MenuItem &) = delete;
-
-    // void onEvent(MenuItem* item, ButtonEvent be);
-    // void onDisplay(MenuItem* item);
-    // void onActivate(MenuItem* item, bool b);
-
-
-    // void setEventCallback(std::function<void(MenuItem* item, ButtonEvent be)> cb);
-    // void setDisplayCallback(std::function<void(MenuItem* item)> cb);
-    // void setActivateCallback(std::function<void(MenuItem* item, bool b)> cb);
-
-    // std::function<void(MenuItem* item, ButtonEvent be)>  onEventCallback = nullptr;
-    // std::function<void(MenuItem* item)> onDisplayCallback = nullptr;
-    // std::function<void(MenuItem* item, bool b)>  onActivateCallback = nullptr;
+    virtual void onDisplay();
 
 // protected:
     MenuItem();
@@ -87,7 +70,21 @@ protected:
   
 };
 
+class NumberInputItem : public MenuItem
+{
+public:
+    NumberInputItem(const char* title, uint8_t numChars=2);
+    ~NumberInputItem();
+    void initialize(MenuItem **items, uint8_t numItems);
+    void onEvent(ButtonEvent be);
+    void onDisplay();
 
+protected:
+    uint8_t numDigits = 2;
+    uint8_t curDigit = numDigits-1;
+    byte* inputBuff = nullptr;
+
+};
 
 class MenuManager
 {

@@ -9,14 +9,17 @@
 MenuManager menuManager;
 
 SimpleStack<MenuItem *> menus(5); // max 5 levels
+
+NumberInputItem ni = NumberInputItem("Enter Node ID:", 2);
+MenuItem *nItems[1] = {&ni};
+
 MenuItem nodeid = MenuItem("> Node ID");
 MenuItem targets = MenuItem("> Targets");
 MenuItem colors = MenuItem("> Colors");
 MenuItem sensor = MenuItem("> Sensor Threshold");
 MenuItem servo = MenuItem("> Servo Limits");
 ExitMenuItem mexit = ExitMenuItem();
-
-MenuItem* mmItems[6] = {&nodeid, &targets, &colors, &sensor, &servo, &mexit};
+MenuItem *mmItems[6] = {&nodeid, &targets, &colors, &sensor, &servo, &mexit};
 
 MenuManager::MenuManager()
 {
@@ -62,8 +65,11 @@ void MenuManager::initialize()
     }
 
     mainMenu = new MenuItem();
-    mainMenu->initialize("Main Menu", mmItems, sizeof(mmItems)/sizeof(mmItems[0]));
+    mainMenu->initialize("Main Menu", mmItems, sizeof(mmItems) / sizeof(mmItems[0]));
     mainMenu->items[0]->active = true;
+
+    nodeid.initialize("> Node ID", nItems, 1);
+
     menus.push(mainMenu);
     Log.infoln("menu manager initialization complete");
 }
@@ -74,7 +80,7 @@ void MenuManager::actionEventHandler(void *args, esp_event_base_t base, int32_t 
 
     if (ae == ActionEvent::CONFIGURE)
     {
-        Log.infoln("MM - Setting configure");
+        // Log.infoln("MM - Setting configure");
         state = 0;
         stateManager.configure = true;
         display();
@@ -86,7 +92,7 @@ void MenuManager::inputEventHandler(void *args, esp_event_base_t base, int32_t i
     currentAction = (ButtonAction)id;
     currentEvent = *((ButtonEvent *)data);
 
-    Log.infoln("MM - InputEvent: %s, Action: %s, Mode: %d, State: %d", ++currentEvent, ++currentAction, stateManager.configure, state);
+    Log.infoln("MenuManager::inputEventHandler: Event: %s, Action: %s", ++currentEvent, ++currentAction);
 
     if (currentAction == ButtonAction::PRESS)
     {
@@ -153,7 +159,7 @@ void MenuManager::display()
 {
     if (stateManager.configure == false)
     {
-        Log.traceln("MenuManager - not in configuration mode; returning");
+        Log.traceln("MenuManager::display - not in configuration mode; returning");
         return;
     }
     else
@@ -163,7 +169,7 @@ void MenuManager::display()
         menus.peek(&item);
         if (item == nullptr)
         {
-            Log.errorln("ERROR - no menu item at the top of the list!");
+            Log.errorln("MenuManager::display - ERROR - no menu item at the top of the list!");
             return;
         }
         else
@@ -182,6 +188,7 @@ void MenuManager::display()
             // Display any child items
             if (item->numItems > 0)
             {
+                Log.traceln("MenuManager::display - showing %d children: %s", item->numItems, item->title);
                 // get active node
                 uint8_t active = item->getActiveIndex();
                 if (item->items[active]->active == false)
@@ -190,21 +197,33 @@ void MenuManager::display()
                     item->items[active]->active = true;
                 }
 
+                //Log.traceln("sw=%d", item->windowStart);
                 uint8_t start = item->windowStart;
-                uint8_t end = item->numItems - 1;
-                Log.traceln("start=%d, end=%d, diff=%d", start, end);
+                uint8_t end = start + 5;
+                //Log.traceln("MenuManager::display - start=%d, end=%d, diff=%d", start, end);
 
+                if( end > (item->numItems - 1))
+                {
+                    end = item->numItems - 1;
+                }
+                //Log.traceln("start=%d, end=%d, diff=%d", start, end);
                 // We can display 6 menu items on the screen at one time
                 // If number to show is > 6, then create window of 6 items
                 // to show.
-                for (uint8_t i = start; i < start + 6; i++)
+                for (uint8_t i = start; i <= end; i++)
                 {
+                    //Log.traceln("MenuManager::display - displaying=%d: %s", i, item->items[i]->title);
                     item->items[i]->onDisplay();
                 }
+            }
+            else
+            {
+                Log.traceln("No children to show: %s", item->title);
             }
             displayManager.setRefresh(true);
         }
     }
+    Log.traceln("MenuManager::display: END");
 }
 
 void MenuManager::print(uint8_t curLine, const char *m, bool nl)

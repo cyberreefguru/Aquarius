@@ -84,6 +84,11 @@ void DisplayManager::print(const char *m)
     ssd1306.print(m);
 }
 
+void DisplayManager::print(uint8_t d)
+{
+    ssd1306.print(d);
+}
+
 void DisplayManager::print(String s)
 {
     ssd1306.print(s);

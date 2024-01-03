@@ -48,6 +48,7 @@ public:
     // void eventHandler(void *arg, esp_event_base_t base, int32_t id, void *data);
     void setRefresh(bool r=true);
     void setSize(DisplaySize size);
+    void print(uint8_t d);
     void print(const char * m);
     void print(String s);
     void println(const char * m);

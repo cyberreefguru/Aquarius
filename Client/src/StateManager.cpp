@@ -131,7 +131,7 @@ void StateManager::initializeDisplay()
 {
     if (stateManager.configure == true)
     {
-        Log.traceln("StateManager - initial display returning");
+        // Log.traceln("StateManager - initial display returning");
         return;
     }
 
@@ -148,7 +148,7 @@ void StateManager::display()
 {
     if (stateManager.configure == true)
     {
-        Log.traceln("StateManager - display returning");
+        // Log.traceln("StateManager - display returning");
         return;
     }
 
