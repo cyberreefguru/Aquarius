@@ -14,6 +14,22 @@ ExitMenuItem::ExitMenuItem()
     this->numItems = 0;
 }
 
+ExitMenuItem::~ExitMenuItem()
+{
+}
+
+void ExitMenuItem::onDisplay()
+{
+    if( menuManager.peek() == this )
+    {
+        menuManager.pop();
+    }
+    stateManager.configure = false;
+    actionEventManager.postEvent(ActionEvent::WAITING);
+    Log.traceln("ExitMenuItem::onDisplay - posted wait event");
+
+}
+
 void ExitMenuItem::onEvent(ButtonEvent be)
 {
     Log.traceln("ExitMenuItem::onEvent - %s", ++be);
@@ -21,13 +37,7 @@ void ExitMenuItem::onEvent(ButtonEvent be)
     {
         stateManager.configure = false;
         actionEventManager.postEvent(ActionEvent::WAITING);
-        Log.traceln("ExitMenuItem - posted wait event");
+        Log.traceln("ExitMenuItem::onEvent - posted wait event");
 
     }
-    else
-    {
-        Log.traceln("ExitMenuItem - calling parent");
-        MenuItem::onEvent(be);
-    }
-
 }
