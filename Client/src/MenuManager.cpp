@@ -10,15 +10,78 @@ MenuManager menuManager;
 
 SimpleStack<MenuItem *> menus(5); // max 5 levels
 
-NumberInputItem ni = NumberInputItem("> Node ID", "Enter Node ID:", 0, 2);
+// ColorMenuItem cmiWhite = ColorMenuItem(&colorWhite);
+// ColorMenuItem cmiBlack = ColorMenuItem(&colorBlack);
+// ColorMenuItem cmiRed = ColorMenuItem(&colorRed);
+// ColorMenuItem cmiGreen = ColorMenuItem(&colorGreen);
+// ColorMenuItem cmiBlue = ColorMenuItem(&colorBlue);
+// ColorMenuItem cmiMaroon = ColorMenuItem(&colorMaroon);
+// ColorMenuItem cmiSalmon = ColorMenuItem(&colorSalmon);
+// ColorMenuItem cmiPink = ColorMenuItem(&colorPink);
+// ColorMenuItem cmiDeepPink = ColorMenuItem(&colorDeepPink);
+// ColorMenuItem cmiMagenta = ColorMenuItem(&colorMagenta);
+// ColorMenuItem cmiPurple = ColorMenuItem(&colorPurple);
+// ColorMenuItem cmiLtBlue = ColorMenuItem(&colorLightBlue);
+// ColorMenuItem cmiNavyBlue = ColorMenuItem(&colorNavyBlue);
+// ColorMenuItem cmiLtGreen = ColorMenuItem(&colorLightGreen);
+// ColorMenuItem cmiChar = ColorMenuItem(&colorChartreuse);
+// ColorMenuItem cmiCyan = ColorMenuItem(&colorCyan);
+// ColorMenuItem cmiDkCyan = ColorMenuItem(&colorDarkCyan);
+// ColorMenuItem cmiOrange = ColorMenuItem(&colorOrange);
+// ;
+// ColorMenuItem cmiOrgRed = ColorMenuItem(&colorOrangeRed);
+// ColorMenuItem cmiDkOrg = ColorMenuItem(&colorDarkOrange);
+// ColorMenuItem cmiYel = ColorMenuItem(&colorYellow);
+// ColorMenuItem cmiYelGr = ColorMenuItem(&colorYellowGreen);
+
+// MenuItem *cmiItems[22] = {&cmiWhite, &cmiBlack, &cmiRed,
+//                                &cmiGreen, &cmiBlue, &cmiMaroon,
+//                                &cmiSalmon, &cmiPink, &cmiDeepPink,
+//                                &cmiMagenta, &cmiPurple, &cmiLtBlue,
+//                                &cmiNavyBlue, &cmiLtGreen, &cmiChar,
+//                                &cmiCyan, &cmiDkCyan, &cmiOrange,
+//                                &cmiOrgRed, &cmiDkOrg, &cmiYel,
+//                                &cmiYelGr};
+
+// ListMenuItem colorConn = ListMenuItem("Set Connect Color", "> Connect", cmiItems, 22);
+
+ColorListItem colorActive = ColorListItem("Set Active Color", "> Active");
+ColorListItem colorInact = ColorListItem("Set Inactive Color", "> Inactive");
+ColorListItem colorInit = ColorListItem("Set Initialize Color", "> Initialize");
+ColorListItem colorConn = ColorListItem("Set Connect Color", "> Connect");
+ColorListItem colorConfig = ColorListItem("Set Configure Color", "> Configure");
+ColorListItem colorErr = ColorListItem("Set Error Color", "> Error");
+ColorListItem colorRec = ColorListItem("Set Receive Color", "> Receive");
+ColorListItem colorProc = ColorListItem("Set Processing Color", "> Processing");
+ColorListItem colorSend = ColorListItem("Set Send Color", "> Send");
+ColorListItem colorWait = ColorListItem("Set Wait Color", "> Wait");
+
+// SimpleMenuItem colorWait = SimpleMenuItem("> Wait");
+// SimpleMenuItem colorRec = SimpleMenuItem("> Receive");
+// SimpleMenuItem colorProc = SimpleMenuItem("> Process");
+// SimpleMenuItem colorSend = SimpleMenuItem("> Send");
+// SimpleMenuItem colorActive = SimpleMenuItem("> Active");
+// SimpleMenuItem colorInact = SimpleMenuItem("> Inactive");
+// SimpleMenuItem colorErr = SimpleMenuItem("> Error");
+MenuItem *cmItems[10] = {&colorInit, &colorConn, &colorConfig, &colorWait,
+                        &colorRec, &colorProc, &colorSend,
+                        &colorActive, &colorInact, &colorErr};
+
+
+ListMenuItem selColor = ListMenuItem("Colors", "> Colors", cmItems, 10);
+
+NumberInputItem ni = NumberInputItem("Enter Node ID:", "> Node ID", 0, 2);
 SimpleMenuItem nodeid = SimpleMenuItem("> Node ID");
 SimpleMenuItem targets = SimpleMenuItem("> Targets");
 SimpleMenuItem colors = SimpleMenuItem("> Colors");
 SimpleMenuItem sensor = SimpleMenuItem("> Sensor Threshold");
 SimpleMenuItem servo = SimpleMenuItem("> Servo Limits");
+SimpleMenuItem e1 = SimpleMenuItem("> Extra 1");
+SimpleMenuItem e2 = SimpleMenuItem("> Extra 2");
 ExitMenuItem mexit = ExitMenuItem();
-MenuItem *mmItems[6] = {&ni, &targets, &colors, &sensor, &servo, &mexit};
-ListMenuItem mainMenu = ListMenuItem("Main Menu", mmItems, 6);
+MenuItem *mmItems[8] = {&ni, &targets, &selColor,
+                        &sensor, &servo, &e1, &e2, &mexit};
+ListMenuItem mainMenu = ListMenuItem("Main Menu", "> Main Menu", mmItems, 8);
 
 MenuManager::MenuManager()
 {
@@ -82,7 +145,6 @@ void MenuManager::actionEventHandler(void *args, esp_event_base_t base, int32_t 
         {
             item->onDisplay();
         }
-
     }
 }
 
@@ -118,7 +180,7 @@ void MenuManager::inputEventHandler(void *args, esp_event_base_t base, int32_t i
     }
 }
 
-MenuItem* MenuManager::peek()
+MenuItem *MenuManager::peek()
 {
     MenuItem *item = nullptr;
     menus.peek(&item);
@@ -184,50 +246,50 @@ void MenuManager::display()
         {
             item->onDisplay();
 
-        //     // Deactivate this item
-        //     // TODO: Keep it active or reactive it
-        //     item->active = false;
+            //     // Deactivate this item
+            //     // TODO: Keep it active or reactive it
+            //     item->active = false;
 
-        //     // item->onActivate(false);
-        //     // Display this item
-        //     item->onDisplay();
+            //     // item->onActivate(false);
+            //     // Display this item
+            //     item->onDisplay();
 
-        //     // Display any child items
-        //     if (item->numItems > 0)
-        //     {
-        //         Log.traceln("MenuManager::display - showing %d children: %s", item->numItems, item->title);
-        //         // get active node
-        //         uint8_t active = item->getActiveIndex();
-        //         if (item->items[active]->active == false)
-        //         {
-        //             // If no node was active, activate it
-        //             item->items[active]->active = true;
-        //         }
+            //     // Display any child items
+            //     if (item->numItems > 0)
+            //     {
+            //         Log.traceln("MenuManager::display - showing %d children: %s", item->numItems, item->label);
+            //         // get active node
+            //         uint8_t active = item->getActiveIndex();
+            //         if (item->items[active]->active == false)
+            //         {
+            //             // If no node was active, activate it
+            //             item->items[active]->active = true;
+            //         }
 
-        //         //Log.traceln("sw=%d", item->windowStart);
-        //         uint8_t start = item->windowStart;
-        //         uint8_t end = start + 5;
-        //         //Log.traceln("MenuManager::display - start=%d, end=%d, diff=%d", start, end);
+            //         //Log.traceln("sw=%d", item->windowStart);
+            //         uint8_t start = item->windowStart;
+            //         uint8_t end = start + 5;
+            //         //Log.traceln("MenuManager::display - start=%d, end=%d, diff=%d", start, end);
 
-        //         if( end > (item->numItems - 1))
-        //         {
-        //             end = item->numItems - 1;
-        //         }
-        //         //Log.traceln("start=%d, end=%d, diff=%d", start, end);
-        //         // We can display 6 menu items on the screen at one time
-        //         // If number to show is > 6, then create window of 6 items
-        //         // to show.
-        //         for (uint8_t i = start; i <= end; i++)
-        //         {
-        //             //Log.traceln("MenuManager::display - displaying=%d: %s", i, item->items[i]->title);
-        //             item->items[i]->onDisplay();
-        //         }
-        //     }
-        //     else
-        //     {
-        //         Log.traceln("No children to show: %s", item->title);
-        //     }
-        //     displayManager.setRefresh(true);
+            //         if( end > (item->numItems - 1))
+            //         {
+            //             end = item->numItems - 1;
+            //         }
+            //         //Log.traceln("start=%d, end=%d, diff=%d", start, end);
+            //         // We can display 6 menu items on the screen at one time
+            //         // If number to show is > 6, then create window of 6 items
+            //         // to show.
+            //         for (uint8_t i = start; i <= end; i++)
+            //         {
+            //             //Log.traceln("MenuManager::display - displaying=%d: %s", i, item->items[i]->label);
+            //             item->items[i]->onDisplay();
+            //         }
+            //     }
+            //     else
+            //     {
+            //         Log.traceln("No children to show: %s", item->label);
+            //     }
+            //     displayManager.setRefresh(true);
         }
     }
     Log.traceln("MenuManager::display: END");

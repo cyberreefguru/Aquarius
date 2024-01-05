@@ -24,6 +24,8 @@ NumberInputItem::NumberInputItem(const char *title, const char *label, uint32_t 
         this->inputBuff[i] = (value / base) % 10;
         base *= 10;
     }
+    Log.traceln("NumberInputItem - title='%s', lable='%s'", title, label);
+
     Log.traceln("NumberInputItem: BEGIN");
 }
 
@@ -97,7 +99,7 @@ void NumberInputItem::onEvent(ButtonEvent be)
 void NumberInputItem::onDisplay()
 {
     Log.traceln("NumberInputItem::onDisplay: BEGIN");
-    if (title != nullptr)
+    if (label != nullptr)
     {
         displayManager.clear();
         displayManager.setCursor(0, 0);
@@ -123,7 +125,7 @@ void NumberInputItem::onDisplay()
     }
     else
     {
-        Log.errorln("Menu Item has no title!");
+        Log.errorln("Menu Item has no label!");
     }
     Log.traceln("NumberInputItem::onDisplay: END");
 }

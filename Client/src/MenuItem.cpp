@@ -14,14 +14,15 @@ MenuItem::~MenuItem()
 {
 }
 
-MenuItem::MenuItem(const char *title)
+MenuItem::MenuItem(const char *title, const char *label)
 {
     this->title = title;
+    this->label = label;
 }
 
-// void MenuItem::initialize(const char *title, MenuItem **items, uint8_t numItems)
+// void MenuItem::initialize(const char *label, MenuItem **items, uint8_t numItems)
 // {
-//     this->title = title;
+//     this->label = label;
 //     this->items = items;
 //     this->numItems = numItems;
 // }
@@ -37,7 +38,7 @@ void MenuItem::onDisplay()
 {
     Log.traceln("MenuItem::onDisplay - BEGIN");
 
-    if (title != nullptr)
+    if (label != nullptr)
     {
         displayManager.clear();
         displayManager.setCursor(0, 0);
@@ -49,13 +50,13 @@ void MenuItem::onDisplay()
         {
            displayManager.setTextColor(WHITE);
         }
-        displayManager.println(title);
+        displayManager.println(label);
         displayManager.setTextColor(WHITE);
         displayManager.setRefresh(true);
     }
     else
     {
-        Log.errorln("MenuItem::onDisplay - Menu Item has no title!");
+        Log.errorln("MenuItem::onDisplay - Menu Item has no label!");
     }
     Log.traceln("MenuItem::onDisplay - END");
 }

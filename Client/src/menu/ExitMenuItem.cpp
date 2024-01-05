@@ -9,7 +9,7 @@
 
 ExitMenuItem::ExitMenuItem()
 {
-    this->title = "> Exit";
+    this->label = "> Exit";
     this->items = nullptr;
     this->numItems = 0;
 }

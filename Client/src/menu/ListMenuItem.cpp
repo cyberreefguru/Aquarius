@@ -6,19 +6,20 @@
  */
 #include "MenuManager.h"
 
-ListMenuItem::ListMenuItem()
-{
-}
-
 ListMenuItem::~ListMenuItem()
 {
 }
 
-ListMenuItem::ListMenuItem(const char *title, MenuItem **items, uint8_t numItems)
+ListMenuItem::ListMenuItem(const char *title, const char *label, MenuItem **items, uint8_t numItems)
 {
     this->title = title;
+    this->label = label;
     this->items = items;
     this->numItems = numItems;
+
+    windowSize = menuManager.getScreenMaxY(); // subtract for menu name
+    windowStart = 0;
+    activeIndex = windowStart;
 }
 
 void ListMenuItem::onDisplay()
@@ -32,12 +33,16 @@ void ListMenuItem::onDisplay()
     }
 
     displayManager.clear();
-    displayManager.setCursor(0,0);
+    displayManager.setCursor(0, 0);
     displayManager.println(title);
-    for (uint8_t i = 0; i < numItems; i++)
+    uint8_t windowEnd = windowStart + windowSize - 1;
+    // Log.traceln("start=%d, end=%d, index=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
+    for (uint8_t i = windowStart; i < windowEnd; i++)
     {
         MenuItem *item = items[i];
-        if (item->isActive())
+        // Log.traceln("ListMenuItem::onDisplay - item.title='%s', item.label='%s'", item->getTitle(), item->getLabel());
+        if (i == activeIndex)
+        // if (item->isActive())
         {
             displayManager.setTextColor(BLACK, WHITE);
         }
@@ -45,7 +50,7 @@ void ListMenuItem::onDisplay()
         {
             displayManager.setTextColor(WHITE);
         }
-        displayManager.println(item->getTitle());
+        displayManager.println(item->getLabel());
         displayManager.setTextColor(WHITE);
     }
     displayManager.setRefresh(true);
@@ -68,6 +73,7 @@ void ListMenuItem::onEvent(ButtonEvent be)
     case ButtonEvent::LEFT:
         active = true;
         menuManager.pop();
+        menuManager.display();
         break;
     case ButtonEvent::RIGHT:
     case ButtonEvent::PUSH:
@@ -77,16 +83,8 @@ void ListMenuItem::onEvent(ButtonEvent be)
         }
         else
         {
-            MenuItem *item = getActive();
-            if (item != nullptr)
-            {
-                menuManager.push(item);
-                item->onDisplay();
-            }
-            else
-            {
-                Log.errorln("ListMenuItem::onEvent - No active item to push!");
-            }
+            menuManager.push(items[activeIndex]);
+            items[activeIndex]->onDisplay();
         }
         break;
     default:
@@ -96,98 +94,121 @@ void ListMenuItem::onEvent(ButtonEvent be)
 
 MenuItem *ListMenuItem::getActive()
 {
-    MenuItem *item = nullptr;
+    return items[activeIndex];
+    // MenuItem *item = nullptr;
 
-    if (items != nullptr && numItems > 0)
-    {
-        for (uint8_t i = 0; i < numItems; i++)
-        {
-            if (items[i]->isActive())
-            {
-                item = items[i];
-                break;
-            }
-        }
-    }
-    else
-    {
-        Log.warningln("ListMenuItem:getActive - No children items");
-    }
+    // if (items != nullptr && numItems > 0)
+    // {
+    //     for (uint8_t i = 0; i < numItems; i++)
+    //     {
+    //         if (items[i]->isActive())
+    //         {
+    //             item = items[i];
+    //             break;
+    //         }
+    //     }
+    // }
+    // else
+    // {
+    //     Log.warningln("ListMenuItem:getActive - No children items");
+    // }
 
-    return item;
+    // return item;
 }
 
 uint8_t ListMenuItem::getActiveIndex()
 {
-    uint8_t index = 0;
-    if (items != nullptr && numItems > 0)
-    {
-        for (uint8_t i = 0; i < numItems; i++)
-        {
-            if (items[i]->isActive())
-            {
-                index = i;
-                break;
-            }
-        }
-    }
-    else
-    {
-        Log.warningln("ListMenuItem:getActiveIndex - No children items");
-    }
-    return index;
+    return activeIndex;
+    // uint8_t index = 0;
+    // if (items != nullptr && numItems > 0)
+    // {
+    //     for (uint8_t i = 0; i < numItems; i++)
+    //     {
+    //         if (items[i]->isActive())
+    //         {
+    //             index = i;
+    //             break;
+    //         }
+    //     }
+    // }
+    // else
+    // {
+    //     Log.warningln("ListMenuItem:getActiveIndex - No children items");
+    // }
+    // return index;
 }
 
 void ListMenuItem::activateNext()
 {
-    if (items != nullptr && numItems > 0)
+    uint8_t windowEnd = windowStart + windowSize - 1;
+    Log.traceln("ListMenuItem::activateNext - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
+    if (activeIndex == (windowEnd - 1))
     {
-        uint8_t cur = getActiveIndex();
-        items[cur]->setActive(false);
-        if ((cur + 1) == numItems)
+        // We are at the end of the window
+        // See if we're also at the end of the list
+        if (activeIndex == numItems - 1)
         {
-            cur = 0;
+            // we're out of items--cycle to top
             windowStart = 0;
+            activeIndex = 0;
         }
         else
         {
-            cur += 1;
-            if (cur == (windowStart + 6))
-            {
-                windowStart += 1;
-            }
+            // We are not at the end of the list, but
+            // but we are at the end of the window
+            // Advance the window one place
+            windowStart++;
+            activeIndex++;
         }
-        items[cur]->setActive(true);
     }
     else
     {
-        Log.warningln("ListMenuItem:activateNext - No children items");
+        // We are within the window, advance index
+        activeIndex++;
     }
+    Log.traceln("ListMenuItem::activateNext - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
 }
 
 void ListMenuItem::activatePrevious()
 {
-    if (items != nullptr && numItems > 0)
+    uint8_t windowEnd = windowStart + windowSize - 1;
+    Log.traceln("ListMenuItem::activatePrevious - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
+    if (activeIndex == windowStart)
     {
-        uint8_t cur = getActiveIndex();
-        items[cur]->setActive(false);
-        if (cur == 0)
+        // We are at the top of the window
+        // See if we're also at the top of the list
+        if (activeIndex == 0)
         {
-            cur = numItems - 1;
-            windowStart = cur - 5;
+            // We are at the start of the list
+            // Side window to end of list
+            if (windowSize >= numItems)
+            {
+                // Windows size > number of items
+                // Set window to 0 and active to last item
+                windowStart = 0;
+                activeIndex = numItems - 1;
+            }
+            else
+            {
+                // Window is < number items
+                // Compute starting point
+                windowStart = numItems - windowSize + 1;
+                activeIndex = numItems - 1;
+            }
         }
         else
         {
-            cur -= 1;
-            if (cur == (windowStart - 1))
-            {
-                windowStart = cur;
-            }
+            Log.traceln("We're not at the top of the list, roll window");
+            // We are not at the top of the list
+            // Pull window up one
+            windowStart--;
+            activeIndex--;
         }
-        items[cur]->setActive(true);
     }
     else
     {
-        Log.warningln("ListMenuItem::activatePrevious - No children items");
+        // We are within the window, advance index
+        activeIndex--;
     }
+    Log.traceln("ListMenuItem::activatePrevious - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
 }

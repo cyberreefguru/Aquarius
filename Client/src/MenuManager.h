@@ -10,6 +10,7 @@
 #include <Arduino.h>
 #include <ArduinoLog.h>
 
+#include "menu/MenuColor.h"
 #include "ButtonEvent.h"
 #include "StateManager.h"
 #include "DisplayManager.h"
@@ -36,12 +37,16 @@ class MenuItem
     // using MenuCallback = std::function<void()>;
 
 public:
-    MenuItem(const char *title);
+    MenuItem(const char *title, const char *label);
     virtual ~MenuItem();
 
     virtual const char* getTitle()
     {
         return title;
+    }
+    virtual const char* getLabel()
+    {
+        return label;
     }
     virtual bool isActive()
     {
@@ -68,7 +73,7 @@ public:
     }
 
 
-    // void initialize(const char *title, MenuItem **items, uint8_t numItems);
+    // void initialize(const char *label, MenuItem **items, uint8_t numItems);
     // void setChildren(MenuItem **items, uint8_t numItems);
 
     virtual void onEvent(ButtonEvent be);
@@ -77,40 +82,63 @@ public:
 protected:
     MenuItem();
     const char *title;
+    const char *label;
     bool active = false;
     uint8_t numItems = 0;
     MenuItem **items = nullptr;
-    // uint8_t currentItemIndex = 0;
-    // uint8_t windowStart = 0;
-
-    // MenuItem *getActive();
-    // uint8_t getActiveIndex();
-    // void activateNext();
-    // void activatePrevious();
 };
 
 class ListMenuItem : public MenuItem
 {
 public:
-    ListMenuItem(const char *title, MenuItem** items, uint8_t numItems);
+    ListMenuItem(){}
+    ListMenuItem(const char *title, const char *label, MenuItem** items, uint8_t numItems);
     virtual ~ListMenuItem();
     virtual void onEvent(ButtonEvent be);
     virtual void onDisplay();
 
-    // protected:
-    ListMenuItem();
-    // const char *title;
-    // uint8_t numItems = 0;
-    // MenuItem **items = nullptr;
-    uint8_t currentItemIndex = 0;
+protected:
+    uint8_t activeIndex = 0;
+    uint8_t windowSize = 0;
     uint8_t windowStart = 0;
+    //uint8_t windowEnd = 0;
 
     MenuItem *getActive();
     uint8_t getActiveIndex();
     void activateNext();
     void activatePrevious();
+private:
+
 };
 
+class ColorMenuItem : public MenuItem
+{
+public:
+    ColorMenuItem(const MenuColor *color);
+    virtual ~ColorMenuItem();
+    virtual void onDisplay();
+    virtual void onEvent(ButtonEvent be);
+
+private:
+    const MenuColor* color;
+
+//std::bind(&MainMenu::save, this)
+//onActivateCallback(item, b);
+
+};
+
+class ColorListItem : public ListMenuItem
+{
+public:
+    ColorListItem(const char *title, const char *label);
+    virtual ~ColorListItem();
+    virtual void onDisplay();
+    virtual void onEvent(ButtonEvent be);
+
+//std::bind(&MainMenu::save, this)
+//onActivateCallback(item, b);
+
+};
 
 class SimpleMenuItem : public MenuItem
 {
@@ -142,7 +170,6 @@ public:
     void onDisplay();
 
 protected:
-    const char *label;
     uint32_t value;
     uint8_t numDigits = 2;
     uint8_t curDigit = numDigits - 1;
@@ -160,6 +187,14 @@ public:
     void pop();
 
     void display();
+    uint8_t getScreenMaxX()
+    {
+        return 21;
+    }
+    uint8_t getScreenMaxY()
+    {
+        return 7;
+    }
 
     void inputEventHandler(void *args, esp_event_base_t base, int32_t id, void *data);
     void actionEventHandler(void *args, esp_event_base_t base, int32_t id, void *data);

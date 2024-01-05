@@ -11,6 +11,7 @@ SimpleMenuItem::SimpleMenuItem(const char *title)
 {
     Log.traceln("SimpleMenuItem: BEGIN");
     this->title = title;
+    this->label = title;
     Log.traceln("SimpleMenuItem: BEGIN");
 }
 
@@ -21,7 +22,7 @@ SimpleMenuItem::~SimpleMenuItem()
 void SimpleMenuItem::onDisplay()
 {
     Log.traceln("SimpleMenuItem::onDisplay - BEGIN");
-    if (title != nullptr)
+    if (label != nullptr)
     {
         displayManager.clear();
         displayManager.setCursor(0, 0);
@@ -33,13 +34,13 @@ void SimpleMenuItem::onDisplay()
         {
             displayManager.setTextColor(WHITE);
         }
-        displayManager.println(title);
+        displayManager.println(label);
         displayManager.setTextColor(WHITE);
         displayManager.setRefresh(true);
     }
     else
     {
-        Log.errorln("Menu Item has no title!");
+        Log.errorln("Menu Item has no label!");
     }
     Log.traceln("SimpleMenuItem::onDisplay - END");
 }
