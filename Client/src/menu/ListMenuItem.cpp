@@ -6,10 +6,6 @@
  */
 #include "MenuManager.h"
 
-ListMenuItem::~ListMenuItem()
-{
-}
-
 ListMenuItem::ListMenuItem(const char *title, const char *label, MenuItem **items, uint8_t numItems)
 {
     this->title = title;
@@ -21,6 +17,11 @@ ListMenuItem::ListMenuItem(const char *title, const char *label, MenuItem **item
     windowStart = 0;
     activeIndex = windowStart;
 }
+
+ListMenuItem::~ListMenuItem()
+{
+}
+
 
 void ListMenuItem::onDisplay()
 {
@@ -71,7 +72,7 @@ void ListMenuItem::onEvent(ButtonEvent be)
         onDisplay();
         break;
     case ButtonEvent::LEFT:
-        active = true;
+        //active = true;
         menuManager.pop();
         menuManager.display();
         break;
@@ -95,47 +96,11 @@ void ListMenuItem::onEvent(ButtonEvent be)
 MenuItem *ListMenuItem::getActive()
 {
     return items[activeIndex];
-    // MenuItem *item = nullptr;
-
-    // if (items != nullptr && numItems > 0)
-    // {
-    //     for (uint8_t i = 0; i < numItems; i++)
-    //     {
-    //         if (items[i]->isActive())
-    //         {
-    //             item = items[i];
-    //             break;
-    //         }
-    //     }
-    // }
-    // else
-    // {
-    //     Log.warningln("ListMenuItem:getActive - No children items");
-    // }
-
-    // return item;
 }
 
 uint8_t ListMenuItem::getActiveIndex()
 {
     return activeIndex;
-    // uint8_t index = 0;
-    // if (items != nullptr && numItems > 0)
-    // {
-    //     for (uint8_t i = 0; i < numItems; i++)
-    //     {
-    //         if (items[i]->isActive())
-    //         {
-    //             index = i;
-    //             break;
-    //         }
-    //     }
-    // }
-    // else
-    // {
-    //     Log.warningln("ListMenuItem:getActiveIndex - No children items");
-    // }
-    // return index;
 }
 
 void ListMenuItem::activateNext()

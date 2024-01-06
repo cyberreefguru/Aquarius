@@ -9,6 +9,7 @@
 
 ExitMenuItem::ExitMenuItem()
 {
+    this->title = "Exit Menu";
     this->label = "> Exit";
     this->items = nullptr;
     this->numItems = 0;
@@ -20,14 +21,14 @@ ExitMenuItem::~ExitMenuItem()
 
 void ExitMenuItem::onDisplay()
 {
+    Log.traceln("ExitMenuItem::onDisplay - BEGIN");
     if( menuManager.peek() == this )
     {
         menuManager.pop();
     }
     stateManager.configure = false;
     actionEventManager.postEvent(ActionEvent::WAITING);
-    Log.traceln("ExitMenuItem::onDisplay - posted wait event");
-
+    Log.traceln("ExitMenuItem::onDisplay - END");
 }
 
 void ExitMenuItem::onEvent(ButtonEvent be)
@@ -38,6 +39,5 @@ void ExitMenuItem::onEvent(ButtonEvent be)
         stateManager.configure = false;
         actionEventManager.postEvent(ActionEvent::WAITING);
         Log.traceln("ExitMenuItem::onEvent - posted wait event");
-
     }
 }

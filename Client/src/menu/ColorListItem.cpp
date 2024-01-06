@@ -64,7 +64,7 @@ void ColorListItem::onEvent(ButtonEvent be)
         onDisplay();
         break;
     case ButtonEvent::LEFT:
-        active = true;
+        //active = true;
         menuManager.pop();
         menuManager.display();
         break;

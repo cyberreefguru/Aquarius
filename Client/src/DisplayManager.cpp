@@ -10,7 +10,8 @@ void DisplayManager::initialize()
 {
     ssd1306 = Adafruit_SSD1306(128, 64, &Wire);
     ssd1306.begin(SSD1306_SWITCHCAPVCC, 0x3C); // Address 0x3C for 128x32
-
+    setBrightness(brightness);
+    
     ssd1306.clearDisplay();
     ssd1306.setTextSize(1);
     ssd1306.setTextColor(SSD1306_WHITE);
@@ -99,6 +100,11 @@ void DisplayManager::println(const char *m)
     ssd1306.println(m);
 }
 
+void DisplayManager::setBrightness(uint8_t v)
+{
+    ssd1306.ssd1306_command(SSD1306_SETCONTRAST);
+    ssd1306.ssd1306_command(v);
+}
 void DisplayManager::printf(const char *f, ...)
 {
     char dest[23];

@@ -9,10 +9,14 @@
 
 SimpleMenuItem::SimpleMenuItem(const char *title)
 {
-    Log.traceln("SimpleMenuItem: BEGIN");
     this->title = title;
     this->label = title;
-    Log.traceln("SimpleMenuItem: BEGIN");
+}
+
+SimpleMenuItem::SimpleMenuItem(const char *title, const char *label)
+{
+    this->title = title;
+    this->label = label;
 }
 
 SimpleMenuItem::~SimpleMenuItem()
@@ -26,14 +30,7 @@ void SimpleMenuItem::onDisplay()
     {
         displayManager.clear();
         displayManager.setCursor(0, 0);
-        if (active)
-        {
-            displayManager.setTextColor(BLACK, WHITE);
-        }
-        else
-        {
-            displayManager.setTextColor(WHITE);
-        }
+        displayManager.setTextColor(WHITE);
         displayManager.println(label);
         displayManager.setTextColor(WHITE);
         displayManager.setRefresh(true);

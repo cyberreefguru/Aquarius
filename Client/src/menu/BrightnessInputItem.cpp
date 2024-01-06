@@ -7,7 +7,7 @@
 
 #include "MenuManager.h"
 
-NumberInputItem::NumberInputItem(const char *title, const char *label)
+BrightnessInputItem::BrightnessInputItem(const char *title, const char *label)
 {
     this->title = title;
     this->label = label;
@@ -18,12 +18,12 @@ NumberInputItem::NumberInputItem(const char *title, const char *label)
     this->curDigit = 0;
 }
 
-NumberInputItem::~NumberInputItem()
+BrightnessInputItem::~BrightnessInputItem()
 {
     free(inputBuff);
 }
 
-void NumberInputItem::initialize(uint32_t *value, uint8_t numDigits)
+void BrightnessInputItem::initialize(uint32_t *value, uint8_t numDigits)
 {
     if (value != 0)
     {
@@ -38,17 +38,17 @@ void NumberInputItem::initialize(uint32_t *value, uint8_t numDigits)
             base *= 10;
         }
 
-        Log.traceln("NumberInputItem::initialize - value=%i, d[1]=%d, d[0]=%d", *value, inputBuff[1], inputBuff[0]);
+        Log.traceln("BrightnessInputItem::initialize - value=%i, d[1]=%d, d[0]=%d", *value, inputBuff[1], inputBuff[0]);
     }
 }
 
-void NumberInputItem::onEvent(ButtonEvent be)
+void BrightnessInputItem::onEvent(ButtonEvent be)
 {
     uint32_t v = 0;
     uint8_t base = 1;
-    Log.traceln("NumberInputItem.onEvent - %s", ++be);
-    Log.traceln("NumberInputItem.onEvent - curDigit=%d, numDigits=%d", curDigit, numDigits);
-    Log.traceln("NumberInputItem.onEvent - value=%i, d[1]=%d, d[0]=%d", *value, inputBuff[1], inputBuff[0]);
+    Log.traceln("BrightnessInputItem.onEvent - %s", ++be);
+    Log.traceln("BrightnessInputItem.onEvent - curDigit=%d, numDigits=%d", curDigit, numDigits);
+    Log.traceln("BrightnessInputItem.onEvent - value=%i, d[1]=%d, d[0]=%d", *value, inputBuff[1], inputBuff[0]);
 
     switch (be)
     {
@@ -60,7 +60,12 @@ void NumberInputItem::onEvent(ButtonEvent be)
             base *= 10;
         }
         *value = v;
-        Log.traceln("NumberInputItem.onEvent - value=%i, d[1]=%d, d[0]=%d", *value, inputBuff[1], inputBuff[0]);
+        if( v == 0 )
+        {
+            v = 1;
+        }
+        displayManager.setBrightness(v);
+        Log.traceln("BrightnessInputItem.onEvent - value=%i, d[1]=%d, d[0]=%d", *value, inputBuff[1], inputBuff[0]);
 
         // Save value and pop us off the menu
         menuManager.pop();
@@ -109,17 +114,17 @@ void NumberInputItem::onEvent(ButtonEvent be)
         }
         break;
     }
-    Log.traceln("NumberInputItem.onEvent - curDigit=%d, numDigits=%d", curDigit, numDigits);
-    Log.traceln("NumberInputItem.onEvent - value=%i, d[1]=%d, d[0]=%d", *value, inputBuff[1], inputBuff[0]);
+    Log.traceln("BrightnessInputItem.onEvent - curDigit=%d, numDigits=%d", curDigit, numDigits);
+    Log.traceln("BrightnessInputItem.onEvent - value=%i, d[1]=%d, d[0]=%d", *value, inputBuff[1], inputBuff[0]);
 
     onDisplay();
 
-    Log.traceln("NumberInputItem.onEvent - END");
+    Log.traceln("BrightnessInputItem.onEvent - END");
 }
 
-void NumberInputItem::onDisplay()
+void BrightnessInputItem::onDisplay()
 {
-    Log.traceln("NumberInputItem::onDisplay - BEGIN");
+    Log.traceln("BrightnessInputItem::onDisplay - BEGIN");
     if (label != nullptr)
     {
         displayManager.clear();
@@ -130,7 +135,7 @@ void NumberInputItem::onDisplay()
         {
             uint8_t index = (numDigits - 1) - i;
 
-            Log.traceln("NumberInputItem::onDisplay: digit=%d", index);
+            Log.traceln("BrightnessInputItem::onDisplay: digit=%d", index);
             if (index == curDigit)
             {
                 displayManager.setTextColor(BLACK, WHITE);
@@ -148,5 +153,5 @@ void NumberInputItem::onDisplay()
     {
         Log.errorln("Menu Item has no label!");
     }
-    Log.traceln("NumberInputItem::onDisplay - END");
+    Log.traceln("BrightnessInputItem::onDisplay - END");
 }

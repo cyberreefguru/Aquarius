@@ -59,7 +59,7 @@ public:
     void setCursor(uint8_t row, uint8_t col);
     void setTextColor(uint16_t fg);
     void setTextColor(uint16_t fg, uint16_t bg);
-
+    void setBrightness(uint8_t v);
 
 protected:
     Adafruit_SSD1306 ssd1306;
@@ -67,6 +67,7 @@ protected:
 
 private:
     bool refresh = false;
+    uint8_t brightness = 255;
     void displayTask( void * pvParameters );
     TaskHandle_t displayTaskHandle = NULL;
 

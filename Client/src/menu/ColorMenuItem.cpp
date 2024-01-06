@@ -9,11 +9,9 @@
 
 ColorMenuItem::ColorMenuItem(const MenuColor *color)
 {
-    Log.traceln("ColorMenuItem: BEGIN");
     this->color = color;
     this->title = color->name;
     this->label = color->name;
-    Log.traceln("ColorMenuItem: BEGIN");
 }
 
 ColorMenuItem::~ColorMenuItem()

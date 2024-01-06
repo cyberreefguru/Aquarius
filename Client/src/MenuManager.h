@@ -48,14 +48,14 @@ public:
     {
         return label;
     }
-    virtual bool isActive()
-    {
-        return active;
-    }
-    virtual void setActive(bool active)
-    {
-        this->active = active;
-    }
+    // virtual bool isActive()
+    // {
+    //     return active;
+    // }
+    // virtual void setActive(bool active)
+    // {
+    //     this->active = active;
+    // }
 
     virtual bool hasChildren()
     {
@@ -83,7 +83,7 @@ protected:
     MenuItem();
     const char *title;
     const char *label;
-    bool active = false;
+    //bool active = false;
     uint8_t numItems = 0;
     MenuItem **items = nullptr;
 };
@@ -144,6 +144,7 @@ class SimpleMenuItem : public MenuItem
 {
 public:
     SimpleMenuItem(const char *title);
+    SimpleMenuItem(const char *title, const char* label);
     virtual ~SimpleMenuItem();
     virtual void onEvent(ButtonEvent be);
     virtual void onDisplay();
@@ -160,20 +161,33 @@ public:
 protected:
 };
 
+
 class NumberInputItem : public MenuItem
 {
 public:
-    NumberInputItem(const char *title, const char *label, uint32_t v, uint8_t numChars = 2);
+    NumberInputItem(){}
+    NumberInputItem(const char *title, const char *label);
+    void initialize(uint32_t *value, uint8_t numChars = 2);
     virtual ~NumberInputItem();
-    void initialize(MenuItem **items, uint8_t numItems);
     void onEvent(ButtonEvent be);
     void onDisplay();
 
 protected:
-    uint32_t value;
+    uint32_t *value;
     uint8_t numDigits = 2;
     uint8_t curDigit = numDigits - 1;
     byte *inputBuff = nullptr;
+};
+
+class BrightnessInputItem : public NumberInputItem
+{
+public:
+    BrightnessInputItem(const char *title, const char *label);
+    void initialize(uint32_t *value, uint8_t numChars = 2);
+    virtual ~BrightnessInputItem();
+    void onEvent(ButtonEvent be);
+    void onDisplay();
+
 };
 
 class MenuManager
@@ -199,17 +213,15 @@ public:
     void inputEventHandler(void *args, esp_event_base_t base, int32_t id, void *data);
     void actionEventHandler(void *args, esp_event_base_t base, int32_t id, void *data);
 
-private:
+protected:
     ButtonEvent currentEvent = ButtonEvent::DOWN;
     ButtonAction currentAction = ButtonAction::PRESS;
     bool changed = false;
-    // uint8_t state = 0;
-    // uint8_t item = 0;
-    // uint8_t activeLineNum = 0;
-    // uint8_t windowStart = 0;
-    // uint8_t windowEnd = 5;
-    // MenuItem *currentItem;
-    // MenuItem *mainMenu;
+    uint32_t vNodeId = 0;
+    uint32_t vServoStart = 0;
+    uint32_t vServoEnd = 0;
+    uint32_t vSensor = 0;
+    uint32_t vBrightness = 0;
 
     void print(uint8_t curLine, const char *m, bool nl);
 };

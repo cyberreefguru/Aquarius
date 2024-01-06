@@ -10,41 +10,6 @@ MenuManager menuManager;
 
 SimpleStack<MenuItem *> menus(5); // max 5 levels
 
-// ColorMenuItem cmiWhite = ColorMenuItem(&colorWhite);
-// ColorMenuItem cmiBlack = ColorMenuItem(&colorBlack);
-// ColorMenuItem cmiRed = ColorMenuItem(&colorRed);
-// ColorMenuItem cmiGreen = ColorMenuItem(&colorGreen);
-// ColorMenuItem cmiBlue = ColorMenuItem(&colorBlue);
-// ColorMenuItem cmiMaroon = ColorMenuItem(&colorMaroon);
-// ColorMenuItem cmiSalmon = ColorMenuItem(&colorSalmon);
-// ColorMenuItem cmiPink = ColorMenuItem(&colorPink);
-// ColorMenuItem cmiDeepPink = ColorMenuItem(&colorDeepPink);
-// ColorMenuItem cmiMagenta = ColorMenuItem(&colorMagenta);
-// ColorMenuItem cmiPurple = ColorMenuItem(&colorPurple);
-// ColorMenuItem cmiLtBlue = ColorMenuItem(&colorLightBlue);
-// ColorMenuItem cmiNavyBlue = ColorMenuItem(&colorNavyBlue);
-// ColorMenuItem cmiLtGreen = ColorMenuItem(&colorLightGreen);
-// ColorMenuItem cmiChar = ColorMenuItem(&colorChartreuse);
-// ColorMenuItem cmiCyan = ColorMenuItem(&colorCyan);
-// ColorMenuItem cmiDkCyan = ColorMenuItem(&colorDarkCyan);
-// ColorMenuItem cmiOrange = ColorMenuItem(&colorOrange);
-// ;
-// ColorMenuItem cmiOrgRed = ColorMenuItem(&colorOrangeRed);
-// ColorMenuItem cmiDkOrg = ColorMenuItem(&colorDarkOrange);
-// ColorMenuItem cmiYel = ColorMenuItem(&colorYellow);
-// ColorMenuItem cmiYelGr = ColorMenuItem(&colorYellowGreen);
-
-// MenuItem *cmiItems[22] = {&cmiWhite, &cmiBlack, &cmiRed,
-//                                &cmiGreen, &cmiBlue, &cmiMaroon,
-//                                &cmiSalmon, &cmiPink, &cmiDeepPink,
-//                                &cmiMagenta, &cmiPurple, &cmiLtBlue,
-//                                &cmiNavyBlue, &cmiLtGreen, &cmiChar,
-//                                &cmiCyan, &cmiDkCyan, &cmiOrange,
-//                                &cmiOrgRed, &cmiDkOrg, &cmiYel,
-//                                &cmiYelGr};
-
-// ListMenuItem colorConn = ListMenuItem("Set Connect Color", "> Connect", cmiItems, 22);
-
 ColorListItem colorActive = ColorListItem("Set Active Color", "> Active");
 ColorListItem colorInact = ColorListItem("Set Inactive Color", "> Inactive");
 ColorListItem colorInit = ColorListItem("Set Initialize Color", "> Initialize");
@@ -56,13 +21,6 @@ ColorListItem colorProc = ColorListItem("Set Processing Color", "> Processing");
 ColorListItem colorSend = ColorListItem("Set Send Color", "> Send");
 ColorListItem colorWait = ColorListItem("Set Wait Color", "> Wait");
 
-// SimpleMenuItem colorWait = SimpleMenuItem("> Wait");
-// SimpleMenuItem colorRec = SimpleMenuItem("> Receive");
-// SimpleMenuItem colorProc = SimpleMenuItem("> Process");
-// SimpleMenuItem colorSend = SimpleMenuItem("> Send");
-// SimpleMenuItem colorActive = SimpleMenuItem("> Active");
-// SimpleMenuItem colorInact = SimpleMenuItem("> Inactive");
-// SimpleMenuItem colorErr = SimpleMenuItem("> Error");
 MenuItem *cmItems[10] = {&colorInit, &colorConn, &colorConfig, &colorWait,
                         &colorRec, &colorProc, &colorSend,
                         &colorActive, &colorInact, &colorErr};
@@ -70,17 +28,18 @@ MenuItem *cmItems[10] = {&colorInit, &colorConn, &colorConfig, &colorWait,
 
 ListMenuItem selColor = ListMenuItem("Colors", "> Colors", cmItems, 10);
 
-NumberInputItem ni = NumberInputItem("Enter Node ID:", "> Node ID", 0, 2);
-SimpleMenuItem nodeid = SimpleMenuItem("> Node ID");
+NumberInputItem ni = NumberInputItem("Enter Node ID:", "> Node ID");
 SimpleMenuItem targets = SimpleMenuItem("> Targets");
-SimpleMenuItem colors = SimpleMenuItem("> Colors");
-SimpleMenuItem sensor = SimpleMenuItem("> Sensor Threshold");
-SimpleMenuItem servo = SimpleMenuItem("> Servo Limits");
-SimpleMenuItem e1 = SimpleMenuItem("> Extra 1");
-SimpleMenuItem e2 = SimpleMenuItem("> Extra 2");
+
+NumberInputItem sensor = NumberInputItem("Enter Sensor Threshhold:", "> Sensor Threshold");
+NumberInputItem servoStart = NumberInputItem("Enter Servo Start:", "> Servo Start");
+NumberInputItem servoEnd = NumberInputItem("Enter Servo End:", "> Servo End");
+BrightnessInputItem brightness = BrightnessInputItem("Enter Brightness:", "> Brightness");
+
 ExitMenuItem mexit = ExitMenuItem();
-MenuItem *mmItems[8] = {&ni, &targets, &selColor,
-                        &sensor, &servo, &e1, &e2, &mexit};
+
+MenuItem *mmItems[] = {&ni, &targets, &selColor, &brightness,
+                        &sensor, &servoStart, &servoEnd, &mexit};
 ListMenuItem mainMenu = ListMenuItem("Main Menu", "> Main Menu", mmItems, 8);
 
 MenuManager::MenuManager()
@@ -125,7 +84,15 @@ void MenuManager::initialize()
         Log.infoln("Added input event handler!");
     }
 
-    mainMenu.getChildren()[0]->setActive(true);
+    // mainMenu.getChildren()[0]->setActive(true);
+
+    ni.initialize(&vNodeId, 2);
+    servoStart.initialize(&vServoStart, 3);
+    servoEnd.initialize(&vServoEnd, 3);
+    sensor.initialize(&vSensor, 3);
+
+    vBrightness = 255;
+    brightness.initialize(&vBrightness, 3);
 
     menus.push(&mainMenu);
     Log.infoln("menu manager initialization complete");
@@ -192,7 +159,7 @@ void MenuManager::push(MenuItem *item)
     if (item != nullptr)
     {
         Log.traceln("Push: %s", item->getTitle());
-        item->setActive(true);
+        //item->setActive(true);
         menus.push(item);
     }
     else
