@@ -4,9 +4,9 @@
  *  Created on: Dec  31, 2023
  *      Author: cyberreefguru
  */
-#include "MenuManager.h"
+#include "ListMenuItem.h"
 
-ListMenuItem::ListMenuItem(const char *title, const char *label, MenuItem **items, uint8_t numItems)
+LabelListMenu::LabelListMenu(const char *title, const char *label, MenuItem **items, uint8_t numItems)
 {
     this->title = title;
     this->label = label;
@@ -18,18 +18,18 @@ ListMenuItem::ListMenuItem(const char *title, const char *label, MenuItem **item
     activeIndex = windowStart;
 }
 
-ListMenuItem::~ListMenuItem()
+LabelListMenu::~LabelListMenu()
 {
 }
 
 
-void ListMenuItem::onDisplay()
+void LabelListMenu::onDisplay()
 {
-    Log.traceln("ListMenuItem::onDisplay - BEGIN");
+    Log.traceln("LabelListMenu::onDisplay - BEGIN");
 
     if (items == nullptr || numItems == 0)
     {
-        Log.errorln("ListMenuItem::onDisplay - no children to display");
+        Log.errorln("LabelListMenu::onDisplay - no children to display");
         return;
     }
 
@@ -41,7 +41,7 @@ void ListMenuItem::onDisplay()
     for (uint8_t i = windowStart; i < windowEnd; i++)
     {
         MenuItem *item = items[i];
-        // Log.traceln("ListMenuItem::onDisplay - item.title='%s', item.label='%s'", item->getTitle(), item->getLabel());
+        // Log.traceln("LabelListMenu::onDisplay - item.title='%s', item.label='%s'", item->getTitle(), item->getLabel());
         if (i == activeIndex)
         // if (item->isActive())
         {
@@ -55,12 +55,12 @@ void ListMenuItem::onDisplay()
         displayManager.setTextColor(WHITE);
     }
     displayManager.setRefresh(true);
-    Log.traceln("ListMenuItem::onDisplay - END");
+    Log.traceln("LabelListMenu::onDisplay - END");
 }
 
-void ListMenuItem::onEvent(ButtonEvent be)
+void LabelListMenu::onEvent(ButtonEvent be)
 {
-    Log.traceln("ListMenuItem::onEvent - %s", ++be);
+    Log.traceln("LabelListMenu::onEvent - %s", ++be);
     switch (be)
     {
     case ButtonEvent::UP:
@@ -80,7 +80,7 @@ void ListMenuItem::onEvent(ButtonEvent be)
     case ButtonEvent::PUSH:
         if (items == nullptr || numItems == 0)
         {
-            Log.warningln("ListMenuItem::onEvent - No children to push!");
+            Log.warningln("LabelListMenu::onEvent - No children to push!");
         }
         else
         {
@@ -93,20 +93,20 @@ void ListMenuItem::onEvent(ButtonEvent be)
     }
 }
 
-MenuItem *ListMenuItem::getActive()
+MenuItem *LabelListMenu::getActive()
 {
     return items[activeIndex];
 }
 
-uint8_t ListMenuItem::getActiveIndex()
+uint8_t LabelListMenu::getActiveIndex()
 {
     return activeIndex;
 }
 
-void ListMenuItem::activateNext()
+void LabelListMenu::activateNext()
 {
     uint8_t windowEnd = windowStart + windowSize - 1;
-    Log.traceln("ListMenuItem::activateNext - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
+    Log.traceln("LabelListMenu::activateNext - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
     if (activeIndex == (windowEnd - 1))
     {
         // We are at the end of the window
@@ -131,13 +131,13 @@ void ListMenuItem::activateNext()
         // We are within the window, advance index
         activeIndex++;
     }
-    Log.traceln("ListMenuItem::activateNext - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
+    Log.traceln("LabelListMenu::activateNext - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
 }
 
-void ListMenuItem::activatePrevious()
+void LabelListMenu::activatePrevious()
 {
     uint8_t windowEnd = windowStart + windowSize - 1;
-    Log.traceln("ListMenuItem::activatePrevious - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
+    Log.traceln("LabelListMenu::activatePrevious - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
     if (activeIndex == windowStart)
     {
         // We are at the top of the window
@@ -175,5 +175,5 @@ void ListMenuItem::activatePrevious()
         // We are within the window, advance index
         activeIndex--;
     }
-    Log.traceln("ListMenuItem::activatePrevious - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
+    Log.traceln("LabelListMenu::activatePrevious - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
 }

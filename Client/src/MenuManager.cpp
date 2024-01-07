@@ -26,7 +26,7 @@ MenuItem *cmItems[10] = {&colorInit, &colorConn, &colorConfig, &colorWait,
                         &colorActive, &colorInact, &colorErr};
 
 
-ListMenuItem selColor = ListMenuItem("Colors", "> Colors", cmItems, 10);
+LabelListMenu selColor = LabelListMenu("Colors", "> Colors", cmItems, 10);
 
 NumberInputItem ni = NumberInputItem("Enter Node ID:", "> Node ID");
 SimpleMenuItem targets = SimpleMenuItem("> Targets");
@@ -40,7 +40,7 @@ ExitMenuItem mexit = ExitMenuItem();
 
 MenuItem *mmItems[] = {&ni, &targets, &selColor, &brightness,
                         &sensor, &servoStart, &servoEnd, &mexit};
-ListMenuItem mainMenu = ListMenuItem("Main Menu", "> Main Menu", mmItems, 8);
+LabelListMenu mainMenu = LabelListMenu("Main Menu", "> Main Menu", mmItems, 8);
 
 MenuManager::MenuManager()
 {

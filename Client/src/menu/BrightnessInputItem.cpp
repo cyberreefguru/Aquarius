@@ -5,7 +5,7 @@
  *      Author: cyberreefguru
  */
 
-#include "MenuManager.h"
+#include "BrightnessMenuItem.h"
 
 BrightnessInputItem::BrightnessInputItem(const char *title, const char *label)
 {

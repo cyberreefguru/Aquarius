@@ -5,12 +5,17 @@
  *      Author: cyberreefguru
  */
 
+#ifndef MM_H
+#define MM_H
+
 #pragma once
 
 #include <Arduino.h>
 #include <ArduinoLog.h>
 
-#include "menu/MenuColor.h"
+#include <SimpleStack.h>
+
+
 #include "ButtonEvent.h"
 #include "StateManager.h"
 #include "DisplayManager.h"
@@ -18,7 +23,17 @@
 #include "InputEventManager.h"
 #include "Helper.h"
 
-#include <SimpleStack.h>
+#include "menu/MenuColor.h"
+
+#include "menu/MenuItem.h"
+#include "menu/ListMenuItem.h"
+#include "menu/SimpleMenuItem.h"
+#include "menu/ExitMenuItem.h"
+
+// #include "menu/ColorListItem.h"
+#include "menu/BrightnessMenuItem.h"
+#include "menu/NumberInputItem.h"
+
 
 #include <functional>
 #include <utility>
@@ -30,165 +45,147 @@ extern "C"
 #include "esp_event.h"
 }
 
-// typedef std::function<void(void)> MenuCallback;
+// // typedef std::function<void(void)> MenuCallback;
 
-class MenuItem
-{
-    // using MenuCallback = std::function<void()>;
+// class MenuItem
+// {
+//     // using MenuCallback = std::function<void()>;
 
-public:
-    MenuItem(const char *title, const char *label);
-    virtual ~MenuItem();
+// public:
+//     MenuItem(const char *title, const char *label);
+//     virtual ~MenuItem();
 
-    virtual const char* getTitle()
-    {
-        return title;
-    }
-    virtual const char* getLabel()
-    {
-        return label;
-    }
-    // virtual bool isActive()
-    // {
-    //     return active;
-    // }
-    // virtual void setActive(bool active)
-    // {
-    //     this->active = active;
-    // }
+//     virtual const char* getTitle()
+//     {
+//         return title;
+//     }
+//     virtual const char* getLabel()
+//     {
+//         return label;
+//     }
+//     virtual bool hasChildren()
+//     {
+//         return (numItems>0 && items != nullptr);
+//     }
+//     virtual uint8_t getNumberChildren()
+//     {
+//         return numItems;
+//     }
+//     virtual MenuItem** getChildren()
+//     {
+//         return items;
+//     }
+//     virtual void onEvent(ButtonEvent be);
+//     virtual void onDisplay();
 
-    virtual bool hasChildren()
-    {
-        return (numItems>0 && items != nullptr);
-    }
+// protected:
+//     MenuItem();
+//     const char *title;
+//     const char *label;
+//     uint8_t numItems = 0;
+//     MenuItem **items = nullptr;
+// };
 
-    virtual uint8_t getNumberChildren()
-    {
-        return numItems;
-    }
+// // class LabelListMenu : public MenuItem
+// // {
+// // public:
+// //     LabelListMenu(){}
+// //     LabelListMenu(const char *title, const char *label, MenuItem** items, uint8_t numItems);
+// //     virtual ~LabelListMenu();
+// //     virtual void onEvent(ButtonEvent be);
+// //     virtual void onDisplay();
 
-    virtual MenuItem** getChildren()
-    {
-        return items;
-    }
+// // protected:
+// //     uint8_t activeIndex = 0;
+// //     uint8_t windowSize = 0;
+// //     uint8_t windowStart = 0;
 
+// //     MenuItem *getActive();
+// //     uint8_t getActiveIndex();
+// //     void activateNext();
+// //     void activatePrevious();
+// // private:
 
-    // void initialize(const char *label, MenuItem **items, uint8_t numItems);
-    // void setChildren(MenuItem **items, uint8_t numItems);
+// // };
 
-    virtual void onEvent(ButtonEvent be);
-    virtual void onDisplay();
+// class ColorMenuItem : public MenuItem
+// {
+// public:
+//     ColorMenuItem(const MenuColor *color);
+//     virtual ~ColorMenuItem();
+//     virtual void onDisplay();
+//     virtual void onEvent(ButtonEvent be);
 
-protected:
-    MenuItem();
-    const char *title;
-    const char *label;
-    //bool active = false;
-    uint8_t numItems = 0;
-    MenuItem **items = nullptr;
-};
+// private:
+//     const MenuColor* color;
 
-class ListMenuItem : public MenuItem
-{
-public:
-    ListMenuItem(){}
-    ListMenuItem(const char *title, const char *label, MenuItem** items, uint8_t numItems);
-    virtual ~ListMenuItem();
-    virtual void onEvent(ButtonEvent be);
-    virtual void onDisplay();
+// //std::bind(&MainMenu::save, this)
+// //onActivateCallback(item, b);
 
-protected:
-    uint8_t activeIndex = 0;
-    uint8_t windowSize = 0;
-    uint8_t windowStart = 0;
-    //uint8_t windowEnd = 0;
+// };
 
-    MenuItem *getActive();
-    uint8_t getActiveIndex();
-    void activateNext();
-    void activatePrevious();
-private:
+// class ColorListItem : public LabelListMenu
+// {
+// public:
+//     ColorListItem(const char *title, const char *label);
+//     virtual ~ColorListItem();
+//     virtual void onDisplay();
+//     virtual void onEvent(ButtonEvent be);
 
-};
+// //std::bind(&MainMenu::save, this)
+// //onActivateCallback(item, b);
 
-class ColorMenuItem : public MenuItem
-{
-public:
-    ColorMenuItem(const MenuColor *color);
-    virtual ~ColorMenuItem();
-    virtual void onDisplay();
-    virtual void onEvent(ButtonEvent be);
+// };
 
-private:
-    const MenuColor* color;
+// class SimpleMenuItem : public MenuItem
+// {
+// public:
+//     SimpleMenuItem(const char *title);
+//     SimpleMenuItem(const char *title, const char* label);
+//     virtual ~SimpleMenuItem();
+//     virtual void onEvent(ButtonEvent be);
+//     virtual void onDisplay();
+// };
 
-//std::bind(&MainMenu::save, this)
-//onActivateCallback(item, b);
+// class ExitMenuItem : public MenuItem
+// {
+// public:
+//     ExitMenuItem();
+//     virtual ~ExitMenuItem();
+//     void onDisplay();
+//     void onEvent(ButtonEvent be);
 
-};
-
-class ColorListItem : public ListMenuItem
-{
-public:
-    ColorListItem(const char *title, const char *label);
-    virtual ~ColorListItem();
-    virtual void onDisplay();
-    virtual void onEvent(ButtonEvent be);
-
-//std::bind(&MainMenu::save, this)
-//onActivateCallback(item, b);
-
-};
-
-class SimpleMenuItem : public MenuItem
-{
-public:
-    SimpleMenuItem(const char *title);
-    SimpleMenuItem(const char *title, const char* label);
-    virtual ~SimpleMenuItem();
-    virtual void onEvent(ButtonEvent be);
-    virtual void onDisplay();
-};
-
-class ExitMenuItem : public MenuItem
-{
-public:
-    ExitMenuItem();
-    virtual ~ExitMenuItem();
-    void onDisplay();
-    void onEvent(ButtonEvent be);
-
-protected:
-};
+// protected:
+// };
 
 
-class NumberInputItem : public MenuItem
-{
-public:
-    NumberInputItem(){}
-    NumberInputItem(const char *title, const char *label);
-    void initialize(uint32_t *value, uint8_t numChars = 2);
-    virtual ~NumberInputItem();
-    void onEvent(ButtonEvent be);
-    void onDisplay();
+// class NumberInputItem : public MenuItem
+// {
+// public:
+//     NumberInputItem(){}
+//     NumberInputItem(const char *title, const char *label);
+//     void initialize(uint32_t *value, uint8_t numChars = 2);
+//     virtual ~NumberInputItem();
+//     void onEvent(ButtonEvent be);
+//     void onDisplay();
 
-protected:
-    uint32_t *value;
-    uint8_t numDigits = 2;
-    uint8_t curDigit = numDigits - 1;
-    byte *inputBuff = nullptr;
-};
+// protected:
+//     uint32_t *value;
+//     uint8_t numDigits = 2;
+//     uint8_t curDigit = numDigits - 1;
+//     byte *inputBuff = nullptr;
+// };
 
-class BrightnessInputItem : public NumberInputItem
-{
-public:
-    BrightnessInputItem(const char *title, const char *label);
-    void initialize(uint32_t *value, uint8_t numChars = 2);
-    virtual ~BrightnessInputItem();
-    void onEvent(ButtonEvent be);
-    void onDisplay();
+// class BrightnessInputItem : public NumberInputItem
+// {
+// public:
+//     BrightnessInputItem(const char *title, const char *label);
+//     void initialize(uint32_t *value, uint8_t numChars = 2);
+//     virtual ~BrightnessInputItem();
+//     void onEvent(ButtonEvent be);
+//     void onDisplay();
 
-};
+// };
 
 class MenuManager
 {
@@ -222,8 +219,6 @@ protected:
     uint32_t vServoEnd = 0;
     uint32_t vSensor = 0;
     uint32_t vBrightness = 0;
-
-    void print(uint8_t curLine, const char *m, bool nl);
 };
 
 // end of add your includes here
@@ -236,4 +231,6 @@ extern "C"
 
 #ifdef __cplusplus
 } // extern "C"
+#endif
+
 #endif
