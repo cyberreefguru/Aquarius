@@ -53,6 +53,7 @@ public:
     void print(String s);
     void println(const char * m);
     void printf(const char *format, ...);
+    void println();
     void clear();
     void clearRow(uint8_t row);
     void clearRow(uint8_t srow, uint8_t scol, uint8_t erow, uint8_t ecol);

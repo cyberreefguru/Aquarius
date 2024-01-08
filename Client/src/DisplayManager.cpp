@@ -100,6 +100,11 @@ void DisplayManager::println(const char *m)
     ssd1306.println(m);
 }
 
+void DisplayManager::println()
+{
+    ssd1306.println();
+}
+
 void DisplayManager::setBrightness(uint8_t v)
 {
     ssd1306.ssd1306_command(SSD1306_SETCONTRAST);

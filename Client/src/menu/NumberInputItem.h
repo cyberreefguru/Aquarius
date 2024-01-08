@@ -15,6 +15,30 @@
 // #include "MenuItem.h"
 #include "MenuManager.h"
 
+enum class ActiveComponent
+{
+    INPUT_AREA=0,
+    OK_BUTTON,
+    CANCEL_BUTTON
+};
+
+inline constexpr unsigned operator+(ActiveComponent const val) { return static_cast<unsigned>(val); }
+inline const char* operator++(ActiveComponent const val)
+{
+    switch (val)
+    {
+    case ActiveComponent::INPUT_AREA:
+        return "INPUT";
+        break;
+    case ActiveComponent::OK_BUTTON:
+        return "OK";
+        break;
+    case ActiveComponent::CANCEL_BUTTON:
+        return "CANCEL";
+        break;
+    }
+}
+
 class NumberInputItem : public MenuItem
 {
 public:
@@ -24,6 +48,7 @@ public:
     virtual ~NumberInputItem();
 
     uint32_t getValue();
+    void setValue();
 
     virtual void onDisplay() override;
     virtual void onButtonUp() override;
@@ -37,6 +62,7 @@ protected:
     uint8_t numDigits = 2;
     uint8_t curDigit = numDigits - 1;
     byte *inputBuff = nullptr;
+    ActiveComponent activeComponent = ActiveComponent::INPUT_AREA;
 };
 
 class BrightnessInputItem : public NumberInputItem
