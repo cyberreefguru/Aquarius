@@ -22,8 +22,15 @@ public:
     NumberInputItem(const char *title, const char *label);
     void initialize(uint32_t *value, uint8_t numChars = 2);
     virtual ~NumberInputItem();
-    void onEvent(ButtonEvent be);
-    void onDisplay();
+
+    uint32_t getValue();
+
+    virtual void onDisplay() override;
+    virtual void onButtonUp() override;
+    virtual void onButtonDown() override;
+    virtual void onButtonLeft() override;
+    virtual void onButtonRight() override;
+    virtual void onButtonPush() override;
 
 protected:
     uint32_t *value;
@@ -36,10 +43,8 @@ class BrightnessInputItem : public NumberInputItem
 {
 public:
     BrightnessInputItem(const char *title, const char *label);
-    void initialize(uint32_t *value, uint8_t numChars = 2);
-    virtual ~BrightnessInputItem();
-    void onEvent(ButtonEvent be);
-    void onDisplay();
+    virtual void onButtonPush() override;
+
 
 };
 

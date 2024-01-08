@@ -21,23 +21,25 @@ ExitMenuItem::~ExitMenuItem()
 
 void ExitMenuItem::onDisplay()
 {
-    Log.traceln("ExitMenuItem::onDisplay - BEGIN");
+    onButtonPush();
+    // Log.traceln("ExitMenuItem::onDisplay - BEGIN");
+    // stateManager.configure = false;
+    // actionEventManager.postEvent(ActionEvent::WAITING);
+    // Log.traceln("ExitMenuItem::onDisplay - END");
+}
+
+void ExitMenuItem::onButtonRight()
+{
+    onButtonPush();
+}
+
+void ExitMenuItem::onButtonPush()
+{
     if( menuManager.peek() == this )
     {
         menuManager.pop();
     }
     stateManager.configure = false;
     actionEventManager.postEvent(ActionEvent::WAITING);
-    Log.traceln("ExitMenuItem::onDisplay - END");
-}
-
-void ExitMenuItem::onEvent(ButtonEvent be)
-{
-    Log.traceln("ExitMenuItem::onEvent - %s", ++be);
-    if( be == ButtonEvent::PUSH )
-    {
-        stateManager.configure = false;
-        actionEventManager.postEvent(ActionEvent::WAITING);
-        Log.traceln("ExitMenuItem::onEvent - posted wait event");
-    }
+    Log.traceln("ExitMenuItem - posted wait event");
 }

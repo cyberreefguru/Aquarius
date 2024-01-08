@@ -15,4 +15,8 @@
 
 #include "NumberInputItem.h"
 
+// NOTE: The definition of the BrightMenuItem is in 
+//       NumberInputItem because of circular references that
+//       I simply could not resolve. I will keep trying.
+
 #endif

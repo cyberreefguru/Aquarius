@@ -13,7 +13,7 @@
 #include <ArduinoLog.h>
 
 #include "MenuItem.h"
-#include "ListMenuItem.h"
+#include "ListMenu.h"
 #include "menu/MenuColor.h"
 
 class ColorMenuItem : public MenuItem
@@ -21,8 +21,8 @@ class ColorMenuItem : public MenuItem
 public:
     ColorMenuItem(const MenuColor *color);
     virtual ~ColorMenuItem();
-    virtual void onDisplay();
-    virtual void onEvent(ButtonEvent be);
+    virtual void onDisplay() override;
+    virtual void onButtonPush() override;
 
 private:
     const MenuColor* color;

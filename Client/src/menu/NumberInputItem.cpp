@@ -41,81 +41,6 @@ void NumberInputItem::initialize(uint32_t *value, uint8_t numDigits)
     }
 }
 
-void NumberInputItem::onEvent(ButtonEvent be)
-{
-    uint32_t v = 0;
-    uint8_t base = 1;
-    Log.traceln("NumberInputItem.onEvent - %s", ++be);
-    Log.traceln("NumberInputItem.onEvent - curDigit=%d, numDigits=%d", curDigit, numDigits);
-    Log.traceln("NumberInputItem.onEvent - value=%i, d[1]=%d, d[0]=%d", *value, inputBuff[1], inputBuff[0]);
-
-    switch (be)
-    {
-    case ButtonEvent::PUSH:
-        // Set value based on input
-        for (uint8_t i = 0; i < numDigits; i++)
-        {
-            v += inputBuff[i]*base;
-            base *= 10;
-        }
-        *value = v;
-        Log.traceln("NumberInputItem.onEvent - value=%i, d[1]=%d, d[0]=%d", *value, inputBuff[1], inputBuff[0]);
-
-        // Save value and pop us off the menu
-        menuManager.pop();
-        // display the currnet top of the queue
-        menuManager.display();
-        return;
-        break;
-    case ButtonEvent::LEFT:
-        if (curDigit == (numDigits - 1))
-        {
-            curDigit = 0;
-        }
-        else
-        {
-            curDigit = curDigit + 1;
-        }
-        break;
-    case ButtonEvent::RIGHT:
-        if (curDigit == 0)
-        {
-            curDigit = numDigits - 1;
-        }
-        else
-        {
-            curDigit = curDigit - 1;
-        }
-        break;
-    case ButtonEvent::DOWN:
-        if (inputBuff[curDigit] == 0)
-        {
-            inputBuff[curDigit] = 9;
-        }
-        else
-        {
-            inputBuff[curDigit] = (inputBuff[curDigit] - 1);
-        }
-        break;
-    case ButtonEvent::UP:
-        if (inputBuff[curDigit] == 9)
-        {
-            inputBuff[curDigit] = 0;
-        }
-        else
-        {
-            inputBuff[curDigit] = (inputBuff[curDigit] + 1);
-        }
-        break;
-    }
-    Log.traceln("NumberInputItem.onEvent - curDigit=%d, numDigits=%d", curDigit, numDigits);
-    Log.traceln("NumberInputItem.onEvent - value=%i, d[1]=%d, d[0]=%d", *value, inputBuff[1], inputBuff[0]);
-
-    onDisplay();
-
-    Log.traceln("NumberInputItem.onEvent - END");
-}
-
 void NumberInputItem::onDisplay()
 {
     Log.traceln("NumberInputItem::onDisplay - BEGIN");
@@ -149,3 +74,154 @@ void NumberInputItem::onDisplay()
     }
     Log.traceln("NumberInputItem::onDisplay - END");
 }
+
+void NumberInputItem::onButtonUp()
+{
+    if (inputBuff[curDigit] == 9)
+    {
+        inputBuff[curDigit] = 0;
+    }
+    else
+    {
+        inputBuff[curDigit] = (inputBuff[curDigit] + 1);
+    }
+    onDisplay();
+}
+
+void NumberInputItem::onButtonDown()
+{
+    if (inputBuff[curDigit] == 0)
+    {
+        inputBuff[curDigit] = 9;
+    }
+    else
+    {
+        inputBuff[curDigit] = (inputBuff[curDigit] - 1);
+    }
+    onDisplay();
+}
+
+void NumberInputItem::onButtonRight()
+{
+    if (curDigit == 0)
+    {
+        curDigit = numDigits - 1;
+    }
+    else
+    {
+        curDigit = curDigit - 1;
+    }
+    onDisplay();
+}
+
+void NumberInputItem::onButtonLeft()
+{
+    if (curDigit == (numDigits - 1))
+    {
+        curDigit = 0;
+    }
+    else
+    {
+        curDigit = curDigit + 1;
+    }
+    onDisplay();
+}
+
+void NumberInputItem::onButtonPush()
+{
+    *value = getValue();
+    Log.traceln("NumberInputItem.onEvent - value=%i, d[1]=%d, d[0]=%d", *value, inputBuff[1], inputBuff[0]);
+
+    // Save value and pop us off the menu
+    menuManager.pop();
+    // display the currnet top of the queue
+    menuManager.display();
+}
+
+uint32_t NumberInputItem::getValue()
+{
+    uint32_t v = 0;
+    uint8_t base = 1;
+    // Set value based on input
+    for (uint8_t i = 0; i < numDigits; i++)
+    {
+        v += inputBuff[i] * base;
+        base *= 10;
+    }
+    return v;
+}
+
+// void NumberInputItem::onEvent(ButtonEvent be)
+// {
+//     uint32_t v = 0;
+//     uint8_t base = 1;
+//     Log.traceln("NumberInputItem.onEvent - %s", ++be);
+//     Log.traceln("NumberInputItem.onEvent - curDigit=%d, numDigits=%d", curDigit, numDigits);
+//     Log.traceln("NumberInputItem.onEvent - value=%i, d[1]=%d, d[0]=%d", *value, inputBuff[1], inputBuff[0]);
+
+//     switch (be)
+//     {
+//     case ButtonEvent::PUSH:
+//         // Set value based on input
+//         for (uint8_t i = 0; i < numDigits; i++)
+//         {
+//             v += inputBuff[i] * base;
+//             base *= 10;
+//         }
+//         *value = v;
+//         Log.traceln("NumberInputItem.onEvent - value=%i, d[1]=%d, d[0]=%d", *value, inputBuff[1], inputBuff[0]);
+
+//         // Save value and pop us off the menu
+//         menuManager.pop();
+//         // display the currnet top of the queue
+//         menuManager.display();
+//         return;
+//         break;
+//     case ButtonEvent::LEFT:
+//         if (curDigit == (numDigits - 1))
+//         {
+//             curDigit = 0;
+//         }
+//         else
+//         {
+//             curDigit = curDigit + 1;
+//         }
+//         break;
+//     case ButtonEvent::RIGHT:
+//         if (curDigit == 0)
+//         {
+//             curDigit = numDigits - 1;
+//         }
+//         else
+//         {
+//             curDigit = curDigit - 1;
+//         }
+//         break;
+//     case ButtonEvent::DOWN:
+//         if (inputBuff[curDigit] == 0)
+//         {
+//             inputBuff[curDigit] = 9;
+//         }
+//         else
+//         {
+//             inputBuff[curDigit] = (inputBuff[curDigit] - 1);
+//         }
+//         break;
+//     case ButtonEvent::UP:
+//         if (inputBuff[curDigit] == 9)
+//         {
+//             inputBuff[curDigit] = 0;
+//         }
+//         else
+//         {
+//             inputBuff[curDigit] = (inputBuff[curDigit] + 1);
+//         }
+//         break;
+//     }
+//     Log.traceln("NumberInputItem.onEvent - curDigit=%d, numDigits=%d", curDigit, numDigits);
+//     Log.traceln("NumberInputItem.onEvent - value=%i, d[1]=%d, d[0]=%d", *value, inputBuff[1], inputBuff[0]);
+
+//     onDisplay();
+
+//     Log.traceln("NumberInputItem.onEvent - END");
+// }

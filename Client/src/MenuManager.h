@@ -15,7 +15,6 @@
 
 #include <SimpleStack.h>
 
-
 #include "ButtonEvent.h"
 #include "StateManager.h"
 #include "DisplayManager.h"
@@ -26,13 +25,13 @@
 #include "menu/MenuColor.h"
 
 #include "menu/MenuItem.h"
-#include "menu/ListMenuItem.h"
+#include "menu/ListMenu.h"
+#include "menu/NumberInputItem.h"
 #include "menu/SimpleMenuItem.h"
 #include "menu/ExitMenuItem.h"
 
 // #include "menu/ColorListItem.h"
-#include "menu/BrightnessMenuItem.h"
-#include "menu/NumberInputItem.h"
+// #include "menu/BrightnessMenuItem.h"
 
 
 #include <functional>

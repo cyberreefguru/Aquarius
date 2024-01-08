@@ -1,12 +1,12 @@
 /*
- * ListMenuItem.cpp
+ * ListMenu.cpp
  *
- *  Created on: Dec  31, 2023
+ *  Created on: Jan 7, 2024
  *      Author: cyberreefguru
  */
-#include "ListMenuItem.h"
+#include "ListMenu.h"
 
-LabelListMenu::LabelListMenu(const char *title, const char *label, MenuItem **items, uint8_t numItems)
+ListMenu::ListMenu(const char *title, const char *label, MenuItem **items, uint8_t numItems)
 {
     this->title = title;
     this->label = label;
@@ -18,18 +18,17 @@ LabelListMenu::LabelListMenu(const char *title, const char *label, MenuItem **it
     activeIndex = windowStart;
 }
 
-LabelListMenu::~LabelListMenu()
+ListMenu::~ListMenu()
 {
 }
 
-
-void LabelListMenu::onDisplay()
+void ListMenu::onDisplay()
 {
-    Log.traceln("LabelListMenu::onDisplay - BEGIN");
+    Log.traceln("ListMenu::onDisplay - BEGIN");
 
     if (items == nullptr || numItems == 0)
     {
-        Log.errorln("LabelListMenu::onDisplay - no children to display");
+        Log.errorln("ListMenu::onDisplay - no children to display");
         return;
     }
 
@@ -41,7 +40,7 @@ void LabelListMenu::onDisplay()
     for (uint8_t i = windowStart; i < windowEnd; i++)
     {
         MenuItem *item = items[i];
-        // Log.traceln("LabelListMenu::onDisplay - item.title='%s', item.label='%s'", item->getTitle(), item->getLabel());
+        // Log.traceln("ListMenu::onDisplay - item.title='%s', item.label='%s'", item->getTitle(), item->getLabel());
         if (i == activeIndex)
         // if (item->isActive())
         {
@@ -51,62 +50,94 @@ void LabelListMenu::onDisplay()
         {
             displayManager.setTextColor(WHITE);
         }
+        //onDisplayListItem(i);
         displayManager.println(item->getLabel());
         displayManager.setTextColor(WHITE);
     }
     displayManager.setRefresh(true);
-    Log.traceln("LabelListMenu::onDisplay - END");
+    Log.traceln("ListMenu::onDisplay - END");
 }
 
-void LabelListMenu::onEvent(ButtonEvent be)
+
+void ListMenu::onButtonUp()
 {
-    Log.traceln("LabelListMenu::onEvent - %s", ++be);
-    switch (be)
-    {
-    case ButtonEvent::UP:
         activatePrevious();
         onDisplay();
-        break;
-    case ButtonEvent::DOWN:
-        activateNext();
-        onDisplay();
-        break;
-    case ButtonEvent::LEFT:
-        //active = true;
-        menuManager.pop();
-        menuManager.display();
-        break;
-    case ButtonEvent::RIGHT:
-    case ButtonEvent::PUSH:
-        if (items == nullptr || numItems == 0)
-        {
-            Log.warningln("LabelListMenu::onEvent - No children to push!");
-        }
-        else
-        {
-            menuManager.push(items[activeIndex]);
-            items[activeIndex]->onDisplay();
-        }
-        break;
-    default:
-        break;
-    }
 }
 
-MenuItem *LabelListMenu::getActive()
+void ListMenu::onButtonDown()
+{
+        activateNext();
+        onDisplay();
+}
+
+void ListMenu::onButtonLeft()
+{
+        menuManager.pop();
+        menuManager.display();
+}
+
+void ListMenu::onButtonRight()
+{
+    onButtonPush();
+}
+
+
+void ListMenu::onButtonPush()
+{
+    menuManager.push(items[activeIndex]);
+    items[activeIndex]->onDisplay();
+}
+
+
+
+
+
+// void ListMenu::onEvent(ButtonEvent be)
+// {
+//     Log.traceln("ListMenu::onEvent - %s", ++be);
+//     switch (be)
+//     {
+//     case ButtonEvent::UP:
+//         break;
+//     case ButtonEvent::DOWN:
+//         break;
+//     case ButtonEvent::LEFT:
+//         //active = true;
+//         break;
+//     case ButtonEvent::RIGHT:
+//     case ButtonEvent::PUSH:
+//         if (items == nullptr || numItems == 0)
+//         {
+//             Log.warningln("ListMenu::onEvent - No children to push!");
+//         }
+//         else
+//         {
+//             onPush(items[activeIndex]);
+//             // menuManager.push(items[activeIndex]);
+//             // items[activeIndex]->onDisplay();
+//         }
+//         break;
+//     default:
+//         break;
+//     }
+// }
+
+
+MenuItem *ListMenu::getActive()
 {
     return items[activeIndex];
 }
 
-uint8_t LabelListMenu::getActiveIndex()
+uint8_t ListMenu::getActiveIndex()
 {
     return activeIndex;
 }
 
-void LabelListMenu::activateNext()
+void ListMenu::activateNext()
 {
     uint8_t windowEnd = windowStart + windowSize - 1;
-    Log.traceln("LabelListMenu::activateNext - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
+    Log.traceln("ListMenu::activateNext - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
     if (activeIndex == (windowEnd - 1))
     {
         // We are at the end of the window
@@ -131,13 +162,13 @@ void LabelListMenu::activateNext()
         // We are within the window, advance index
         activeIndex++;
     }
-    Log.traceln("LabelListMenu::activateNext - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
+    Log.traceln("ListMenu::activateNext - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
 }
 
-void LabelListMenu::activatePrevious()
+void ListMenu::activatePrevious()
 {
     uint8_t windowEnd = windowStart + windowSize - 1;
-    Log.traceln("LabelListMenu::activatePrevious - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
+    Log.traceln("ListMenu::activatePrevious - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
     if (activeIndex == windowStart)
     {
         // We are at the top of the window
@@ -175,5 +206,5 @@ void LabelListMenu::activatePrevious()
         // We are within the window, advance index
         activeIndex--;
     }
-    Log.traceln("LabelListMenu::activatePrevious - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
+    Log.traceln("ListMenu::activatePrevious - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
 }

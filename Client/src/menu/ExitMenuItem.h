@@ -20,8 +20,10 @@ class ExitMenuItem : public MenuItem
 public:
     ExitMenuItem();
     virtual ~ExitMenuItem();
-    void onDisplay();
-    void onEvent(ButtonEvent be);
+    void onDisplay() override;
+    virtual void onButtonRight() override;
+    virtual void onButtonPush() override;
+
 
 protected:
 };

@@ -42,24 +42,12 @@ void SimpleMenuItem::onDisplay()
     Log.traceln("SimpleMenuItem::onDisplay - END");
 }
 
-void SimpleMenuItem::onEvent(ButtonEvent be)
+void SimpleMenuItem::onButtonRight()
 {
-    Log.traceln("SimpleMenuItem.onEvent - BEGIN");
-    switch (be)
-    {
-    case ButtonEvent::UP:
-        break;
-    case ButtonEvent::DOWN:
-        break;
-    case ButtonEvent::LEFT:
-    case ButtonEvent::PUSH:
+    onButtonPush();
+}
+void SimpleMenuItem::onButtonPush()
+{
         menuManager.pop();
         menuManager.display();
-        break;
-    case ButtonEvent::RIGHT:
-        break;
-    default:
-        break;
-    }
-    Log.traceln("SimpleMenuItem.onEvent - END");
 }

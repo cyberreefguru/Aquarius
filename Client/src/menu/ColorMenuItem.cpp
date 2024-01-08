@@ -21,31 +21,14 @@ ColorMenuItem::~ColorMenuItem()
 void ColorMenuItem::onDisplay()
 {
     Log.traceln("ColorMenuItem::onDisplay - BEGIN");
-    Log.traceln("Saving Color: %s, %X", color->name, color->value);
-        menuManager.pop();
-        menuManager.pop();
-        menuManager.display();
+    displayManager.println(color->name);
     Log.traceln("ColorMenuItem::onDisplay - END");
 }
 
-void ColorMenuItem::onEvent(ButtonEvent be)
+void ColorMenuItem::onButtonPush()
 {
-    Log.traceln("ColorMenuItem.onEvent - BEGIN");
-    switch (be)
-    {
-    case ButtonEvent::UP:
-        break;
-    case ButtonEvent::DOWN:
-        break;
-    case ButtonEvent::LEFT:
-    case ButtonEvent::PUSH:
+        Log.traceln("Saving %s to value", color->name);
+        // TODO - save color
         menuManager.pop();
         menuManager.display();
-        break;
-    case ButtonEvent::RIGHT:
-        break;
-    default:
-        break;
-    }
-    Log.traceln("ColorMenuItem.onEvent - END");
 }

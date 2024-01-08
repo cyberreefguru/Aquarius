@@ -10,16 +10,16 @@ MenuManager menuManager;
 
 SimpleStack<MenuItem *> menus(5); // max 5 levels
 
-ColorListItem colorActive = ColorListItem("Set Active Color", "> Active");
-ColorListItem colorInact = ColorListItem("Set Inactive Color", "> Inactive");
-ColorListItem colorInit = ColorListItem("Set Initialize Color", "> Initialize");
-ColorListItem colorConn = ColorListItem("Set Connect Color", "> Connect");
-ColorListItem colorConfig = ColorListItem("Set Configure Color", "> Configure");
-ColorListItem colorErr = ColorListItem("Set Error Color", "> Error");
-ColorListItem colorRec = ColorListItem("Set Receive Color", "> Receive");
-ColorListItem colorProc = ColorListItem("Set Processing Color", "> Processing");
-ColorListItem colorSend = ColorListItem("Set Send Color", "> Send");
-ColorListItem colorWait = ColorListItem("Set Wait Color", "> Wait");
+ColorListMenu colorActive = ColorListMenu("Set Active Color", "> Active");
+ColorListMenu colorInact = ColorListMenu("Set Inactive Color", "> Inactive");
+ColorListMenu colorInit = ColorListMenu("Set Initialize Color", "> Initialize");
+ColorListMenu colorConn = ColorListMenu("Set Connect Color", "> Connect");
+ColorListMenu colorConfig = ColorListMenu("Set Configure Color", "> Configure");
+ColorListMenu colorErr = ColorListMenu("Set Error Color", "> Error");
+ColorListMenu colorRec = ColorListMenu("Set Receive Color", "> Receive");
+ColorListMenu colorProc = ColorListMenu("Set Processing Color", "> Processing");
+ColorListMenu colorSend = ColorListMenu("Set Send Color", "> Send");
+ColorListMenu colorWait = ColorListMenu("Set Wait Color", "> Wait");
 
 MenuItem *cmItems[10] = {&colorInit, &colorConn, &colorConfig, &colorWait,
                         &colorRec, &colorProc, &colorSend,
@@ -212,67 +212,7 @@ void MenuManager::display()
         else
         {
             item->onDisplay();
-
-            //     // Deactivate this item
-            //     // TODO: Keep it active or reactive it
-            //     item->active = false;
-
-            //     // item->onActivate(false);
-            //     // Display this item
-            //     item->onDisplay();
-
-            //     // Display any child items
-            //     if (item->numItems > 0)
-            //     {
-            //         Log.traceln("MenuManager::display - showing %d children: %s", item->numItems, item->label);
-            //         // get active node
-            //         uint8_t active = item->getActiveIndex();
-            //         if (item->items[active]->active == false)
-            //         {
-            //             // If no node was active, activate it
-            //             item->items[active]->active = true;
-            //         }
-
-            //         //Log.traceln("sw=%d", item->windowStart);
-            //         uint8_t start = item->windowStart;
-            //         uint8_t end = start + 5;
-            //         //Log.traceln("MenuManager::display - start=%d, end=%d, diff=%d", start, end);
-
-            //         if( end > (item->numItems - 1))
-            //         {
-            //             end = item->numItems - 1;
-            //         }
-            //         //Log.traceln("start=%d, end=%d, diff=%d", start, end);
-            //         // We can display 6 menu items on the screen at one time
-            //         // If number to show is > 6, then create window of 6 items
-            //         // to show.
-            //         for (uint8_t i = start; i <= end; i++)
-            //         {
-            //             //Log.traceln("MenuManager::display - displaying=%d: %s", i, item->items[i]->label);
-            //             item->items[i]->onDisplay();
-            //         }
-            //     }
-            //     else
-            //     {
-            //         Log.traceln("No children to show: %s", item->label);
-            //     }
-            //     displayManager.setRefresh(true);
         }
     }
     Log.traceln("MenuManager::display: END");
 }
-
-// void MenuManager::print(uint8_t curLine, const char *m, bool nl)
-// {
-//     Log.traceln("cl=%d, ln=%d, nl=%d, m=%s", curLine, activeLineNum, nl, m);
-//     if (curLine == activeLineNum)
-//     {
-//         displayManager.setTextColor(BLACK, WHITE);
-//     }
-//     else
-//     {
-//         displayManager.setTextColor(WHITE);
-//     }
-//     displayManager.setCursor(curLine, 0);
-//     displayManager.print(m);
-// }

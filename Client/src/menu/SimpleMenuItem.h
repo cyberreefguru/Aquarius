@@ -22,8 +22,9 @@ public:
     SimpleMenuItem(const char *title);
     SimpleMenuItem(const char *title, const char* label);
     virtual ~SimpleMenuItem();
-    virtual void onEvent(ButtonEvent be);
-    virtual void onDisplay();
+    virtual void onDisplay() override;
+    void onButtonPush() override;
+    void onButtonRight() override;
 };
 
 #endif
