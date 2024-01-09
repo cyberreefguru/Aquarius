@@ -57,8 +57,8 @@ protected:
     MenuItem();
     const char *title;
     const char *label;
-    uint8_t numItems = 0;
-    MenuItem **items = nullptr;
+    uint8_t numItems = 0; // TODO - move to ListMenuItem or something
+    MenuItem **items = nullptr; // TODO - move to ListMenuItem or something
 };
 
 #endif

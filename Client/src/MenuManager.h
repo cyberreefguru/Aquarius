@@ -29,6 +29,7 @@
 #include "menu/NumberInputItem.h"
 #include "menu/SimpleMenuItem.h"
 #include "menu/ExitMenuItem.h"
+#include "menu/MultiNumberInputItem.h"
 
 // #include "menu/ColorListItem.h"
 // #include "menu/BrightnessMenuItem.h"
@@ -214,8 +215,6 @@ protected:
     ButtonAction currentAction = ButtonAction::PRESS;
     bool changed = false;
     uint32_t vNodeId = 0;
-    uint32_t vServoStart = 0;
-    uint32_t vServoEnd = 0;
     uint32_t vSensor = 0;
     uint32_t vBrightness = 0;
 };

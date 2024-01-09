@@ -42,21 +42,6 @@ private:
 
 };
 
-class LabelListMenu : public ListMenu
-{
-public:
-    LabelListMenu(){}
-    LabelListMenu(const char *title, const char *label, MenuItem** items, uint8_t numItems);
-    virtual ~LabelListMenu();
-    virtual void onDisplay() override;
-   virtual void onButtonPush() override;
-
-protected:
-private:
-
-};
-
-
 class ColorListMenu : public ListMenu
 {
 public:

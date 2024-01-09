@@ -24,6 +24,7 @@ public:
     virtual ~SimpleMenuItem();
     virtual void onDisplay() override;
     void onButtonPush() override;
+    void onButtonLeft() override;
     void onButtonRight() override;
 };
 

@@ -10,6 +10,10 @@ MenuManager menuManager;
 
 SimpleStack<MenuItem *> menus(5); // max 5 levels
 
+uint32_t vServoStart = 0;
+uint32_t vServoEnd = 0;
+
+
 ColorListMenu colorActive = ColorListMenu("Set Active Color", "> Active");
 ColorListMenu colorInact = ColorListMenu("Set Inactive Color", "> Inactive");
 ColorListMenu colorInit = ColorListMenu("Set Initialize Color", "> Initialize");
@@ -26,21 +30,29 @@ MenuItem *cmItems[10] = {&colorInit, &colorConn, &colorConfig, &colorWait,
                         &colorActive, &colorInact, &colorErr};
 
 
-LabelListMenu selColor = LabelListMenu("Colors", "> Colors", cmItems, 10);
+ListMenu selColor = ListMenu("Colors", "> Colors", cmItems, 10);
 
 NumberInputItem ni = NumberInputItem("Enter Node ID:", "> Node ID");
 SimpleMenuItem targets = SimpleMenuItem("> Targets");
 
 NumberInputItem sensor = NumberInputItem("Enter Sensor Threshhold:", "> Sensor Threshold");
-NumberInputItem servoStart = NumberInputItem("Enter Servo Start:", "> Servo Start");
-NumberInputItem servoEnd = NumberInputItem("Enter Servo End:", "> Servo End");
+// NumberInputItem servoStart = NumberInputItem("Enter Servo Start:", "> Servo Start");
+// NumberInputItem servoEnd = NumberInputItem("Enter Servo End:", "> Servo End");
 BrightnessInputItem brightness = BrightnessInputItem("Enter Brightness:", "> Brightness");
 
 ExitMenuItem mexit = ExitMenuItem();
 
+NumberInput servoStart = NumberInput("Start> ", &vServoStart, 3);
+NumberInput servoEnd = NumberInput("End> ", &vServoEnd, 3);
+
+MenuItem *si[2] = {&servoStart, &servoEnd };
+
+MultiNumberInputItem servoMenu = MultiNumberInputItem("Servo Values:", "> Servo Settings", si, 2);
+
+
 MenuItem *mmItems[] = {&ni, &targets, &selColor, &brightness,
-                        &sensor, &servoStart, &servoEnd, &mexit};
-LabelListMenu mainMenu = LabelListMenu("Main Menu", "> Main Menu", mmItems, 8);
+                        &sensor, &servoMenu, &mexit};
+ListMenu mainMenu = ListMenu("Main Menu", "> Main Menu", mmItems, 7);
 
 MenuManager::MenuManager()
 {
@@ -87,8 +99,8 @@ void MenuManager::initialize()
     // mainMenu.getChildren()[0]->setActive(true);
 
     ni.initialize(&vNodeId, 2);
-    servoStart.initialize(&vServoStart, 3);
-    servoEnd.initialize(&vServoEnd, 3);
+    // servoStart.initialize(&vServoStart, 3);
+    // servoEnd.initialize(&vServoEnd, 3);
     sensor.initialize(&vSensor, 3);
 
     vBrightness = 255;

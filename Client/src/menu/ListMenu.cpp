@@ -50,7 +50,6 @@ void ListMenu::onDisplay()
         {
             displayManager.setTextColor(WHITE);
         }
-        //onDisplayListItem(i);
         displayManager.println(item->getLabel());
         displayManager.setTextColor(WHITE);
     }

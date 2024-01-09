@@ -42,6 +42,11 @@ void SimpleMenuItem::onDisplay()
     Log.traceln("SimpleMenuItem::onDisplay - END");
 }
 
+void SimpleMenuItem::onButtonLeft()
+{
+    onButtonPush();
+}
+
 void SimpleMenuItem::onButtonRight()
 {
     onButtonPush();
