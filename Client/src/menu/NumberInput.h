@@ -17,7 +17,8 @@ class NumberInput : public MenuItem
 {
 public:
     NumberInput() {}
-    NumberInput(const char *title, uint32_t *value, uint8_t numDigits);
+    // NumberInput(menu_title_t title, uint32_t *value, uint8_t numDigits);
+    NumberInput(menu_label_t label, menu_title_t title, menu_prompt_t prompt, uint32_t *value, uint8_t numDigits);
     virtual ~NumberInput();
 
     void initializeValue();

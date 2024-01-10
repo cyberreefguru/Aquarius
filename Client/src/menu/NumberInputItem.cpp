@@ -6,69 +6,49 @@
  */
 #include "NumberInputItem.h"
 
-NumberInputItem::NumberInputItem(const char *title, const char *label)
+// NumberInputItem::NumberInputItem(menu_label_t label, menu_title_t title, uint32_t *value, uint8_t numDigits)
+// {
+//     // NumberInputItem(label, title, "> ", value, numDigits);
+//     this->menuTitle = title;
+//     this->menuLabel = label;
+//     this->menuPrompt = "> ";
+
+//     this->item = new NumberInput(title, value,  numDigits);
+//     this->items = {(MenuItem**)&item};
+//     this->numItems = 1;
+//     this->curInput = 0;
+
+// }
+
+NumberInputItem::NumberInputItem(menu_label_t label, menu_title_t title, menu_prompt_t prompt, uint32_t *value, uint8_t numDigits)
 {
-    this->title = title;
-    this->label = label;
-    this->value = value;
-    this->items = nullptr;
-    this->numItems = 0;
-    this->numDigits = 0;
-    this->curDigit = 0;
+    this->menuTitle = title;
+    this->menuLabel = label;
+    this->menuPrompt = prompt;
+
+    this->item = new NumberInput(label, title, prompt, value, numDigits);
+    this->items = {(MenuItem **)&item};
+    this->numItems = 1;
+    this->curInput = 0;
+    this->item->active =true;
 }
 
 NumberInputItem::~NumberInputItem()
 {
-    free(inputBuff);
-}
-
-void NumberInputItem::initialize(uint32_t *value, uint8_t numDigits)
-{
-    if (value != 0)
-    {
-        this->value = value;
-        this->numDigits = numDigits;
-        this->inputBuff = new uint8_t[numDigits];
-        setValue();
-
-        Log.traceln("NumberInputItem::initialize - value=%i, d[1]=%d, d[0]=%d", *value, inputBuff[1], inputBuff[0]);
-    }
+    free(item);
+    free(items);
 }
 
 void NumberInputItem::onDisplay()
 {
     Log.traceln("NumberInputItem::onDisplay - BEGIN");
-    if (label == nullptr)
-    {
-        Log.errorln("NumberInputItem::onDisplay - Label is null!");
-        return;
-    }
-
     displayManager.clear();
     displayManager.setCursor(0, 0);
-    displayManager.println(title);
-    displayManager.print("> ");
-    for (uint8_t i = 0; i < numDigits; i++)
-    {
-        uint8_t index = (numDigits - 1) - i;
+    displayManager.println(menuTitle);
+    items[0]->onDisplay();
+    displayManager.println();
 
-        Log.traceln("NumberInputItem::onDisplay: digit=%d", index);
-        if (index == curDigit && activeComponent == ActiveComponent::INPUT_AREA)
-        {
-            displayManager.setTextColor(BLACK, WHITE);
-        }
-        else
-        {
-            displayManager.setTextColor(WHITE);
-        }
-
-        displayManager.print(inputBuff[index]);
-        displayManager.setTextColor(WHITE);
-    }
-
-    displayManager.print("\n\n");
-
-    if (activeComponent == ActiveComponent::OK_BUTTON)
+    if (curInput == numItems)
     {
         displayManager.setTextColor(BLACK, WHITE);
     }
@@ -81,7 +61,7 @@ void NumberInputItem::onDisplay()
 
     displayManager.print("  ");
 
-    if (activeComponent == ActiveComponent::CANCEL_BUTTON)
+    if (curInput == numItems + 1)
     {
         displayManager.setTextColor(BLACK, WHITE);
     }
@@ -94,233 +74,139 @@ void NumberInputItem::onDisplay()
 
     displayManager.setRefresh(true);
 
-    Log.traceln("NumberInputItem::onDisplay - END");
+    Log.traceln("MultiNumberInputItem::onDisplay - END");
 }
 
 void NumberInputItem::onButtonUp()
 {
-    switch (activeComponent)
+    Log.traceln("NumberInputItem::onButtonUp: curInput=%d", curInput);
+    if (curInput == 0)
     {
-    case ActiveComponent::INPUT_AREA:
-        if (inputBuff[curDigit] == 9)
-        {
-            inputBuff[curDigit] = 0;
-        }
-        else
-        {
-            inputBuff[curDigit] = (inputBuff[curDigit] + 1);
-        }
-        break;
-    case ActiveComponent::OK_BUTTON:
-        curDigit = 0;
-        activeComponent = ActiveComponent::INPUT_AREA;
-        break;
-    case ActiveComponent::CANCEL_BUTTON:
-        activeComponent = ActiveComponent::OK_BUTTON;
-        break;
+        // @ Input
+        ((NumberInput *)items[curInput])->active = true; // make sure it's active
+        ((NumberInput *)items[curInput])->onButtonUp();  // call input up
+    }
+    else if (curInput == 1)
+    {
+        // @ OK; move to input
+        curInput = 0; // move to input
+        ((NumberInput *)items[curInput])->active = true;
+        //((NumberInput *)items[curInput])->curDigit = 0;
+    }
+    else if (curInput == 2)
+    {
+        // @ Cancel; move to input
+        curInput = 0; // move to input
+        ((NumberInput *)items[curInput])->active = true;
+        //((NumberInput *)items[curInput])->curDigit = 0;
     }
     onDisplay();
 }
 
 void NumberInputItem::onButtonDown()
 {
-    switch (activeComponent)
+    Log.traceln("NumberInputItem::onButtonDown: curInput=%d", curInput);
+    if (curInput == 0)
     {
-    case ActiveComponent::INPUT_AREA:
-    if (inputBuff[curDigit] == 0)
-    {
-        inputBuff[curDigit] = 9;
+        // @ Input
+        ((NumberInput *)items[curInput])->active = true;  // make sure it's active
+        ((NumberInput *)items[curInput])->onButtonDown(); // call input down
     }
-    else
+    else if (curInput == 1)
     {
-        inputBuff[curDigit] = (inputBuff[curDigit] - 1);
+        // @ OK; move to input
+        curInput = 0; // move to input
+        ((NumberInput *)items[curInput])->active = true;
     }
-        break;
-    case ActiveComponent::OK_BUTTON:
-        activeComponent = ActiveComponent::CANCEL_BUTTON;
-        break;
-    case ActiveComponent::CANCEL_BUTTON:
-        curDigit = (numDigits-1);
-        activeComponent = ActiveComponent::INPUT_AREA;
-        break;
-    }
-    onDisplay();
-}
-
-void NumberInputItem::onButtonRight()
-{
-    switch (activeComponent)
+    else if (curInput == 2)
     {
-    case ActiveComponent::INPUT_AREA:
-        if (curDigit == 0)
-        {
-            activeComponent = ActiveComponent::OK_BUTTON;
-        }
-        else
-        {
-            curDigit--;
-        }
-        break;
-    case ActiveComponent::OK_BUTTON:
-        activeComponent = ActiveComponent::CANCEL_BUTTON;
-        break;
-    case ActiveComponent::CANCEL_BUTTON:
-        activeComponent = ActiveComponent::INPUT_AREA;
-        curDigit = numDigits - 1;
-        break;
+        // @ Cancel; move to input
+        curInput = 0; // move to input
+        ((NumberInput *)items[curInput])->active = true;
     }
     onDisplay();
 }
 
 void NumberInputItem::onButtonLeft()
 {
-    switch (activeComponent)
+    Log.traceln("NumberInputItem::onButtonLeft: curInput=%d", curInput);
+
+    if (curInput == 0)
     {
-    case ActiveComponent::INPUT_AREA:
-        if (curDigit == (numDigits - 1))
-        {
-            activeComponent = ActiveComponent::CANCEL_BUTTON;
-        }
-        else
-        {
-            curDigit++;
-        }
-        break;
-    case ActiveComponent::OK_BUTTON:
-        curDigit = 0;
-        activeComponent = ActiveComponent::INPUT_AREA;
-        break;
-    case ActiveComponent::CANCEL_BUTTON:
-        activeComponent = ActiveComponent::OK_BUTTON;
-        break;
+        // @ Input; Send event to input item
+        ((NumberInput *)items[curInput])->onButtonLeft();
+    }
+    else if (curInput == 1)
+    {
+        // @ OK; move to last input item
+        curInput = 0;
+        ((NumberInput *)items[curInput])->active = true;
+    }
+    else if (curInput == 2)
+    {
+        // @ Cancel; Move to OK
+        curInput--;
+    }
+    onDisplay();
+}
+
+void NumberInputItem::onButtonRight()
+{
+    Log.traceln("NumberInputItem::onButtonRight: curInput=%d", curInput);
+
+    if (curInput == 0)
+    {
+        // @ Input; Send event to input item
+        ((NumberInput *)items[curInput])->onButtonRight();
+    }
+    else if (curInput == 1)
+    {
+        // @ OK; move to cancel
+        curInput++; // Move to canel
+    }
+    else if (curInput == 2)
+    {
+        // @ Cancel; move to first item
+        curInput = 0;
+        ((NumberInput *)items[curInput])->active = true;
+        ((NumberInput *)items[curInput])->curDigit = ((NumberInput *)items[curInput])->numDigits - 1;
     }
     onDisplay();
 }
 
 void NumberInputItem::onButtonPush()
 {
-    switch (activeComponent)
+    Log.traceln("NumberInputItem::onButtonPush: curInput=%d", curInput);
+
+    if (curInput == 0)
     {
-    case ActiveComponent::INPUT_AREA:
-        activeComponent = ActiveComponent::OK_BUTTON;
+        // @ Input
+        ((NumberInput *)items[curInput])->onButtonPush();
+        curInput=1; // Advance to OK
         onDisplay();
-        break;
-    case ActiveComponent::OK_BUTTON:
-        *value = getValue();
-        Log.traceln("NumberInputItem.onEvent - value=%i, d[1]=%d, d[0]=%d", *value, inputBuff[1], inputBuff[0]);
-
-        // Save value and pop us off the menu
-        menuManager.pop();
-        // display the currnet top of the queue
-        menuManager.display();
-        break;
-    case ActiveComponent::CANCEL_BUTTON:
-        setValue();
-        activeComponent = ActiveComponent::INPUT_AREA;
-        // Save value and pop us off the menu
-        menuManager.pop();
-        // display the currnet top of the queue
-        menuManager.display();
-        break;
     }
-}
-
-uint32_t NumberInputItem::getValue()
-{
-    uint32_t v = 0;
-    uint8_t base = 1;
-    // Set value based on input
-    for (uint8_t i = 0; i < numDigits; i++)
+    else if (curInput == 1)
     {
-        v += inputBuff[i] * base;
-        base *= 10;
+        // @ OK; Save values
+        curInput = 0;
+        ((NumberInput *)items[curInput])->setValue();
+        ((NumberInput *)items[curInput])->active = true;
+
+        // Save value and pop us off the menu
+        menuManager.pop();
+        // display the currnet top of the queue
+        menuManager.display();
     }
-    return v;
+    else if (curInput == 2)
+    {
+        // @ Cancel; reset input value to original
+        curInput = 0;
+        ((NumberInput *)items[curInput])->initializeValue();
+        ((NumberInput *)items[curInput])->active = true;
+
+        // Save value and pop us off the menu
+        menuManager.pop();
+        // display the currnet top of the queue
+        menuManager.display();
+    }
 }
-
-void NumberInputItem::setValue()
-{
-        for (uint8_t i = 0; i < numDigits; i++)
-        {
-            uint8_t base = 1;
-            this->inputBuff[i] = (*value / base) % 10;
-            base *= 10;
-        }
-}
-
-
-
-// void NumberInputItem::onEvent(ButtonEvent be)
-// {
-//     uint32_t v = 0;
-//     uint8_t base = 1;
-//     Log.traceln("NumberInputItem.onEvent - %s", ++be);
-//     Log.traceln("NumberInputItem.onEvent - curDigit=%d, numDigits=%d", curDigit, numDigits);
-//     Log.traceln("NumberInputItem.onEvent - value=%i, d[1]=%d, d[0]=%d", *value, inputBuff[1], inputBuff[0]);
-
-//     switch (be)
-//     {
-//     case ButtonEvent::PUSH:
-//         // Set value based on input
-//         for (uint8_t i = 0; i < numDigits; i++)
-//         {
-//             v += inputBuff[i] * base;
-//             base *= 10;
-//         }
-//         *value = v;
-//         Log.traceln("NumberInputItem.onEvent - value=%i, d[1]=%d, d[0]=%d", *value, inputBuff[1], inputBuff[0]);
-
-//         // Save value and pop us off the menu
-//         menuManager.pop();
-//         // display the currnet top of the queue
-//         menuManager.display();
-//         return;
-//         break;
-//     case ButtonEvent::LEFT:
-//         if (curDigit == (numDigits - 1))
-//         {
-//             curDigit = 0;
-//         }
-//         else
-//         {
-//             curDigit = curDigit + 1;
-//         }
-//         break;
-//     case ButtonEvent::RIGHT:
-//         if (curDigit == 0)
-//         {
-//             curDigit = numDigits - 1;
-//         }
-//         else
-//         {
-//             curDigit = curDigit - 1;
-//         }
-//         break;
-//     case ButtonEvent::DOWN:
-//         if (inputBuff[curDigit] == 0)
-//         {
-//             inputBuff[curDigit] = 9;
-//         }
-//         else
-//         {
-//             inputBuff[curDigit] = (inputBuff[curDigit] - 1);
-//         }
-//         break;
-//     case ButtonEvent::UP:
-//         if (inputBuff[curDigit] == 9)
-//         {
-//             inputBuff[curDigit] = 0;
-//         }
-//         else
-//         {
-//             inputBuff[curDigit] = (inputBuff[curDigit] + 1);
-//         }
-//         break;
-//     }
-//     Log.traceln("NumberInputItem.onEvent - curDigit=%d, numDigits=%d", curDigit, numDigits);
-//     Log.traceln("NumberInputItem.onEvent - value=%i, d[1]=%d, d[0]=%d", *value, inputBuff[1], inputBuff[0]);
-
-//     onDisplay();
-
-//     Log.traceln("NumberInputItem.onEvent - END");
-// }

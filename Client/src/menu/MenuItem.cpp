@@ -4,21 +4,23 @@
  *  Created on: Dec  31, 2023
  *      Author: cyberreefguru
  */
-#include "MenuManager.h"
+#include "MenuManager.h" // TODO: fix this
 
 MenuItem::MenuItem()
 {
+}
+
+MenuItem::MenuItem(menu_label_t label, menu_title_t title, menu_prompt_t prompt)
+{
+    this->menuTitle = title;
+    this->menuLabel = label;
+    this->menuPrompt = prompt;
 }
 
 MenuItem::~MenuItem()
 {
 }
 
-MenuItem::MenuItem(const char *title, const char *label)
-{
-    this->title = title;
-    this->label = label;
-}
 
 void MenuItem::onEvent(ButtonEvent be)
 {

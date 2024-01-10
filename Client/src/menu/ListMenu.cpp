@@ -6,14 +6,15 @@
  */
 #include "ListMenu.h"
 
-ListMenu::ListMenu(const char *title, const char *label, MenuItem **items, uint8_t numItems)
+ListMenu::ListMenu(menu_label_t label, menu_title_t title, MenuItem **items, uint8_t numItems)
 {
-    this->title = title;
-    this->label = label;
+    this->menuLabel = label;
+    this->menuTitle = title;
+    this->menuPrompt = "> ";
     this->items = items;
     this->numItems = numItems;
 
-    windowSize = menuManager.getScreenMaxY(); // subtract for menu name
+    windowSize = menuManager.getScreenMaxY()-1; // subtract for menu name
     windowStart = 0;
     activeIndex = windowStart;
 }
@@ -34,10 +35,10 @@ void ListMenu::onDisplay()
 
     displayManager.clear();
     displayManager.setCursor(0, 0);
-    displayManager.println(title);
+    displayManager.println(menuTitle);
     uint8_t windowEnd = windowStart + windowSize - 1;
     // Log.traceln("start=%d, end=%d, index=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
-    for (uint8_t i = windowStart; i < windowEnd; i++)
+    for (uint8_t i = windowStart; i <= windowEnd; i++)
     {
         MenuItem *item = items[i];
         // Log.traceln("ListMenu::onDisplay - item.title='%s', item.label='%s'", item->getTitle(), item->getLabel());
@@ -50,7 +51,7 @@ void ListMenu::onDisplay()
         {
             displayManager.setTextColor(WHITE);
         }
-        displayManager.println(item->getLabel());
+        displayManager.println(item->getMenuLabel());
         displayManager.setTextColor(WHITE);
     }
     displayManager.setRefresh(true);
@@ -88,41 +89,6 @@ void ListMenu::onButtonPush()
     items[activeIndex]->onDisplay();
 }
 
-
-
-
-
-// void ListMenu::onEvent(ButtonEvent be)
-// {
-//     Log.traceln("ListMenu::onEvent - %s", ++be);
-//     switch (be)
-//     {
-//     case ButtonEvent::UP:
-//         break;
-//     case ButtonEvent::DOWN:
-//         break;
-//     case ButtonEvent::LEFT:
-//         //active = true;
-//         break;
-//     case ButtonEvent::RIGHT:
-//     case ButtonEvent::PUSH:
-//         if (items == nullptr || numItems == 0)
-//         {
-//             Log.warningln("ListMenu::onEvent - No children to push!");
-//         }
-//         else
-//         {
-//             onPush(items[activeIndex]);
-//             // menuManager.push(items[activeIndex]);
-//             // items[activeIndex]->onDisplay();
-//         }
-//         break;
-//     default:
-//         break;
-//     }
-// }
-
-
 MenuItem *ListMenu::getActive()
 {
     return items[activeIndex];
@@ -135,7 +101,7 @@ uint8_t ListMenu::getActiveIndex()
 
 void ListMenu::activateNext()
 {
-    uint8_t windowEnd = windowStart + windowSize - 1;
+    uint8_t windowEnd = windowStart + windowSize;
     Log.traceln("ListMenu::activateNext - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
     if (activeIndex == (windowEnd - 1))
     {
@@ -166,7 +132,7 @@ void ListMenu::activateNext()
 
 void ListMenu::activatePrevious()
 {
-    uint8_t windowEnd = windowStart + windowSize - 1;
+    uint8_t windowEnd = windowStart + windowSize;
     Log.traceln("ListMenu::activatePrevious - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
     if (activeIndex == windowStart)
     {
@@ -187,7 +153,7 @@ void ListMenu::activatePrevious()
             {
                 // Window is < number items
                 // Compute starting point
-                windowStart = numItems - windowSize + 1;
+                windowStart = numItems - windowSize;
                 activeIndex = numItems - 1;
             }
         }

@@ -10,8 +10,8 @@
 ColorMenuItem::ColorMenuItem(const MenuColor *color)
 {
     this->color = color;
-    this->title = color->name;
-    this->label = color->name;
+    this->menuTitle = (menu_title_t)color->name;
+    this->menuLabel = (menu_label_t)color->name;
 }
 
 ColorMenuItem::~ColorMenuItem()

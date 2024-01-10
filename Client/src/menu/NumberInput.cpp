@@ -1,15 +1,17 @@
 /*
- * MultiNumberInput.cpp
+ * NumberInput.cpp
  *
  *  Created on: Jan 8, 2024
  *      Author: cyberreefguru
  */
 #include "NumberInput.h"
 
-NumberInput::NumberInput(const char *title, uint32_t *value, uint8_t numDigits)
+NumberInput::NumberInput(menu_label_t label, menu_title_t title, menu_prompt_t prompt, uint32_t *value, uint8_t numDigits)
 {
-    this->title = title;
-    this->label = title;
+    this->menuLabel = label;
+    this->menuTitle = title;
+    this->menuPrompt = prompt;
+
     this->value = value;
     this->numDigits = numDigits;
     this->curDigit = 0;
@@ -25,15 +27,9 @@ NumberInput::~NumberInput()
 void NumberInput::onDisplay()
 {
     Log.traceln("NumberInput::onDisplay - BEGIN");
-    if (title == nullptr)
-    {
-        Log.errorln("NumberInput::onDisplay - title is null!");
-        return;
-    }
-
     Log.traceln("NumberInput::onDisplay: value=%d", *value);
 
-    displayManager.print(title);
+    displayManager.print(menuPrompt);
     for (uint8_t i = 0; i < numDigits; i++)
     {
         uint8_t index = (numDigits - 1) - i;
@@ -57,16 +53,13 @@ void NumberInput::onDisplay()
 void NumberInput::onButtonUp()
 {
     Log.traceln("NumberInput::onButtonUp - curDigit=%d, v=%d, a=%d", curDigit, inputBuff[curDigit], active);
-    if(active)
+    if (inputBuff[curDigit] == 9)
     {
-        if (inputBuff[curDigit] == 9)
-        {
-            inputBuff[curDigit] = 0;
-        }
-        else
-        {
-            inputBuff[curDigit] = (inputBuff[curDigit] + 1);
-        }
+        inputBuff[curDigit] = 0;
+    }
+    else
+    {
+        inputBuff[curDigit] = (inputBuff[curDigit] + 1);
     }
     Log.traceln("NumberInput::onButtonUp - curDigit=%d, v=%d, a=%d", curDigit, inputBuff[curDigit], active);
     onDisplay();
@@ -75,16 +68,13 @@ void NumberInput::onButtonUp()
 void NumberInput::onButtonDown()
 {
     Log.traceln("NumberInput::onButtonDown - curDigit=%d, v=%d, a=%d", curDigit, inputBuff[curDigit], active);
-    if( active )
+    if (inputBuff[curDigit] == 0)
     {
-        if (inputBuff[curDigit] == 0)
-        {
-            inputBuff[curDigit] = 9;
-        }
-        else
-        {
-            inputBuff[curDigit] = (inputBuff[curDigit] - 1);
-        }
+        inputBuff[curDigit] = 9;
+    }
+    else
+    {
+        inputBuff[curDigit] = (inputBuff[curDigit] - 1);
     }
     Log.traceln("NumberInput::onButtonDown - curDigit=%d, v=%d, a=%d", curDigit, inputBuff[curDigit], active);
     onDisplay();
@@ -93,19 +83,14 @@ void NumberInput::onButtonDown()
 void NumberInput::onButtonLeft()
 {
     Log.traceln("NumberInput::onButtonLeft - curDigit=%d, v=%d, a=%d", curDigit, inputBuff[curDigit], active);
-   // bool b = false;
-    if( active )
+    if (curDigit == (numDigits - 1))
     {
-        if (curDigit == (numDigits - 1))
-        {
-            curDigit = 0;
-            active = false;
-        }
-        else
-        {
-            curDigit++;
-        }
-
+        curDigit = 0;
+        // active = false;
+    }
+    else
+    {
+        curDigit++;
     }
     Log.traceln("NumberInput::onButtonLeft - curDigit=%d, v=%d, a=%d", curDigit, inputBuff[curDigit], active);
     onDisplay();
@@ -115,23 +100,19 @@ void NumberInput::onButtonLeft()
 void NumberInput::onButtonRight()
 {
     Log.traceln("NumberInput::onButtonRight - curDigit=%d, v=%d, a=%d", curDigit, inputBuff[curDigit], active);
-    // bool b = false;
-    if( active )
+    if (curDigit == 0)
     {
-        if (curDigit == 0)
-        {
-            active = false;
-        }
-        else
-        {
-            curDigit--;
-        }
+        curDigit = numDigits-1;
+        // active = false;
+    }
+    else
+    {
+        curDigit--;
     }
     Log.traceln("NumberInput::onButtonRight - curDigit=%d, v=%d, a=%d", curDigit, inputBuff[curDigit], active);
     onDisplay();
     // return b;
 }
-
 
 void NumberInput::onButtonPush()
 {

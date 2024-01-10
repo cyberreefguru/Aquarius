@@ -7,31 +7,38 @@
 
 #include "SimpleMenuItem.h"
 
-SimpleMenuItem::SimpleMenuItem(const char *title)
-{
-    this->title = title;
-    this->label = title;
-}
-
-SimpleMenuItem::SimpleMenuItem(const char *title, const char *label)
-{
-    this->title = title;
-    this->label = label;
-}
-
 SimpleMenuItem::~SimpleMenuItem()
 {
+    this->menuTitle = "";
+    this->menuLabel = menuTitle;
+    this->menuPrompt = menuTitle;
 }
+
+SimpleMenuItem::SimpleMenuItem(menu_title_t title)
+{
+    this->menuTitle = title;
+    this->menuLabel = menuTitle;
+    this->menuPrompt = "";
+
+}
+
+SimpleMenuItem::SimpleMenuItem(menu_label_t label, menu_title_t title, menu_prompt_t prompt)
+{
+    this->menuTitle = title;
+    this->menuLabel = label;
+    this->menuPrompt = prompt;
+}
+
 
 void SimpleMenuItem::onDisplay()
 {
     Log.traceln("SimpleMenuItem::onDisplay - BEGIN");
-    if (label != nullptr)
+    if (menuLabel != nullptr)
     {
         displayManager.clear();
         displayManager.setCursor(0, 0);
         displayManager.setTextColor(WHITE);
-        displayManager.println(label);
+        displayManager.println(menuLabel);
         displayManager.setTextColor(WHITE);
         displayManager.setRefresh(true);
     }

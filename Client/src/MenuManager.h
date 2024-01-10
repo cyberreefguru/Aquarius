@@ -214,9 +214,6 @@ protected:
     ButtonEvent currentEvent = ButtonEvent::DOWN;
     ButtonAction currentAction = ButtonAction::PRESS;
     bool changed = false;
-    uint32_t vNodeId = 0;
-    uint32_t vSensor = 0;
-    uint32_t vBrightness = 0;
 };
 
 // end of add your includes here

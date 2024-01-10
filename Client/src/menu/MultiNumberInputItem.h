@@ -20,7 +20,7 @@ class MultiNumberInputItem : public MenuItem
 {
 public:
     MultiNumberInputItem(){}
-    MultiNumberInputItem(const char *title, const char *label, MenuItem **items, uint8_t numItems);
+    MultiNumberInputItem(menu_label_t label, menu_title_t title, MenuItem **items, uint8_t numItems);
     virtual ~MultiNumberInputItem();
 
     virtual void onDisplay() override;

@@ -19,8 +19,9 @@
 class SimpleMenuItem : public MenuItem
 {
 public:
-    SimpleMenuItem(const char *title);
-    SimpleMenuItem(const char *title, const char* label);
+    SimpleMenuItem(menu_title_t title);
+    SimpleMenuItem(menu_label_t label, menu_title_t title);
+    SimpleMenuItem(menu_label_t label, menu_title_t title, menu_prompt_t prompt);
     virtual ~SimpleMenuItem();
     virtual void onDisplay() override;
     void onButtonPush() override;

@@ -11,48 +11,49 @@ MenuManager menuManager;
 SimpleStack<MenuItem *> menus(5); // max 5 levels
 
 uint32_t vServoStart = 0;
-uint32_t vServoEnd = 0;
+uint32_t vServoEnd = 180;
+uint32_t vNodeId = 0;
+uint32_t vSensor = 128;
+uint32_t vBrightness = 255;
 
 
-ColorListMenu colorActive = ColorListMenu("Set Active Color", "> Active");
-ColorListMenu colorInact = ColorListMenu("Set Inactive Color", "> Inactive");
-ColorListMenu colorInit = ColorListMenu("Set Initialize Color", "> Initialize");
-ColorListMenu colorConn = ColorListMenu("Set Connect Color", "> Connect");
-ColorListMenu colorConfig = ColorListMenu("Set Configure Color", "> Configure");
-ColorListMenu colorErr = ColorListMenu("Set Error Color", "> Error");
-ColorListMenu colorRec = ColorListMenu("Set Receive Color", "> Receive");
-ColorListMenu colorProc = ColorListMenu("Set Processing Color", "> Processing");
-ColorListMenu colorSend = ColorListMenu("Set Send Color", "> Send");
-ColorListMenu colorWait = ColorListMenu("Set Wait Color", "> Wait");
+ColorListMenu colorActive = ColorListMenu("> Active", "Active Color:", ">");
+ColorListMenu colorInact = ColorListMenu("> Inactive", "Inactive Color:", ">");
+ColorListMenu colorInit = ColorListMenu("> Initialize", "Initialize Color:", ">");
+ColorListMenu colorConn = ColorListMenu("> Connect", "Connect Color:", ">");
+ColorListMenu colorConfig = ColorListMenu("> Configure", "Configure Color:", ">");
+ColorListMenu colorErr = ColorListMenu("> Error", "Error Color:", ">");
+ColorListMenu colorRec = ColorListMenu("> Receive", "Receive Color:", ">");
+ColorListMenu colorProc = ColorListMenu("> Processing", "Processing Color:", ">");
+ColorListMenu colorSend = ColorListMenu("> Send", "Send Color:", ">");
+ColorListMenu colorWait = ColorListMenu("> Wait", "Wait Color:", ">");
 
 MenuItem *cmItems[10] = {&colorInit, &colorConn, &colorConfig, &colorWait,
                         &colorRec, &colorProc, &colorSend,
                         &colorActive, &colorInact, &colorErr};
 
 
-ListMenu selColor = ListMenu("Colors", "> Colors", cmItems, 10);
+ListMenu selColor = ListMenu("> Colors", "Colors:", cmItems, 10);
 
-NumberInputItem ni = NumberInputItem("Enter Node ID:", "> Node ID");
+NumberInputItem ni = NumberInputItem("> Node ID", "Node ID:", "> ", &vNodeId, 2);
 SimpleMenuItem targets = SimpleMenuItem("> Targets");
 
-NumberInputItem sensor = NumberInputItem("Enter Sensor Threshhold:", "> Sensor Threshold");
-// NumberInputItem servoStart = NumberInputItem("Enter Servo Start:", "> Servo Start");
-// NumberInputItem servoEnd = NumberInputItem("Enter Servo End:", "> Servo End");
-BrightnessInputItem brightness = BrightnessInputItem("Enter Brightness:", "> Brightness");
+NumberInputItem sensor = NumberInputItem("> Sensor Threshold", "Sensor Threshhold:", ">", &vSensor, 3);
+NumberInputItem brightness = NumberInputItem("> Brightness", "Brightness:", "> ", &vSensor, 3);
 
 ExitMenuItem mexit = ExitMenuItem();
 
-NumberInput servoStart = NumberInput("Start> ", &vServoStart, 3);
-NumberInput servoEnd = NumberInput("End> ", &vServoEnd, 3);
+NumberInput servoStart = NumberInput("Start> ", "Start: ", "Start> ", &vServoStart, 3);
+NumberInput servoEnd = NumberInput("End> ", "End: ",       "End  > ", &vServoEnd, 3);
 
 MenuItem *si[2] = {&servoStart, &servoEnd };
 
-MultiNumberInputItem servoMenu = MultiNumberInputItem("Servo Values:", "> Servo Settings", si, 2);
+MultiNumberInputItem servoMenu = MultiNumberInputItem("> Servo Settings", "Servo Values:", si, 2);
 
 
 MenuItem *mmItems[] = {&ni, &targets, &selColor, &brightness,
                         &sensor, &servoMenu, &mexit};
-ListMenu mainMenu = ListMenu("Main Menu", "> Main Menu", mmItems, 7);
+ListMenu mainMenu = ListMenu("> Main Menu", "Main Menu:", mmItems, 7);
 
 MenuManager::MenuManager()
 {
@@ -98,13 +99,13 @@ void MenuManager::initialize()
 
     // mainMenu.getChildren()[0]->setActive(true);
 
-    ni.initialize(&vNodeId, 2);
+    // ni.initialize(&vNodeId, 2);
     // servoStart.initialize(&vServoStart, 3);
     // servoEnd.initialize(&vServoEnd, 3);
-    sensor.initialize(&vSensor, 3);
+    // sensor.initialize(&vSensor, 3);
 
-    vBrightness = 255;
-    brightness.initialize(&vBrightness, 3);
+    // vBrightness = 255;
+    // brightness.initialize(&vBrightness, 3);
 
     menus.push(&mainMenu);
     Log.infoln("menu manager initialization complete");
@@ -170,7 +171,7 @@ void MenuManager::push(MenuItem *item)
 {
     if (item != nullptr)
     {
-        Log.traceln("Push: %s", item->getTitle());
+        Log.traceln("Push: %s", item->getMenuTitle());
         //item->setActive(true);
         menus.push(item);
     }
@@ -196,7 +197,7 @@ void MenuManager::pop()
     menus.pop(&item);
     if (&item != nullptr)
     {
-        Log.traceln("Pop: %s", item->getTitle());
+        Log.traceln("Pop: %s", item->getMenuTitle());
     }
     else
     {

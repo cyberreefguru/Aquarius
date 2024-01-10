@@ -9,8 +9,9 @@
 
 ExitMenuItem::ExitMenuItem()
 {
-    this->title = "Exit Menu";
-    this->label = "> Exit";
+    this->menuTitle = "Exit Menu";
+    this->menuLabel = "> Exit";
+    this->menuPrompt = menuLabel;
     this->items = nullptr;
     this->numItems = 0;
 }

@@ -19,19 +19,28 @@
 #include "ActionEventManager.h"
 #include "InputEventManager.h"
 
+typedef const char* menu_title_t;
+typedef const char* menu_label_t;
+typedef const char* menu_prompt_t;
+
+
 class MenuItem
 {
 public:
-    MenuItem(const char *title, const char *label);
+    MenuItem(menu_label_t label, menu_title_t title, menu_prompt_t prompt);
     virtual ~MenuItem();
 
-    virtual const char* getTitle()
+    virtual const char* getMenuLabel()
     {
-        return title;
+        return menuLabel;
     }
-    virtual const char* getLabel()
+    virtual const char* getMenuTitle()
     {
-        return label;
+        return menuTitle;
+    }
+    virtual const char* getMenuPrompt()
+    {
+        return menuPrompt;
     }
     virtual bool hasChildren()
     {
@@ -55,8 +64,9 @@ public:
 
 protected:
     MenuItem();
-    const char *title;
-    const char *label;
+    const char *menuLabel; // shown when in a list
+    const char *menuTitle; // shown when onDisplay called
+    const char *menuPrompt; // shown when onDisplay called
     uint8_t numItems = 0; // TODO - move to ListMenuItem or something
     MenuItem **items = nullptr; // TODO - move to ListMenuItem or something
 };

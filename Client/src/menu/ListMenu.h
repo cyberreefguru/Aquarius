@@ -19,8 +19,8 @@
 class ListMenu : public MenuItem
 {
 public:
-    ListMenu(){}
-    ListMenu(const char *title, const char *label, MenuItem** items, uint8_t numItems);
+    ListMenu() {}
+    ListMenu(menu_label_t label, menu_title_t title, MenuItem **items, uint8_t numItems);
     virtual ~ListMenu();
     virtual void onDisplay() override;
     virtual void onButtonUp() override;
@@ -38,21 +38,20 @@ protected:
     uint8_t getActiveIndex();
     void activateNext();
     void activatePrevious();
-private:
 
+private:
 };
 
 class ColorListMenu : public ListMenu
 {
 public:
-    ColorListMenu(const char *title, const char *label);
+    ColorListMenu(menu_label_t label, menu_title_t title, menu_prompt_t prompt);
     virtual ~ColorListMenu();
     virtual void onDisplay() override;
-   virtual void onButtonPush() override;
+    virtual void onButtonPush() override;
 
-//std::bind(&MainMenu::save, this)
-//onActivateCallback(item, b);
-
+    // std::bind(&MainMenu::save, this)
+    // onActivateCallback(item, b);
 };
 
 #endif
