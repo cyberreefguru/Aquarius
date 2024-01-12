@@ -18,7 +18,7 @@ class NumberInput : public MenuItem
 public:
     NumberInput() {}
     // NumberInput(menu_title_t title, uint32_t *value, uint8_t numDigits);
-    NumberInput(menu_label_t label, menu_title_t title, menu_prompt_t prompt, uint32_t *value, uint8_t numDigits);
+    NumberInput(menu_label_t label, menu_title_t title, menu_prompt_t prompt, uint32_t *value, uint8_t numDigits, uint8_t decimal=0);
     virtual ~NumberInput();
 
     void initializeValue();
@@ -34,6 +34,7 @@ public:
     uint32_t *value;
     uint8_t curDigit;
     uint8_t numDigits;
+    uint8_t decimal;
     uint8_t *inputBuff = nullptr;
     bool active = false;
 };

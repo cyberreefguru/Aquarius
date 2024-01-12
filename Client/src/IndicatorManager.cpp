@@ -16,14 +16,8 @@ IndicatorManager::IndicatorManager() {}
 void IndicatorManager::initialize()
 {
     pixels.begin();
-    pixels.setBrightness(25);
-    // setIndicators(Color::Red);
-    // delay(250);
-    // setIndicators(Color::Green);
-    // delay(250);
-    // setIndicators(Color::Blue);
-    // delay(250);
-    setIndicators(Color::Orange, Color::Black);
+    pixels.setBrightness(25); // TODO: Get from preferences
+    setIndicators(DEFAULT_COLOR_CONFIGURE, DEFAULT_COLOR_DEACTIVE);
 
     actionEventManager.addEventHandler([](void *arg, esp_event_base_t base, int32_t id, void *data)
                                  { indicatorManager.eventHandler(arg, base, id, data); });
@@ -50,50 +44,50 @@ void IndicatorManager::eventHandler(void *arg, esp_event_base_t base, int32_t id
     switch (event)
     {
     case ActionEvent::INITIALIZING:
-        setStatusIndicator(Color::Orange);
+        setStatusIndicator(prefManager.getInitializeColor());
         break;
     case ActionEvent::MSG_RECEIVED:
         flashMode = Mode::Flash;
-        flashRate = 250;
-        setStatusIndicator(Color::Blue);
+        flashRate = 200;
+        setStatusIndicator(prefManager.getReceiveColor());
         break;
     case ActionEvent::WAITING:
         flashMode = Mode::HeartBeat;
-        flashRate = 150;
-        setStatusIndicator(Color::Green);
+        flashRate = 125;
+        setStatusIndicator(prefManager.getWaitColor());
         break;
     case ActionEvent::PROCESSING:
         flashMode = Mode::Flash;
-        flashRate = 250;
-        setStatusIndicator(Color::Blue);
+        flashRate = 200;
+        setStatusIndicator(prefManager.getProcessColor());
         break;
     case ActionEvent::WIFI_DOWN:
-        setStatusIndicator(Color::Magenta);
+        setStatusIndicator(prefManager.getWifiDownColor());
         break;
     case ActionEvent::WIFI_UP:
-        setStatusIndicator(Color::Blue);
+        setStatusIndicator(prefManager.getWifiUpColor());
         break;
     case ActionEvent::MQTT_DOWN:
-        setStatusIndicator(Color::Purple);
+        setStatusIndicator(prefManager.getMqttDownColor());
         break;
     case ActionEvent::MQTT_UP:
-        setStatusIndicator(Color::Blue);
+        setStatusIndicator(prefManager.getMqttUpColor());
         break;
     case ActionEvent::ACTIVE:
-        setSystemIndicator(Color::Green);
+        setSystemIndicator(prefManager.getActiveColor());
         break;
     case ActionEvent::DEACTIVE:
-        setSystemIndicator(Color::Black);
+        setSystemIndicator(prefManager.getDeactiveColor());
         break;
     case ActionEvent::CONFIGURE:
         flashMode = Mode::Flash;
-        flashRate = 250;
-        setStatusIndicator(Color::Cyan);
+        flashRate = 200;
+        setStatusIndicator(prefManager.getConfigureColor());
         break;
     case ActionEvent::ERROR:
         flashMode = Mode::Flash;
         flashRate = 100;
-        setSystemIndicator(Color::Red);
+        setSystemIndicator(prefManager.getErrorColor());
         break;
     default:
         break;

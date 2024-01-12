@@ -8,6 +8,7 @@
 
 #include <ArduinoLog.h>
 #include <Preferences.h>
+#include "menu/MenuColor.h"
 
 #define NAMESPACE "aquarius"
 
@@ -17,42 +18,59 @@
 #define KEY_NODE_ID "id"
 // #define KEY_DELAY "delay"
 
-#define KEY_HOST_NAME "wifi_hostname"
-#define KEY_WIFI_SSID "wifi_ssid"
-#define KEY_WIFI_PASSWORD "wifi_password"
-#define KEY_WIFI_RETRIES "wifi_retries"
-#define KEY_WIFI_DELAY "wifi_delay"
-#define KEY_WIFI_TIMEOUT "wifi_timeout"
+#define KEY_HOST_NAME "wifi.hostname"
+#define KEY_WIFI_SSID "wifi.ssid"
+#define KEY_WIFI_PASSWORD "wifi.password"
+#define KEY_WIFI_RETRIES "wifi.retries"
+#define KEY_WIFI_DELAY "wifi.delay"
+#define KEY_WIFI_TIMEOUT "wifi.timeout"
 
-#define KEY_MQTT_SERVER "mqtt_server"
-#define KEY_MQTT_PORT "mqtt_port"
-#define KEY_MQTT_USER "mqtt_user"
-#define KEY_MQTT_PASSWORD "mqtt_pass"
-#define KEY_MQTT_RETRIES "mqtt_retries"
-#define KEY_MQTT_DELAY "mqtt_delay"
-#define KEY_MQTT_TIMEOUT "mqtt_timeout"
+#define KEY_MQTT_SERVER "mqtt.server"
+#define KEY_MQTT_PORT "mqtt.port"
+#define KEY_MQTT_USER "mqtt.user"
+#define KEY_MQTT_PASSWORD "mqtt.pass"
+#define KEY_MQTT_RETRIES "mqtt.retries"
+#define KEY_MQTT_DELAY "mqtt.delay"
+#define KEY_MQTT_TIMEOUT "mqtt.timeout"
 
-#define KEY_COLOR_INITIALIZE "color_initialize"
-#define KEY_COLOR_DEACTIVE "color_deactive"
-#define KEY_COLOR_ACTTIVE "color_active"
-#define KEY_COLOR_SEND "color_send"
-#define KEY_COLOR_PROCESS "color_process"
-#define KEY_COLOR_RECEIVE "color_receive"
-#define KEY_COLOR_WAIT "color_wait"
-#define KEY_COLOR_CONNECT "color_connect"
-#define KEY_COLOR_ERROR "color_error"
+#define KEY_COLOR_INITIALIZE "c.init"
+#define KEY_COLOR_CONFIGURE "c.config"
+#define KEY_COLOR_CONNECT "c.connect"
+#define KEY_COLOR_RECEIVE "c.receive"
+#define KEY_COLOR_PROCESS "c.process"
+#define KEY_COLOR_SEND "c.send"
+#define KEY_COLOR_WAIT "c.wait"
 
-#define KEY_SERVO_START "servo_start"
-#define KEY_SERVO_STOP "servo_stop"
+#define KEY_COLOR_ERROR "c.error"
+#define KEY_COLOR_WIFI_DOWN "c.w.down"
+#define KEY_COLOR_WIFI_UP "c.w.up"
+#define KEY_COLOR_MQTT_DOWN "c.m.down"
+#define KEY_COLOR_MQTT_UP "c.m.up"
 
-#define KEY_SENSOR_THRESHOLD "sensor_threshold"
+#define KEY_COLOR_ACTIVE "color.active"
+#define KEY_COLOR_DEACTIVE "color.deactive"
 
-#define KEY_DISPLAY_SIZE "display_size"
+#define KEY_SERVO_START "s.start"
+#define KEY_SERVO_STOP "s.stop"
+
+#define KEY_SENSOR_THRESHOLD "s.t"
+
+#define KEY_TARGETS "ts"
+#define KEY_TARGET "t"
+#define KEY_TARGET_NODE_ID  "t.nid"
+#define KEY_TARGET_START_DELAY  "t.sd"
+#define KEY_TARGET_END_DELAY  "t.ed"
+
+#define KEY_DISPLAY_SIZE "d.s"
+
+#define KEY_BRIGHTNESS_SCREEN "b.s"
+#define KEY_BRIGHTNESS_LED "b.i"
+
 
 #define DEFAULT_NODE_ID 1
 #define DEFAULT_DELAY 500
 
-#define DEFAULT_HOST_NAME "aquarius 1"
+#define DEFAULT_HOST_NAME "aquarius"
 #define DEFAULT_WIFI_SSID "aquarius"
 #define DEFAULT_WIFI_PASSWORD "iamsecure"
 #define DEFAULT_WIFI_RETRIES 10
@@ -67,15 +85,22 @@
 #define DEFAULT_MQTT_DELAY 500
 #define DEFAULT_MQTT_TIMEOUT 10 * 1000
 
-#define DEFAULT_COLOR_INITIALIZE 0x0000F700
-#define DEFAULT_COLOR_DEACTIVE 0x00000000
-#define DEFAULT_COLOR_ACTTIVE 0x00C800C8
-#define DEFAULT_COLOR_SEND 0x0000FFFF
-#define DEFAULT_COLOR_PROCESS 0x0000FFFF
-#define DEFAULT_COLOR_RECEIVE 0x0000FFFF
-#define DEFAULT_COLOR_WAIT 0x000000FF
-#define DEFAULT_COLOR_CONNECT 0x000000FF
-#define DEFAULT_COLOR_ERROR 0x00FF0000
+#define DEFAULT_COLOR_INITIALIZE (uint32_t)colorOrange.value
+#define DEFAULT_COLOR_CONFIGURE (uint32_t)colorCyan.value
+#define DEFAULT_COLOR_SEND (uint32_t)colorBlue.value
+#define DEFAULT_COLOR_PROCESS (uint32_t)colorBlue.value
+#define DEFAULT_COLOR_RECEIVE (uint32_t)colorBlue.value
+#define DEFAULT_COLOR_CONNECT (uint32_t)colorBlue.value
+#define DEFAULT_COLOR_WAIT (uint32_t)colorGreen.value
+
+#define DEFAULT_COLOR_WIFI_DOWN (uint32_t)colorMagenta.value
+#define DEFAULT_COLOR_WIFI_UP (uint32_t)colorBlue.value
+#define DEFAULT_COLOR_MQTT_DOWN (uint32_t)colorPurple.value
+#define DEFAULT_COLOR_MQTT_UP (uint32_t)colorBlue.value
+#define DEFAULT_COLOR_ERROR (uint32_t)colorRed.value
+
+#define DEFAULT_COLOR_ACTIVE (uint32_t)colorGreen.value
+#define DEFAULT_COLOR_DEACTIVE (uint32_t)colorBlack.value
 
 #define DEFAULT_SERVO_START 0
 #define DEFAULT_SERVO_STOP 180
@@ -84,6 +109,8 @@
 
 #define DEFAULT_DISPLAY_SIZE DisplaySize::Regular
 
+#define DEFAULT_BRIGHTNESS_SCREEN 255
+#define DEFAULT_LED_BRIGHTNESS 25
 #define MAX_HOSTNAME 64
 #define MAX_SSID 32
 #define MAX_USER_ID 32
@@ -113,6 +140,7 @@ public:
     uint32_t getMqttTimeout();
 
     uint32_t getInitializeColor();
+    uint32_t getConfigureColor();
     uint32_t getDeactiveColor();
     uint32_t getActiveColor();
     uint32_t getSendColor();
@@ -121,6 +149,10 @@ public:
     uint32_t getWaitColor();
     uint32_t getConnectColor();
     uint32_t getErrorColor();
+    uint32_t getWifiDownColor();
+    uint32_t getWifiUpColor();
+    uint32_t getMqttDownColor();
+    uint32_t getMqttUpColor();
 
     uint8_t getServoStart();
     uint8_t getServoStop();
@@ -133,6 +165,7 @@ public:
     void set(char const *key, uint16_t v);
     void set(char const *key, uint32_t v);
     void set(char const *key, char *v, uint8_t len);
+    void set(char const *key, MenuColor color);
 
 private:
     boolean config = false;

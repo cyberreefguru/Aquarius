@@ -6,12 +6,13 @@
  */
 #include "ColorListMenu.h"
 
-ColorListMenu::ColorListMenu(menu_label_t label, menu_title_t title, menu_prompt_t prompt)
+ColorListMenu::ColorListMenu(menu_label_t label, menu_title_t title, menu_prompt_t prompt, const char* key)
 {
     this->menuLabel = label;
     this->menuTitle = title;
     this->menuPrompt = prompt;
     this->numItems = numMenuColors;
+    this->key = key;
 
     windowSize = menuManager.getScreenMaxY(); // subtract for menu name
     windowStart = 0;
@@ -53,7 +54,7 @@ void ColorListMenu::onButtonPush()
 {
     Log.traceln("Saving color: %s", menuColors[activeIndex]->name);
 
-    // TODO - save color
+    prefManager.set(key, (uint32_t)menuColors[activeIndex]->value);
     
     menuManager.pop();
     menuManager.display();

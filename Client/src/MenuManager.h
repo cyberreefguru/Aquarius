@@ -21,6 +21,7 @@
 #include "ActionEventManager.h"
 #include "InputEventManager.h"
 #include "Helper.h"
+#include "PreferenceManager.h"
 
 #include "menu/MenuColor.h"
 

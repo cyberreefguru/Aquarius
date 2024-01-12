@@ -17,16 +17,16 @@ uint32_t vSensor = 128;
 uint32_t vBrightness = 255;
 
 
-ColorListMenu colorActive = ColorListMenu("> Active", "Active Color:", ">");
-ColorListMenu colorInact = ColorListMenu("> Inactive", "Inactive Color:", ">");
-ColorListMenu colorInit = ColorListMenu("> Initialize", "Initialize Color:", ">");
-ColorListMenu colorConn = ColorListMenu("> Connect", "Connect Color:", ">");
-ColorListMenu colorConfig = ColorListMenu("> Configure", "Configure Color:", ">");
-ColorListMenu colorErr = ColorListMenu("> Error", "Error Color:", ">");
-ColorListMenu colorRec = ColorListMenu("> Receive", "Receive Color:", ">");
-ColorListMenu colorProc = ColorListMenu("> Processing", "Processing Color:", ">");
-ColorListMenu colorSend = ColorListMenu("> Send", "Send Color:", ">");
-ColorListMenu colorWait = ColorListMenu("> Wait", "Wait Color:", ">");
+ColorListMenu colorActive = ColorListMenu("> Active", "Active Color:", ">", KEY_COLOR_ACTIVE);
+ColorListMenu colorInact = ColorListMenu("> Deactive", "Deactive Color:", ">", KEY_COLOR_DEACTIVE);
+ColorListMenu colorInit = ColorListMenu("> Initialize", "Initialize Color:", ">", KEY_COLOR_INITIALIZE);
+ColorListMenu colorConn = ColorListMenu("> Connect", "Connect Color:", ">", KEY_COLOR_CONNECT);
+ColorListMenu colorConfig = ColorListMenu("> Configure", "Configure Color:", ">", KEY_COLOR_CONFIGURE);
+ColorListMenu colorErr = ColorListMenu("> Error", "Error Color:", ">", KEY_COLOR_ERROR);
+ColorListMenu colorRec = ColorListMenu("> Receive", "Receive Color:", ">", KEY_COLOR_RECEIVE);
+ColorListMenu colorProc = ColorListMenu("> Processing", "Processing Color:", ">", KEY_COLOR_PROCESS);
+ColorListMenu colorSend = ColorListMenu("> Send", "Send Color:", ">", KEY_COLOR_SEND);
+ColorListMenu colorWait = ColorListMenu("> Wait", "Wait Color:", ">", KEY_COLOR_WAIT);
 
 MenuItem *cmItems[10] = {&colorInit, &colorConn, &colorConfig, &colorWait,
                         &colorRec, &colorProc, &colorSend,

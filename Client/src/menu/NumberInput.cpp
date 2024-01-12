@@ -6,7 +6,7 @@
  */
 #include "NumberInput.h"
 
-NumberInput::NumberInput(menu_label_t label, menu_title_t title, menu_prompt_t prompt, uint32_t *value, uint8_t numDigits)
+NumberInput::NumberInput(menu_label_t label, menu_title_t title, menu_prompt_t prompt, uint32_t *value, uint8_t numDigits, uint8_t decimal)
 {
     this->menuLabel = label;
     this->menuTitle = title;
@@ -15,6 +15,7 @@ NumberInput::NumberInput(menu_label_t label, menu_title_t title, menu_prompt_t p
     this->value = value;
     this->numDigits = numDigits;
     this->curDigit = 0;
+    this->decimal = decimal;
     this->inputBuff = (uint8_t *)new uint8_t[numDigits];
     initializeValue();
 }
@@ -34,6 +35,10 @@ void NumberInput::onDisplay()
     {
         uint8_t index = (numDigits - 1) - i;
         Log.traceln("NumberInput::onDisplay: digit=%d, value=%d", index, inputBuff[index]);
+        if( decimal > 0 && i == decimal)
+        {
+            displayManager.print(".");
+        }
         if (index == curDigit && active)
         {
             displayManager.setTextColor(BLACK, WHITE);

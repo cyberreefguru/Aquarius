@@ -11,6 +11,7 @@
 #include <ArduinoLog.h>
 #include <Adafruit_NeoPixel.h>
 
+#include "PreferenceManager.h"
 #include "ActionEvent.h"
 #include "ActionEventManager.h"
 #include "StateManager.h"

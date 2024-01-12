@@ -33,6 +33,7 @@ protected:
     uint8_t activeIndex = 0;
     uint8_t windowSize = 0;
     uint8_t windowStart = 0;
+    const char* key = nullptr;
 
     MenuItem *getActive();
     uint8_t getActiveIndex();
@@ -45,7 +46,7 @@ private:
 class ColorListMenu : public ListMenu
 {
 public:
-    ColorListMenu(menu_label_t label, menu_title_t title, menu_prompt_t prompt);
+    ColorListMenu(menu_label_t label, menu_title_t title, menu_prompt_t prompt, const char* key);
     virtual ~ColorListMenu();
     virtual void onDisplay() override;
     virtual void onButtonPush() override;

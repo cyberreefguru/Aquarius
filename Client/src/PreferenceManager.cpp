@@ -92,18 +92,27 @@ void PreferenceManager::reset()
     preferences.putUChar(KEY_MQTT_RETRIES, DEFAULT_MQTT_RETRIES);
     preferences.putULong(KEY_MQTT_DELAY, DEFAULT_MQTT_DELAY);
     preferences.putULong(KEY_MQTT_TIMEOUT, DEFAULT_MQTT_TIMEOUT);
+
     preferences.putULong(KEY_COLOR_INITIALIZE, DEFAULT_COLOR_INITIALIZE);
-    preferences.putULong(KEY_COLOR_DEACTIVE, DEFAULT_COLOR_DEACTIVE);
-    preferences.putULong(KEY_COLOR_ACTTIVE, DEFAULT_COLOR_ACTTIVE);
-    preferences.putULong(KEY_COLOR_SEND, DEFAULT_COLOR_SEND);
-    preferences.putULong(KEY_COLOR_PROCESS, DEFAULT_COLOR_PROCESS);
-    preferences.putULong(KEY_COLOR_RECEIVE, DEFAULT_COLOR_RECEIVE);
-    preferences.putULong(KEY_COLOR_WAIT, DEFAULT_COLOR_WAIT);
+    preferences.putULong(KEY_COLOR_CONFIGURE, DEFAULT_COLOR_CONFIGURE);
     preferences.putULong(KEY_COLOR_CONNECT, DEFAULT_COLOR_CONNECT);
-    preferences.putULong(KEY_COLOR_ERROR, DEFAULT_COLOR_ERROR);
+    preferences.putULong(KEY_COLOR_RECEIVE, DEFAULT_COLOR_RECEIVE);
+    preferences.putULong(KEY_COLOR_PROCESS, DEFAULT_COLOR_PROCESS);
+    preferences.putULong(KEY_COLOR_SEND, DEFAULT_COLOR_SEND);
+    preferences.putULong(KEY_COLOR_WAIT, DEFAULT_COLOR_WAIT);
+
+    preferences.putULong(KEY_COLOR_WIFI_DOWN, DEFAULT_COLOR_WIFI_DOWN);
+    preferences.putULong(KEY_COLOR_WIFI_UP, DEFAULT_COLOR_WIFI_UP);
+    preferences.putULong(KEY_COLOR_MQTT_DOWN, DEFAULT_COLOR_MQTT_DOWN);
+    preferences.putULong(KEY_COLOR_MQTT_UP, DEFAULT_COLOR_MQTT_UP);
+
+    preferences.putULong(KEY_COLOR_ACTIVE, DEFAULT_COLOR_ACTIVE);
+    preferences.putULong(KEY_COLOR_DEACTIVE, DEFAULT_COLOR_DEACTIVE);
+
     preferences.putShort(KEY_SERVO_START, DEFAULT_SERVO_START);
     preferences.putShort(KEY_SERVO_STOP, DEFAULT_SERVO_STOP);
     preferences.putShort(KEY_SENSOR_THRESHOLD, DEFAULT_SENSOR_THRESHOLD);
+
     preferences.putUChar(KEY_DISPLAY_SIZE, DEFAULT_DISPLAY_SIZE);
 
 }
@@ -112,11 +121,6 @@ uint8_t PreferenceManager::getId()
 {
     return preferences.getUChar(KEY_NODE_ID, DEFAULT_NODE_ID);
 }
-
-// uint32_t PreferenceManager::getDelay()
-// {
-//     return preferences.getULong(KEY_DELAY, DEFAULT_DELAY);
-// }
 
 char * PreferenceManager::getWifiSsid()
 {
@@ -130,17 +134,17 @@ char* PreferenceManager::getWifiPassword()
 
 uint8_t PreferenceManager::getWifiRety()
 {
-    return preferences.getUChar(KEY_WIFI_RETRIES, 10);
+    return preferences.getUChar(KEY_WIFI_RETRIES, DEFAULT_WIFI_RETRIES);
 }
 
 uint32_t PreferenceManager::getWifiDelay()
 {
-    return preferences.getULong(KEY_WIFI_DELAY, 500);
+    return preferences.getULong(KEY_WIFI_DELAY, DEFAULT_WIFI_DELAY);
 }
 
 uint32_t PreferenceManager::getWifiTimeout()
 {
-    return preferences.getULong(KEY_WIFI_TIMEOUT, 10 * 1000);
+    return preferences.getULong(KEY_WIFI_TIMEOUT, DEFAULT_WIFI_TIMEOUT);
 }
 
 char* PreferenceManager::getMqttUserId()
@@ -154,71 +158,89 @@ char* PreferenceManager::getMqttPassword()
 }
 uint8_t PreferenceManager::getMqttRety()
 {
-    return preferences.getUChar(KEY_MQTT_RETRIES, 10);
+    return preferences.getUChar(KEY_MQTT_RETRIES, DEFAULT_MQTT_RETRIES);
 }
 uint32_t PreferenceManager::getMqttDelay()
 {
-    return preferences.getULong(KEY_MQTT_DELAY, 500);
+    return preferences.getULong(KEY_MQTT_DELAY, DEFAULT_MQTT_DELAY);
 }
 uint32_t PreferenceManager::getMqttTimeout()
 {
-    return preferences.getULong(KEY_MQTT_TIMEOUT, 10 * 1000);
+    return preferences.getULong(KEY_MQTT_TIMEOUT, DEFAULT_MQTT_TIMEOUT);
 }
 
 uint32_t PreferenceManager::getInitializeColor()
 {
-    return preferences.getULong(KEY_COLOR_INITIALIZE, 0x0000F700);
+    return preferences.getULong(KEY_COLOR_INITIALIZE, DEFAULT_COLOR_INITIALIZE);
+}
+uint32_t PreferenceManager::getConfigureColor()
+{
+    return preferences.getULong(KEY_COLOR_CONFIGURE, DEFAULT_COLOR_CONFIGURE);
 }
 uint32_t PreferenceManager::getDeactiveColor()
 {
-    return preferences.getULong(KEY_COLOR_DEACTIVE, 0x00000000);
+    return preferences.getULong(KEY_COLOR_DEACTIVE, DEFAULT_COLOR_DEACTIVE);
 }
 uint32_t PreferenceManager::getActiveColor()
 {
-    return preferences.getULong(KEY_COLOR_ACTTIVE, 0x00C800C8);
+    return preferences.getULong(KEY_COLOR_ACTIVE, DEFAULT_COLOR_ACTIVE);
 }
 uint32_t PreferenceManager::getSendColor()
 {
-    return preferences.getULong(KEY_COLOR_SEND, 0x0000FFFF);
+    return preferences.getULong(KEY_COLOR_SEND, DEFAULT_COLOR_SEND);
 }
 uint32_t PreferenceManager::getProcessColor()
 {
-    return preferences.getULong(KEY_COLOR_PROCESS, 0x0000FFFF);
+    return preferences.getULong(KEY_COLOR_PROCESS, DEFAULT_COLOR_PROCESS);
 }
 uint32_t PreferenceManager::getReceiveColor()
 {
-    return preferences.getULong(KEY_COLOR_RECEIVE, 0x0000FFFF);
+    return preferences.getULong(KEY_COLOR_RECEIVE, DEFAULT_COLOR_RECEIVE);
 }
 uint32_t PreferenceManager::getWaitColor()
 {
-    return preferences.getULong(KEY_COLOR_WAIT, 0x000000FF);
+    return preferences.getULong(KEY_COLOR_WAIT, DEFAULT_COLOR_WAIT);
 }
 uint32_t PreferenceManager::getConnectColor()
 {
-    return preferences.getULong(KEY_COLOR_CONNECT, 0x000000FF);
+    return preferences.getULong(KEY_COLOR_CONNECT, DEFAULT_COLOR_CONNECT);
 }
 uint32_t PreferenceManager::getErrorColor()
 {
-    return preferences.getULong(KEY_COLOR_ERROR, 0x00FF0000);
+    return preferences.getULong(KEY_COLOR_ERROR, DEFAULT_COLOR_ERROR);
+}
+uint32_t PreferenceManager::getWifiDownColor()
+{
+    return preferences.getULong(KEY_COLOR_WIFI_DOWN, DEFAULT_COLOR_WIFI_DOWN);
+}
+uint32_t PreferenceManager::getWifiUpColor()
+{
+    return preferences.getULong(KEY_COLOR_WIFI_UP, DEFAULT_COLOR_WIFI_UP);
+}
+uint32_t PreferenceManager::getMqttDownColor()
+{
+    return preferences.getULong(KEY_COLOR_MQTT_DOWN, DEFAULT_COLOR_MQTT_DOWN);
+}
+uint32_t PreferenceManager::getMqttUpColor()
+{
+    return preferences.getULong(KEY_COLOR_MQTT_UP, DEFAULT_COLOR_MQTT_UP);
 }
 uint8_t PreferenceManager::getServoStart()
 {
-    return preferences.getShort(KEY_SERVO_START, 0);
+    return preferences.getShort(KEY_SERVO_START, DEFAULT_SERVO_START);
 }
 uint8_t PreferenceManager::getServoStop()
 {
-    return preferences.getShort(KEY_SERVO_STOP, 180);
+    return preferences.getShort(KEY_SERVO_STOP, DEFAULT_SERVO_STOP);
 }
 uint8_t PreferenceManager::getSensorThreshold()
 {
-    return preferences.getShort(KEY_SENSOR_THRESHOLD, 128);
+    return preferences.getShort(KEY_SENSOR_THRESHOLD, DEFAULT_SENSOR_THRESHOLD);
 }
 uint8_t PreferenceManager::getDisplaySize()
 {
     return preferences.getUChar(KEY_DISPLAY_SIZE);
 }
-
-
 void PreferenceManager::set( char const *key, uint8_t v)
 {
     preferences.putUChar(key, v);
@@ -234,4 +256,9 @@ void PreferenceManager::set(char const *key, uint32_t v)
 void PreferenceManager::set(char const *key, char *v, uint8_t len)
 {
     preferences.putBytes(key, v, len);
+}
+void PreferenceManager::set(char const *key, MenuColor color)
+{
+    uint32_t c = (uint32_t)color.value;
+    preferences.putULong(key, c);
 }
