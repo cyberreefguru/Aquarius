@@ -42,7 +42,7 @@ void ListMenu::onDisplay(bool active)
     displayManager.setCursor(0, 0);
     displayManager.println(menuTitle);
     uint8_t windowEnd = windowStart + windowSize - 1;
-    // Log.traceln("start=%d, end=%d, index=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
+    Log.traceln("ListMenu::onDisplay - start=%d, end=%d, ai=%d, ws=%d, ni=%d", windowStart, windowEnd, activeIndex, windowSize, numItems);
     for (uint8_t i = windowStart; i <= windowEnd; i++)
     {
         MenuItem *item = items[i];
