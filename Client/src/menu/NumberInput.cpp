@@ -25,7 +25,7 @@ NumberInput::~NumberInput()
     free(inputBuff);
 }
 
-void NumberInput::onDisplay()
+void NumberInput::onDisplay(bool active)
 {
     Log.traceln("NumberInput::onDisplay - BEGIN");
     Log.traceln("NumberInput::onDisplay: value=%d", *value);
@@ -57,7 +57,7 @@ void NumberInput::onDisplay()
 
 void NumberInput::onButtonUp()
 {
-    Log.traceln("NumberInput::onButtonUp - curDigit=%d, v=%d, a=%d", curDigit, inputBuff[curDigit], active);
+    Log.traceln("NumberInput::onButtonUp - curDigit=%d, v=%d", curDigit, inputBuff[curDigit]);
     if (inputBuff[curDigit] == 9)
     {
         inputBuff[curDigit] = 0;
@@ -66,13 +66,13 @@ void NumberInput::onButtonUp()
     {
         inputBuff[curDigit] = (inputBuff[curDigit] + 1);
     }
-    Log.traceln("NumberInput::onButtonUp - curDigit=%d, v=%d, a=%d", curDigit, inputBuff[curDigit], active);
-    onDisplay();
+    Log.traceln("NumberInput::onButtonUp - curDigit=%d, v=%d", curDigit, inputBuff[curDigit]);
+    onDisplay(false);
 }
 
 void NumberInput::onButtonDown()
 {
-    Log.traceln("NumberInput::onButtonDown - curDigit=%d, v=%d, a=%d", curDigit, inputBuff[curDigit], active);
+    Log.traceln("NumberInput::onButtonDown - curDigit=%d, v=%d", curDigit, inputBuff[curDigit]);
     if (inputBuff[curDigit] == 0)
     {
         inputBuff[curDigit] = 9;
@@ -81,13 +81,13 @@ void NumberInput::onButtonDown()
     {
         inputBuff[curDigit] = (inputBuff[curDigit] - 1);
     }
-    Log.traceln("NumberInput::onButtonDown - curDigit=%d, v=%d, a=%d", curDigit, inputBuff[curDigit], active);
-    onDisplay();
+    Log.traceln("NumberInput::onButtonDown - curDigit=%d, v=%d", curDigit, inputBuff[curDigit]);
+    onDisplay(false);
 }
 
 void NumberInput::onButtonLeft()
 {
-    Log.traceln("NumberInput::onButtonLeft - curDigit=%d, v=%d, a=%d", curDigit, inputBuff[curDigit], active);
+    Log.traceln("NumberInput::onButtonLeft - curDigit=%d, v=%d", curDigit, inputBuff[curDigit]);
     if (curDigit == (numDigits - 1))
     {
         curDigit = 0;
@@ -97,14 +97,14 @@ void NumberInput::onButtonLeft()
     {
         curDigit++;
     }
-    Log.traceln("NumberInput::onButtonLeft - curDigit=%d, v=%d, a=%d", curDigit, inputBuff[curDigit], active);
-    onDisplay();
+    Log.traceln("NumberInput::onButtonLeft - curDigit=%d, v=%d", curDigit, inputBuff[curDigit]);
+    onDisplay(false);
     // return b;
 }
 
 void NumberInput::onButtonRight()
 {
-    Log.traceln("NumberInput::onButtonRight - curDigit=%d, v=%d, a=%d", curDigit, inputBuff[curDigit], active);
+    Log.traceln("NumberInput::onButtonRight - curDigit=%d, v=%d", curDigit, inputBuff[curDigit]);
     if (curDigit == 0)
     {
         curDigit = numDigits-1;
@@ -114,14 +114,14 @@ void NumberInput::onButtonRight()
     {
         curDigit--;
     }
-    Log.traceln("NumberInput::onButtonRight - curDigit=%d, v=%d, a=%d", curDigit, inputBuff[curDigit], active);
-    onDisplay();
+    Log.traceln("NumberInput::onButtonRight - curDigit=%d, v=%d", curDigit, inputBuff[curDigit]);
+    onDisplay(false);
     // return b;
 }
 
 void NumberInput::onButtonPush()
 {
-    active = false;
+    // active = false;
     curDigit = 0;
 }
 

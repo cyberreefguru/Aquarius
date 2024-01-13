@@ -1,7 +1,7 @@
 /*
- * ExitMenuItem.h
+ * SimpleMenuItem.cpp
  *
- *  Created on: Dec  31, 2023
+ *  Created on: Jan 6, 2024
  *      Author: cyberreefguru
  */
 
@@ -19,7 +19,6 @@ SimpleMenuItem::SimpleMenuItem(menu_title_t title)
     this->menuTitle = title;
     this->menuLabel = menuTitle;
     this->menuPrompt = "";
-
 }
 
 SimpleMenuItem::SimpleMenuItem(menu_label_t label, menu_title_t title, menu_prompt_t prompt)
@@ -29,15 +28,21 @@ SimpleMenuItem::SimpleMenuItem(menu_label_t label, menu_title_t title, menu_prom
     this->menuPrompt = prompt;
 }
 
-
-void SimpleMenuItem::onDisplay()
+void SimpleMenuItem::onDisplay(bool active)
 {
     Log.traceln("SimpleMenuItem::onDisplay - BEGIN");
     if (menuLabel != nullptr)
     {
         displayManager.clear();
         displayManager.setCursor(0, 0);
-        displayManager.setTextColor(WHITE);
+        if (active)
+        {
+            displayManager.setTextColor(BLACK, WHITE);
+        }
+        else
+        {
+            displayManager.setTextColor(WHITE);
+        }
         displayManager.println(menuLabel);
         displayManager.setTextColor(WHITE);
         displayManager.setRefresh(true);
@@ -60,6 +65,6 @@ void SimpleMenuItem::onButtonRight()
 }
 void SimpleMenuItem::onButtonPush()
 {
-        menuManager.pop();
-        menuManager.display();
+    menuManager.pop();
+    menuManager.display();
 }

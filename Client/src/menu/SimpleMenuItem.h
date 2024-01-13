@@ -23,7 +23,8 @@ public:
     SimpleMenuItem(menu_label_t label, menu_title_t title);
     SimpleMenuItem(menu_label_t label, menu_title_t title, menu_prompt_t prompt);
     virtual ~SimpleMenuItem();
-    virtual void onDisplay() override;
+    //virtual void onDisplay();
+    virtual void onDisplay(bool active) override;
     void onButtonPush() override;
     void onButtonLeft() override;
     void onButtonRight() override;

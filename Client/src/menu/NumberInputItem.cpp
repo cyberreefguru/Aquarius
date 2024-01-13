@@ -30,7 +30,7 @@ NumberInputItem::NumberInputItem(menu_label_t label, menu_title_t title, menu_pr
     this->items = {(MenuItem **)&item};
     this->numItems = 1;
     this->curInput = 0;
-    this->item->active =true;
+    // this->item->active =true;
 }
 
 NumberInputItem::~NumberInputItem()
@@ -39,13 +39,13 @@ NumberInputItem::~NumberInputItem()
     free(items);
 }
 
-void NumberInputItem::onDisplay()
+void NumberInputItem::onDisplay(bool active)
 {
     Log.traceln("NumberInputItem::onDisplay - BEGIN");
     displayManager.clear();
     displayManager.setCursor(0, 0);
     displayManager.println(menuTitle);
-    items[0]->onDisplay();
+    items[0]->onDisplay(active);
     displayManager.println();
 
     if (curInput == numItems)
@@ -83,24 +83,24 @@ void NumberInputItem::onButtonUp()
     if (curInput == 0)
     {
         // @ Input
-        ((NumberInput *)items[curInput])->active = true; // make sure it's active
+        // ((NumberInput *)items[curInput])->active = true; // make sure it's active
         ((NumberInput *)items[curInput])->onButtonUp();  // call input up
     }
     else if (curInput == 1)
     {
         // @ OK; move to input
         curInput = 0; // move to input
-        ((NumberInput *)items[curInput])->active = true;
+        // ((NumberInput *)items[curInput])->active = true;
         //((NumberInput *)items[curInput])->curDigit = 0;
     }
     else if (curInput == 2)
     {
         // @ Cancel; move to input
         curInput = 0; // move to input
-        ((NumberInput *)items[curInput])->active = true;
+        // ((NumberInput *)items[curInput])->active = true;
         //((NumberInput *)items[curInput])->curDigit = 0;
     }
-    onDisplay();
+    onDisplay(false);
 }
 
 void NumberInputItem::onButtonDown()
@@ -109,22 +109,22 @@ void NumberInputItem::onButtonDown()
     if (curInput == 0)
     {
         // @ Input
-        ((NumberInput *)items[curInput])->active = true;  // make sure it's active
+        // ((NumberInput *)items[curInput])->active = true;  // make sure it's active
         ((NumberInput *)items[curInput])->onButtonDown(); // call input down
     }
     else if (curInput == 1)
     {
         // @ OK; move to input
         curInput = 0; // move to input
-        ((NumberInput *)items[curInput])->active = true;
+        // ((NumberInput *)items[curInput])->active = true;
     }
     else if (curInput == 2)
     {
         // @ Cancel; move to input
         curInput = 0; // move to input
-        ((NumberInput *)items[curInput])->active = true;
+        // ((NumberInput *)items[curInput])->active = true;
     }
-    onDisplay();
+    onDisplay(false);
 }
 
 void NumberInputItem::onButtonLeft()
@@ -140,14 +140,14 @@ void NumberInputItem::onButtonLeft()
     {
         // @ OK; move to last input item
         curInput = 0;
-        ((NumberInput *)items[curInput])->active = true;
+        // ((NumberInput *)items[curInput])->active = true;
     }
     else if (curInput == 2)
     {
         // @ Cancel; Move to OK
         curInput--;
     }
-    onDisplay();
+    onDisplay(false);
 }
 
 void NumberInputItem::onButtonRight()
@@ -168,10 +168,10 @@ void NumberInputItem::onButtonRight()
     {
         // @ Cancel; move to first item
         curInput = 0;
-        ((NumberInput *)items[curInput])->active = true;
+        // ((NumberInput *)items[curInput])->active = true;
         ((NumberInput *)items[curInput])->curDigit = ((NumberInput *)items[curInput])->numDigits - 1;
     }
-    onDisplay();
+    onDisplay(false);
 }
 
 void NumberInputItem::onButtonPush()
@@ -183,14 +183,14 @@ void NumberInputItem::onButtonPush()
         // @ Input
         ((NumberInput *)items[curInput])->onButtonPush();
         curInput=1; // Advance to OK
-        onDisplay();
+        onDisplay(false);
     }
     else if (curInput == 1)
     {
         // @ OK; Save values
         curInput = 0;
         ((NumberInput *)items[curInput])->setValue();
-        ((NumberInput *)items[curInput])->active = true;
+        // ((NumberInput *)items[curInput])->active = true;
 
         // Save value and pop us off the menu
         menuManager.pop();
@@ -202,7 +202,7 @@ void NumberInputItem::onButtonPush()
         // @ Cancel; reset input value to original
         curInput = 0;
         ((NumberInput *)items[curInput])->initializeValue();
-        ((NumberInput *)items[curInput])->active = true;
+        // ((NumberInput *)items[curInput])->active = true;
 
         // Save value and pop us off the menu
         menuManager.pop();

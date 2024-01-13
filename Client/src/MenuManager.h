@@ -31,6 +31,8 @@
 #include "menu/SimpleMenuItem.h"
 #include "menu/ExitMenuItem.h"
 #include "menu/MultiNumberInputItem.h"
+#include "menu/ActionMenuItem.h"
+
 
 // #include "menu/ColorListItem.h"
 // #include "menu/BrightnessMenuItem.h"
@@ -46,7 +48,7 @@ extern "C"
 #include "esp_event.h"
 }
 
-// // typedef std::function<void(void)> MenuCallback;
+typedef std::function<void(void)> MenuCallback;
 
 // class MenuItem
 // {
@@ -188,6 +190,29 @@ extern "C"
 
 // };
 
+
+// class ActionMenuItem : public MenuItem
+// {
+// public:
+//     ActionMenuItem(menu_label_t label, menu_title_t title, menu_prompt_t prompt, ActionCallback cb);
+//     virtual ~ActionMenuItem();
+//     virtual void onDisplay() override;
+//     void onButtonPush() override;
+
+//     ActionCallback doAction = nullptr;
+//     bool active = false;
+
+//     virtual bool isActive()
+//     {
+//         return active;
+//     }
+
+
+// private:
+
+// };
+
+
 class MenuManager
 {
 public:
@@ -211,10 +236,14 @@ public:
     void inputEventHandler(void *args, esp_event_base_t base, int32_t id, void *data);
     void actionEventHandler(void *args, esp_event_base_t base, int32_t id, void *data);
 
+    void onServoStart();
+    void onServoEnd();
+
 protected:
     ButtonEvent currentEvent = ButtonEvent::DOWN;
     ButtonAction currentAction = ButtonAction::PRESS;
     bool changed = false;
+
 };
 
 // end of add your includes here

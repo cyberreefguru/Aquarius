@@ -8,6 +8,8 @@
 
 #include <ArduinoLog.h>
 #include <Preferences.h>
+
+#include "Target.h"
 #include "menu/MenuColor.h"
 
 #define NAMESPACE "aquarius"
@@ -16,7 +18,6 @@
 #define KEY_CONFIGURED "configured"
 
 #define KEY_NODE_ID "id"
-// #define KEY_DELAY "delay"
 
 #define KEY_HOST_NAME "wifi.hostname"
 #define KEY_WIFI_SSID "wifi.ssid"

@@ -1,3 +1,10 @@
+/*
+ * Command.cpp
+ *
+ *  Created on: Nov 26, 2023
+ *      Author: cyberreefguru
+ */
+
 #include "Command.h"
 
 Command::Command()
@@ -5,7 +12,7 @@ Command::Command()
 
     jsonDocument.clear();
     parameters.clear();
-};
+}
 
 uint32_t Command::fromJson(char *buffer)
 {

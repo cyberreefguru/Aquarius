@@ -30,32 +30,34 @@ public:
     MenuItem(menu_label_t label, menu_title_t title, menu_prompt_t prompt);
     virtual ~MenuItem();
 
-    virtual const char* getMenuLabel()
+    const char* getMenuLabel()
     {
         return menuLabel;
     }
-    virtual const char* getMenuTitle()
+    const char* getMenuTitle()
     {
         return menuTitle;
     }
-    virtual const char* getMenuPrompt()
+    const char* getMenuPrompt()
     {
         return menuPrompt;
     }
-    virtual bool hasChildren()
+    bool hasChildren()
     {
         return (numItems>0 && items != nullptr);
     }
-    virtual uint8_t getNumberChildren()
+    uint8_t getNumberChildren()
     {
         return numItems;
     }
-    virtual MenuItem** getChildren()
+    MenuItem** getChildren()
     {
         return items;
     }
+
     virtual void onEvent(ButtonEvent be);
-    virtual void onDisplay()=0; // must implement
+    // virtual void onDisplay();
+    virtual void onDisplay(bool active)=0; // must implement
     virtual void onButtonUp(){}
     virtual void onButtonDown(){}
     virtual void onButtonLeft(){}

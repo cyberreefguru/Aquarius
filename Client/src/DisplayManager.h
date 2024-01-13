@@ -5,6 +5,10 @@
  *      Author: cyberreefguru
  */
 
+
+#ifndef DisplayManager_H
+#define DisplayManager_H
+
 #pragma once
 
 #include <Arduino.h>
@@ -84,4 +88,6 @@ private:
 
 #ifdef __cplusplus
 } // extern "C"
+#endif
+
 #endif

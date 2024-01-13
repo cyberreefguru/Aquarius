@@ -20,7 +20,7 @@ ExitMenuItem::~ExitMenuItem()
 {
 }
 
-void ExitMenuItem::onDisplay()
+void ExitMenuItem::onDisplay(bool active)
 {
     onButtonPush();
     // Log.traceln("ExitMenuItem::onDisplay - BEGIN");

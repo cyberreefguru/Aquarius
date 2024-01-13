@@ -24,7 +24,8 @@ public:
     void initializeValue();
     void setValue();
 
-    virtual void onDisplay() override;
+    // virtual void onDisplay();
+    virtual void onDisplay(bool active) override;
     virtual void onButtonUp() override;
     virtual void onButtonDown() override;
     virtual void onButtonLeft() override;
@@ -36,7 +37,7 @@ public:
     uint8_t numDigits;
     uint8_t decimal;
     uint8_t *inputBuff = nullptr;
-    bool active = false;
+    // bool active = false;
 };
 
 #endif

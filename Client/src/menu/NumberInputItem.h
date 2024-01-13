@@ -25,7 +25,8 @@ public:
     NumberInputItem(menu_label_t label, menu_title_t title, menu_prompt_t prompt, uint32_t *value, uint8_t numDigits);
     virtual ~NumberInputItem();
 
-    virtual void onDisplay() override;
+    // virtual void onDisplay();
+    virtual void onDisplay(bool active) override;
     virtual void onButtonUp() override;
     virtual void onButtonDown() override;
     virtual void onButtonLeft() override;

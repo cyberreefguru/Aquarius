@@ -14,10 +14,10 @@ MultiNumberInputItem::MultiNumberInputItem(menu_label_t label, menu_title_t titl
     this->items = items;
     this->numItems = numItems;
 
-    if (numItems > 0)
-    {
-        ((NumberInput *)items[0])->active = true;
-    }
+    // if (numItems > 0)
+    // {
+    //     ((NumberInput *)items[0])->active = true;
+    // }
 }
 
 MultiNumberInputItem::~MultiNumberInputItem()
@@ -25,7 +25,7 @@ MultiNumberInputItem::~MultiNumberInputItem()
     // free(inputBuff);
 }
 
-void MultiNumberInputItem::onDisplay()
+void MultiNumberInputItem::onDisplay(bool active)
 {
     Log.traceln("MultiNumberInputItem::onDisplay - BEGIN");
     if (menuLabel == nullptr)
@@ -40,7 +40,7 @@ void MultiNumberInputItem::onDisplay()
     for (uint8_t i = 0; i < numItems; i++)
     {
         Log.traceln("Displaying NumberInput[%d]", i);
-        items[i]->onDisplay();
+        items[i]->onDisplay(( curInput == i ));
     }
 
     displayManager.println();
@@ -80,22 +80,22 @@ void MultiNumberInputItem::onButtonUp()
     if (curInput >= 0 && curInput < numItems)
     {
         // @ Input
-        ((NumberInput *)items[curInput])->active = true; // make sure it's active
+        // ((NumberInput *)items[curInput])->active = true; // make sure it's active
         ((NumberInput *)items[curInput])->onButtonUp();  // call input up
     }
     else if (curInput == numItems)
     {
         // @ OK; move to input
         curInput--; // move to last input
-        ((NumberInput *)items[curInput])->active = true;
+        // ((NumberInput *)items[curInput])->active = true;
     }
     else if (curInput == numItems + 1)
     {
         // @ Cancel; move to input
         curInput = 0; // move to input
-        ((NumberInput *)items[curInput])->active = true;
+        // ((NumberInput *)items[curInput])->active = true;
     }
-    onDisplay();
+    onDisplay(false);
 }
 
 void MultiNumberInputItem::onButtonDown()
@@ -104,22 +104,22 @@ void MultiNumberInputItem::onButtonDown()
     if (curInput >= 0 && curInput < numItems)
     {
         // @ Input
-        ((NumberInput *)items[curInput])->active = true;  // make sure it's active
+        // ((NumberInput *)items[curInput])->active = true;  // make sure it's active
         ((NumberInput *)items[curInput])->onButtonDown(); // call input down
     }
     else if (curInput == numItems)
     {
         // @ OK; move to input
         curInput = 0; // move to first input
-        ((NumberInput *)items[curInput])->active = true;
+        // ((NumberInput *)items[curInput])->active = true;
     }
     else if (curInput == numItems + 1)
     {
         // @ Cancel; move to input
         curInput = 0; // move to first input
-        ((NumberInput *)items[curInput])->active = true;
+        // ((NumberInput *)items[curInput])->active = true;
     }
-    onDisplay();
+    onDisplay(false);
 }
 
 void MultiNumberInputItem::onButtonLeft()
@@ -135,14 +135,14 @@ void MultiNumberInputItem::onButtonLeft()
     {
         // @ OK; move to last input item
         curInput = numItems - 1;
-        ((NumberInput *)items[curInput])->active = true;
+        // ((NumberInput *)items[curInput])->active = true;
     }
     else if (curInput == numItems + 1)
     {
         // @ Cancel; Move to OK
         curInput--;
     }
-    onDisplay();
+    onDisplay(false);
 }
 
 void MultiNumberInputItem::onButtonRight()
@@ -163,10 +163,10 @@ void MultiNumberInputItem::onButtonRight()
     {
         // @ Cancel; move to first item
         curInput = 0;
-        ((NumberInput *)items[curInput])->active = true;
+        // ((NumberInput *)items[curInput])->active = true;
         //((NumberInput *)items[curInput])->curDigit = ((NumberInput *)items[curInput])->numDigits - 1;
     }
-    onDisplay();
+    onDisplay(false);
 }
 
 void MultiNumberInputItem::onButtonPush()
@@ -178,11 +178,11 @@ void MultiNumberInputItem::onButtonPush()
         // @ Input
         ((NumberInput *)items[curInput])->onButtonPush();
         curInput++;
-        if (curInput < numItems)
-        {
-            ((NumberInput *)items[curInput])->active = true;
-        }
-        onDisplay();
+        // if (curInput < numItems)
+        // {
+        //     ((NumberInput *)items[curInput])->active = true;
+        // }
+        onDisplay(false);
     }
     else if (curInput == numItems)
     {
@@ -190,10 +190,10 @@ void MultiNumberInputItem::onButtonPush()
         for (uint8_t i = 0; i < numItems; i++)
         {
             ((NumberInput *)items[i])->setValue();
-            ((NumberInput *)items[i])->active = false;
+            // ((NumberInput *)items[i])->active = false;
         }
         curInput=0;
-        ((NumberInput *)items[curInput])->active = true;
+        // ((NumberInput *)items[curInput])->active = true;
 
         // Save value and pop us off the menu
         menuManager.pop();
@@ -206,10 +206,10 @@ void MultiNumberInputItem::onButtonPush()
         for (uint8_t i = 0; i < numItems; i++)
         {
             ((NumberInput *)items[i])->initializeValue();
-            ((NumberInput *)items[i])->active = false;
+            // ((NumberInput *)items[i])->active = false;
         }
         curInput=0;
-        ((NumberInput *)items[curInput])->active = true;
+        // ((NumberInput *)items[curInput])->active = true;
 
         // Save value and pop us off the menu
         menuManager.pop();

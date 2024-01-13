@@ -21,8 +21,8 @@ class ColorMenuItem : public MenuItem
 public:
     ColorMenuItem(const MenuColor *color);
     virtual ~ColorMenuItem();
-    virtual void onDisplay() override;
-    virtual void onButtonPush() override;
+    void onDisplay(bool active) override;
+    void onButtonPush() override;
 
 private:
     const MenuColor* color;

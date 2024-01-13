@@ -22,6 +22,11 @@ MenuItem::~MenuItem()
 }
 
 
+// void MenuItem::onDisplay()
+// {
+//     onDisplay(false);
+// }
+
 void MenuItem::onEvent(ButtonEvent be)
 {
    Log.traceln("MenuItem.onEvent - BEGIN");

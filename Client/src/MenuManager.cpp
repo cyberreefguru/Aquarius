@@ -5,6 +5,7 @@
  *      Author: cyberreefguru
  */
 #include "MenuManager.h"
+#include "menu/MultiActionItem.h"
 
 MenuManager menuManager;
 
@@ -15,7 +16,6 @@ uint32_t vServoEnd = 180;
 uint32_t vNodeId = 0;
 uint32_t vSensor = 128;
 uint32_t vBrightness = 255;
-
 
 ColorListMenu colorActive = ColorListMenu("> Active", "Active Color:", ">", KEY_COLOR_ACTIVE);
 ColorListMenu colorInact = ColorListMenu("> Deactive", "Deactive Color:", ">", KEY_COLOR_DEACTIVE);
@@ -29,11 +29,10 @@ ColorListMenu colorSend = ColorListMenu("> Send", "Send Color:", ">", KEY_COLOR_
 ColorListMenu colorWait = ColorListMenu("> Wait", "Wait Color:", ">", KEY_COLOR_WAIT);
 
 MenuItem *cmItems[10] = {&colorInit, &colorConn, &colorConfig, &colorWait,
-                        &colorRec, &colorProc, &colorSend,
-                        &colorActive, &colorInact, &colorErr};
+                         &colorRec, &colorProc, &colorSend,
+                         &colorActive, &colorInact, &colorErr};
 
-
-ListMenu selColor = ListMenu("> Colors", "Colors:", cmItems, 10);
+ListMenu selColor = ListMenu("> Colors", "Colors:", "> ", cmItems, 10);
 
 NumberInputItem ni = NumberInputItem("> Node ID", "Node ID:", "> ", &vNodeId, 2);
 SimpleMenuItem targets = SimpleMenuItem("> Targets");
@@ -44,16 +43,21 @@ NumberInputItem brightness = NumberInputItem("> Brightness", "Brightness:", "> "
 ExitMenuItem mexit = ExitMenuItem();
 
 NumberInput servoStart = NumberInput("Start> ", "Start: ", "Start> ", &vServoStart, 3);
-NumberInput servoEnd = NumberInput("End> ", "End: ",       "End  > ", &vServoEnd, 3);
+NumberInput servoEnd = NumberInput("End> ", "End: ", "End  > ", &vServoEnd, 3);
 
-MenuItem *si[2] = {&servoStart, &servoEnd };
+MenuItem *si[2] = {&servoStart, &servoEnd};
 
 MultiNumberInputItem servoMenu = MultiNumberInputItem("> Servo Settings", "Servo Values:", si, 2);
 
+ActionMenuItem sStart = ActionMenuItem("Start> ", "Start: ", "Start> ", std::bind(&MenuManager::onServoStart, menuManager));
+ActionMenuItem sEnd = ActionMenuItem("End> ", "End: ", "End  > ", std::bind(&MenuManager::onServoEnd, menuManager));
+ActionMenuItem *amts[2] = {&sStart, &sEnd};
+
+MultiActionItem sMenu = MultiActionItem("> Servo A Settings", "Servo A Values:", amts, 2);
 
 MenuItem *mmItems[] = {&ni, &targets, &selColor, &brightness,
-                        &sensor, &servoMenu, &mexit};
-ListMenu mainMenu = ListMenu("> Main Menu", "Main Menu:", mmItems, 7);
+                       &sensor, &servoMenu, &sMenu, &mexit};
+ListMenu mainMenu = ListMenu("> Main Menu", "Main Menu:", "> ", mmItems, 7);
 
 MenuManager::MenuManager()
 {
@@ -61,6 +65,15 @@ MenuManager::MenuManager()
 
 MenuManager::~MenuManager()
 {
+}
+
+void MenuManager::onServoStart()
+{
+    Log.infoln("MenuManager::onServoStart");
+}
+void MenuManager::onServoEnd()
+{
+    Log.infoln("MenuManager::onServoEnd");
 }
 
 void MenuManager::initialize()
@@ -123,7 +136,7 @@ void MenuManager::actionEventHandler(void *args, esp_event_base_t base, int32_t 
         menus.peek(&item);
         if (item != nullptr)
         {
-            item->onDisplay();
+            item->onDisplay(false);
         }
     }
 }
@@ -172,7 +185,7 @@ void MenuManager::push(MenuItem *item)
     if (item != nullptr)
     {
         Log.traceln("Push: %s", item->getMenuTitle());
-        //item->setActive(true);
+        // item->setActive(true);
         menus.push(item);
     }
     else
@@ -224,7 +237,7 @@ void MenuManager::display()
         }
         else
         {
-            item->onDisplay();
+            item->onDisplay(false);
         }
     }
     Log.traceln("MenuManager::display: END");

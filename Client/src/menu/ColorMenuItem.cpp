@@ -18,7 +18,7 @@ ColorMenuItem::~ColorMenuItem()
 {
 }
 
-void ColorMenuItem::onDisplay()
+void ColorMenuItem::onDisplay(bool active)
 {
     Log.traceln("ColorMenuItem::onDisplay - BEGIN");
     displayManager.println(color->name);

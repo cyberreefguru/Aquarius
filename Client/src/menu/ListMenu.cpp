@@ -6,11 +6,11 @@
  */
 #include "ListMenu.h"
 
-ListMenu::ListMenu(menu_label_t label, menu_title_t title, MenuItem **items, uint8_t numItems)
+ListMenu::ListMenu(menu_label_t label, menu_title_t title, menu_prompt_t prompt, MenuItem **items, uint8_t numItems)
 {
     this->menuLabel = label;
     this->menuTitle = title;
-    this->menuPrompt = "> ";
+    this->menuPrompt = prompt;
     this->items = items;
     this->numItems = numItems;
 
@@ -23,7 +23,12 @@ ListMenu::~ListMenu()
 {
 }
 
-void ListMenu::onDisplay()
+// void ListMenu::onDisplay(bool active)
+// {
+//     onDisplay();
+// }
+
+void ListMenu::onDisplay(bool active)
 {
     Log.traceln("ListMenu::onDisplay - BEGIN");
 
@@ -62,13 +67,13 @@ void ListMenu::onDisplay()
 void ListMenu::onButtonUp()
 {
         activatePrevious();
-        onDisplay();
+        onDisplay(false);
 }
 
 void ListMenu::onButtonDown()
 {
         activateNext();
-        onDisplay();
+        onDisplay(false);
 }
 
 void ListMenu::onButtonLeft()
@@ -86,7 +91,7 @@ void ListMenu::onButtonRight()
 void ListMenu::onButtonPush()
 {
     menuManager.push(items[activeIndex]);
-    items[activeIndex]->onDisplay();
+    items[activeIndex]->onDisplay(true);
 }
 
 MenuItem *ListMenu::getActive()

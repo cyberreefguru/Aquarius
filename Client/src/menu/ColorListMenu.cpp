@@ -23,7 +23,7 @@ ColorListMenu::~ColorListMenu()
 {
 }
 
-void ColorListMenu::onDisplay()
+void ColorListMenu::onDisplay(bool active)
 {
     Log.traceln("ColorListMenu::onDisplay - BEGIN");
 
@@ -34,7 +34,6 @@ void ColorListMenu::onDisplay()
     // Log.traceln("start=%d, end=%d, index=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
     for (uint8_t i = windowStart; i < windowEnd; i++)
     {
-
         if (i == activeIndex)
         {
             displayManager.setTextColor(BLACK, WHITE);
