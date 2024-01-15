@@ -6,6 +6,7 @@
  */
 #include "MenuManager.h"
 #include "menu/MultiActionItem.h"
+#include "menu/ResetMenuItem.h"
 
 MenuManager menuManager;
 
@@ -17,16 +18,16 @@ uint32_t vNodeId = 0;
 uint32_t vSensor = 128;
 uint32_t vBrightness = 255;
 
-ColorListMenu colorActive = ColorListMenu("> Active", "Active Color:", ">", KEY_COLOR_ACTIVE);
-ColorListMenu colorInact = ColorListMenu("> Deactive", "Deactive Color:", ">", KEY_COLOR_DEACTIVE);
-ColorListMenu colorInit = ColorListMenu("> Initialize", "Initialize Color:", ">", KEY_COLOR_INITIALIZE);
-ColorListMenu colorConn = ColorListMenu("> Connect", "Connect Color:", ">", KEY_COLOR_CONNECT);
-ColorListMenu colorConfig = ColorListMenu("> Configure", "Configure Color:", ">", KEY_COLOR_CONFIGURE);
-ColorListMenu colorErr = ColorListMenu("> Error", "Error Color:", ">", KEY_COLOR_ERROR);
-ColorListMenu colorRec = ColorListMenu("> Receive", "Receive Color:", ">", KEY_COLOR_RECEIVE);
-ColorListMenu colorProc = ColorListMenu("> Processing", "Processing Color:", ">", KEY_COLOR_PROCESS);
-ColorListMenu colorSend = ColorListMenu("> Send", "Send Color:", ">", KEY_COLOR_SEND);
-ColorListMenu colorWait = ColorListMenu("> Wait", "Wait Color:", ">", KEY_COLOR_WAIT);
+ColorListMenu colorActive = ColorListMenu("> Active", "Active Color:", "> ", KEY_COLOR_ACTIVE);
+ColorListMenu colorInact = ColorListMenu("> Deactive", "Deactive Color:", "> ", KEY_COLOR_DEACTIVE);
+ColorListMenu colorInit = ColorListMenu("> Initialize", "Initialize Color:", "> ", KEY_COLOR_INITIALIZE);
+ColorListMenu colorConn = ColorListMenu("> Connect", "Connect Color:", "> ", KEY_COLOR_CONNECT);
+ColorListMenu colorConfig = ColorListMenu("> Configure", "Configure Color:", "> ", KEY_COLOR_CONFIGURE);
+ColorListMenu colorErr = ColorListMenu("> Error", "Error Color:", "> ", KEY_COLOR_ERROR);
+ColorListMenu colorRec = ColorListMenu("> Receive", "Receive Color:", "> ", KEY_COLOR_RECEIVE);
+ColorListMenu colorProc = ColorListMenu("> Processing", "Processing Color:", "> ", KEY_COLOR_PROCESS);
+ColorListMenu colorSend = ColorListMenu("> Send", "Send Color:", "> ", KEY_COLOR_SEND);
+ColorListMenu colorWait = ColorListMenu("> Wait", "Wait Color:", "> ", KEY_COLOR_WAIT);
 
 MenuItem *cmItems[10] = {&colorInit, &colorConn, &colorConfig, &colorWait,
                          &colorRec, &colorProc, &colorSend,
@@ -40,24 +41,36 @@ SimpleMenuItem targets = SimpleMenuItem("> Targets");
 NumberInputItem sensor = NumberInputItem("> Sensor Threshold", "Sensor Threshhold:", ">", &vSensor, 3);
 NumberInputItem brightness = NumberInputItem("> Brightness", "Brightness:", "> ", &vSensor, 3);
 
-ExitMenuItem mexit = ExitMenuItem();
+// ExitMenuItem mexit = ExitMenuItem();
 
 NumberInput servoStart = NumberInput("Start> ", "Start: ", "Start> ", &vServoStart, 3);
-NumberInput servoEnd = NumberInput("End> ", "End: ", "End  > ", &vServoEnd, 3);
+NumberInput servoEnd = NumberInput("End> ", "End: ", "End> ", &vServoEnd, 3);
 
 MenuItem *si[2] = {&servoStart, &servoEnd};
 
 MultiNumberInputItem servoMenu = MultiNumberInputItem("> Servo Settings", "Servo Values:", si, 2);
 
-ActionMenuItem sStart = ActionMenuItem("Start> ", "Start: ", "Start> ", std::bind(&MenuManager::onServoStart, menuManager));
-ActionMenuItem sEnd = ActionMenuItem("End> ", "End: ", "End  > ", std::bind(&MenuManager::onServoEnd, menuManager));
-ActionMenuItem *amts[2] = {&sStart, &sEnd};
+ActionMenuItem mReset = ActionMenuItem("> Factory Reset", "Factory Reset?\n", "Press to Reset", std::bind(&MenuManager::onResetPush, menuManager));
+ActionMenuItem mExit = ActionMenuItem("> Exit", "Exit", "> Exit", std::bind(&MenuManager::onResetButton, menuManager));
 
-MultiActionItem sMenu = MultiActionItem("> Servo A Settings", "Servo A Values:", amts, 2);
+// ActionMenuItem sStart = ActionMenuItem("Start> ", "Start: ", "Start> ", std::bind(&MenuManager::onServoStart, menuManager));
+// ActionMenuItem sEnd = ActionMenuItem("End> ", "End: ", "End> ", std::bind(&MenuManager::onServoEnd, menuManager));
+// ActionMenuItem *amts[2] = {&sStart, &sEnd};
+// MultiActionItem sMenu = MultiActionItem("> Servo A Settings", "Servo A Values:", amts, 2);
 
-MenuItem *mmItems[] = {&ni, &targets, &selColor, &brightness,
-                       &sensor, &servoMenu, &sMenu, &mexit};
-ListMenu mainMenu = ListMenu("> Main Menu", "Main Menu:", "> ", mmItems, 7);
+// ResetMenuItem mreset = ResetMenuItem();
+
+MenuItem *mmItems[] = {
+    &ni,
+    &targets,
+    &selColor,
+    &brightness,
+    &sensor,
+    &servoMenu,
+    &mReset,
+    &mExit,
+};
+ListMenu mainMenu = ListMenu("> Main Menu", "Main Menu:", "> ", mmItems, 8);
 
 MenuManager::MenuManager()
 {
@@ -65,15 +78,6 @@ MenuManager::MenuManager()
 
 MenuManager::~MenuManager()
 {
-}
-
-void MenuManager::onServoStart()
-{
-    Log.infoln("MenuManager::onServoStart");
-}
-void MenuManager::onServoEnd()
-{
-    Log.infoln("MenuManager::onServoEnd");
 }
 
 void MenuManager::initialize()
@@ -110,17 +114,16 @@ void MenuManager::initialize()
         Log.infoln("Added input event handler!");
     }
 
-    // mainMenu.getChildren()[0]->setActive(true);
+    mReset.setButtonCallback(std::bind(&MenuManager::onResetButton, this),
+                             std::bind(&MenuManager::onResetButton, this),
+                             std::bind(&MenuManager::onResetButton, this),
+                             std::bind(&MenuManager::onResetButton, this),
+                             std::bind(&MenuManager::onResetPush, this));
 
-    // ni.initialize(&vNodeId, 2);
-    // servoStart.initialize(&vServoStart, 3);
-    // servoEnd.initialize(&vServoEnd, 3);
-    // sensor.initialize(&vSensor, 3);
-
-    // vBrightness = 255;
-    // brightness.initialize(&vBrightness, 3);
+    mExit.setDisplayCallback(std::bind(&MenuManager::doExit, this));
 
     menus.push(&mainMenu);
+
     Log.infoln("menu manager initialization complete");
 }
 
@@ -241,4 +244,37 @@ void MenuManager::display()
         }
     }
     Log.traceln("MenuManager::display: END");
+}
+
+void MenuManager::doExit()
+{
+    Log.traceln("MenuManager::doExit - BEGIN");
+    pop();
+    // stateManager.configure = false;
+    actionEventManager.postEvent(ActionEvent::WAITING);
+    displayManager.setRefresh(true);
+    Log.traceln("MenuManager::doExit - END");
+}
+
+void MenuManager::onResetPush()
+{
+    Log.infoln("Reseting to factory settings...");
+    prefManager.reset();
+    Log.infoln("Reset!");
+    onResetButton();
+}
+
+void MenuManager::onResetButton()
+{
+    pop();
+    display();
+}
+
+void MenuManager::onServoStart()
+{
+    Log.infoln("MenuManager::onServoStart");
+}
+void MenuManager::onServoEnd()
+{
+    Log.infoln("MenuManager::onServoEnd");
 }

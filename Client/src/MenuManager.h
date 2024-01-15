@@ -236,6 +236,10 @@ public:
     void inputEventHandler(void *args, esp_event_base_t base, int32_t id, void *data);
     void actionEventHandler(void *args, esp_event_base_t base, int32_t id, void *data);
 
+    void doExit();
+    void onResetPush();
+    void onResetButton();
+
     void onServoStart();
     void onServoEnd();
 

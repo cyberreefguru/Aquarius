@@ -61,6 +61,7 @@ void PreferenceManager::zeroBuffers()
     memset(wifi_pass, 0, MAX_PASSWORD);
     memset(mqtt_user, 0, MAX_USER_ID);
     memset(mqtt_pass, 0, MAX_PASSWORD);
+    memset(targets, 0, TARGET_BUFF_SIZE);
 }
 
 void PreferenceManager::resetBuffers()
@@ -70,7 +71,9 @@ void PreferenceManager::resetBuffers()
     strncpy(wifi_pass, DEFAULT_WIFI_PASSWORD, strnlen(DEFAULT_WIFI_PASSWORD, MAX_PASSWORD));
     strncpy(mqtt_user, DEFAULT_MQTT_USER, strnlen(DEFAULT_MQTT_USER, MAX_USER_ID));
     strncpy(mqtt_pass, DEFAULT_MQTT_PASSWORD, strnlen(DEFAULT_MQTT_PASSWORD, MAX_PASSWORD));
+    strncpy(targets, DEFAULT_TARGETS, strnlen(DEFAULT_TARGETS, TARGET_BUFF_SIZE));
 }
+
 void PreferenceManager::reset()
 {
     // Zero buffers
@@ -115,6 +118,7 @@ void PreferenceManager::reset()
 
     preferences.putUChar(KEY_DISPLAY_SIZE, DEFAULT_DISPLAY_SIZE);
 
+    preferences.putBytes(KEY_TARGETS, targets, strnlen(targets, TARGET_BUFF_SIZE));
 }
 
 uint8_t PreferenceManager::getId()

@@ -16,6 +16,11 @@ ActionMenuItem::ActionMenuItem(menu_label_t label, menu_title_t title, menu_prom
     this->doAction = cb;
 }
 
+void ActionMenuItem::setDisplayCallback(DisplayCallback cb)
+{
+    doDisplay = cb;
+}
+
 void ActionMenuItem::setActionCallback(ActionCallback cb)
 {
     doAction = cb;
@@ -35,11 +40,25 @@ void ActionMenuItem::setButtonCallback(ButtonCallback up, ButtonCallback down,
 void ActionMenuItem::onDisplay(bool active)
 {
     Log.traceln("ActionMenuItem::onDisplay - BEGIN");
-    if (menuLabel == nullptr)
+
+    if (doDisplay != nullptr)
     {
-        Log.errorln("Menu Item has no label!");
+        Log.traceln("ActionMenuItem::onDisplay - using callback");
+        doDisplay();
         return;
     }
+
+    Log.traceln("ActionMenuItem::onDisplay - no callback; rendering");
+
+    if (menuLabel == nullptr || menuPrompt == nullptr)
+    {
+        Log.errorln("Item missing labels!");
+        return;
+    }
+
+    displayManager.clear();
+    displayManager.setCursor(0, 0);
+    displayManager.println(menuTitle);
 
     if (active)
     {
@@ -49,16 +68,12 @@ void ActionMenuItem::onDisplay(bool active)
     {
         displayManager.setTextColor(WHITE);
     }
-    displayManager.print(menuLabel);
+    displayManager.print(menuPrompt);
     displayManager.setTextColor(WHITE);
     displayManager.setRefresh(true);
+
     Log.traceln("ActionMenuItem::onDisplay - END");
 }
-
-// void ActionMenuItem::onDisplay()
-// {
-//     onDisplay(false);
-// }
 
 void ActionMenuItem::onAction()
 {
@@ -78,32 +93,32 @@ void ActionMenuItem::onButtonUp()
 
 void ActionMenuItem::onButtonDown()
 {
-    if (doButtonUp != nullptr)
+    if (doButtonDown != nullptr)
     {
-        doButtonUp();
+        doButtonDown();
     }
 }
 
 void ActionMenuItem::onButtonLeft()
 {
-    if (doButtonUp != nullptr)
+    if (doButtonLeft != nullptr)
     {
-        doButtonUp();
+        doButtonLeft();
     }
 }
 
 void ActionMenuItem::onButtonRight()
 {
-    if (doButtonUp != nullptr)
+    if (doButtonRight != nullptr)
     {
-        doButtonUp();
+        doButtonRight();
     }
 }
 
 void ActionMenuItem::onButtonPush()
 {
-    if (doButtonUp != nullptr)
+    if (doButtonPush != nullptr)
     {
-        doButtonUp();
+        doButtonPush();
     }
 }

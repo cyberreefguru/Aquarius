@@ -23,7 +23,6 @@ typedef const char* menu_title_t;
 typedef const char* menu_label_t;
 typedef const char* menu_prompt_t;
 
-
 class MenuItem
 {
 public:
@@ -71,6 +70,7 @@ protected:
     const char *menuPrompt; // shown when onDisplay called
     uint8_t numItems = 0; // TODO - move to ListMenuItem or something
     MenuItem **items = nullptr; // TODO - move to ListMenuItem or something
+    
 };
 
 #endif

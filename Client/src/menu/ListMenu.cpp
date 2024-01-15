@@ -14,7 +14,7 @@ ListMenu::ListMenu(menu_label_t label, menu_title_t title, menu_prompt_t prompt,
     this->items = items;
     this->numItems = numItems;
 
-    windowSize = menuManager.getScreenMaxY()-1; // subtract for menu name
+    windowSize = menuManager.getScreenMaxY() - 1; // subtract for menu name
     windowStart = 0;
     activeIndex = windowStart;
 }
@@ -63,30 +63,28 @@ void ListMenu::onDisplay(bool active)
     Log.traceln("ListMenu::onDisplay - END");
 }
 
-
 void ListMenu::onButtonUp()
 {
-        activatePrevious();
-        onDisplay(false);
+    activatePrevious();
+    onDisplay(false);
 }
 
 void ListMenu::onButtonDown()
 {
-        activateNext();
-        onDisplay(false);
+    activateNext();
+    onDisplay(false);
 }
 
 void ListMenu::onButtonLeft()
 {
-        menuManager.pop();
-        menuManager.display();
+    menuManager.pop();
+    menuManager.display();
 }
 
 void ListMenu::onButtonRight()
 {
     onButtonPush();
 }
-
 
 void ListMenu::onButtonPush()
 {

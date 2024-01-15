@@ -34,6 +34,7 @@ inline const char *operator++(ActionMenuType c)
     }
 }
 
+typedef std::function<void()> DisplayCallback;
 typedef std::function<void()> ActionCallback;
 typedef std::function<void()> ButtonCallback;
 
@@ -45,6 +46,7 @@ public:
     virtual ~ActionMenuItem() {}
 
     void setActionCallback(ActionCallback cb);
+    void setDisplayCallback(DisplayCallback cb);
     void setButtonCallback(ButtonCallback up, ButtonCallback down,
                            ButtonCallback left, ButtonCallback right,
                            ButtonCallback push);
@@ -60,6 +62,7 @@ public:
 
 
 private:
+    DisplayCallback doDisplay = nullptr;
     ActionCallback doAction = nullptr;
     ButtonCallback doButtonUp = nullptr;
     ButtonCallback doButtonDown = nullptr;

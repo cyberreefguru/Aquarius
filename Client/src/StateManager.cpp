@@ -59,16 +59,17 @@ void StateManager::eventHandler(void *arg, esp_event_base_t base, int32_t id, vo
     switch (event)
     {
     case ActionEvent::INITIALIZING:
+        processing = false;
+        configure = false;
         // setStatusMessage("Initializing", true);
         break;
     case ActionEvent::WAITING:
+        processing = false;
+        configure = false;
         if (lastEvent == ActionEvent::CONFIGURE)
         {
             initializeDisplay();
         }
-        // setStatusMessage("Waiting", true);
-        processing = false;
-        configure = false;
         break;
     case ActionEvent::MSG_RECEIVED:
         // setStatusMessage("Msg Received", true);
@@ -99,11 +100,15 @@ void StateManager::eventHandler(void *arg, esp_event_base_t base, int32_t id, vo
         break;
     case ActionEvent::MQTT_DOWN:
         mqtt = false;
+        processing = false;
+        configure = false;
         // setStatusMessage("MQTT ERROR");
         // setNetworkStatus(false);
         break;
     case ActionEvent::MQTT_UP:
         mqtt = true;
+        processing = false;
+        configure = false;
         // setStatusMessage("MQTT UP");
         // setNetworkStatus(false);
         break;

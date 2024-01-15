@@ -19,20 +19,20 @@
 
 #define KEY_NODE_ID "id"
 
-#define KEY_HOST_NAME "wifi.hostname"
-#define KEY_WIFI_SSID "wifi.ssid"
-#define KEY_WIFI_PASSWORD "wifi.password"
-#define KEY_WIFI_RETRIES "wifi.retries"
-#define KEY_WIFI_DELAY "wifi.delay"
-#define KEY_WIFI_TIMEOUT "wifi.timeout"
+#define KEY_HOST_NAME "w.hostname"
+#define KEY_WIFI_SSID "w.ssid"
+#define KEY_WIFI_PASSWORD "w.password"
+#define KEY_WIFI_RETRIES "w.retries"
+#define KEY_WIFI_DELAY "w.delay"
+#define KEY_WIFI_TIMEOUT "w.timeout"
 
-#define KEY_MQTT_SERVER "mqtt.server"
-#define KEY_MQTT_PORT "mqtt.port"
-#define KEY_MQTT_USER "mqtt.user"
-#define KEY_MQTT_PASSWORD "mqtt.pass"
-#define KEY_MQTT_RETRIES "mqtt.retries"
-#define KEY_MQTT_DELAY "mqtt.delay"
-#define KEY_MQTT_TIMEOUT "mqtt.timeout"
+#define KEY_MQTT_SERVER "m.server"
+#define KEY_MQTT_PORT "manager.port"
+#define KEY_MQTT_USER "m.user"
+#define KEY_MQTT_PASSWORD "m.pass"
+#define KEY_MQTT_RETRIES "m.retries"
+#define KEY_MQTT_DELAY "m.delay"
+#define KEY_MQTT_TIMEOUT "m.timeout"
 
 #define KEY_COLOR_INITIALIZE "c.init"
 #define KEY_COLOR_CONFIGURE "c.config"
@@ -48,8 +48,8 @@
 #define KEY_COLOR_MQTT_DOWN "c.m.down"
 #define KEY_COLOR_MQTT_UP "c.m.up"
 
-#define KEY_COLOR_ACTIVE "color.active"
-#define KEY_COLOR_DEACTIVE "color.deactive"
+#define KEY_COLOR_ACTIVE "c.active"
+#define KEY_COLOR_DEACTIVE "c.deactive"
 
 #define KEY_SERVO_START "s.start"
 #define KEY_SERVO_STOP "s.stop"
@@ -58,15 +58,18 @@
 
 #define KEY_TARGETS "ts"
 #define KEY_TARGET "t"
-#define KEY_TARGET_NODE_ID  "t.nid"
-#define KEY_TARGET_START_DELAY  "t.sd"
-#define KEY_TARGET_END_DELAY  "t.ed"
+#define KEY_TARGET_NODE_ID  "nid"
+#define KEY_TARGET_START_DELAY  "sd"
+#define KEY_TARGET_END_DELAY  "ed"
 
 #define KEY_DISPLAY_SIZE "d.s"
 
 #define KEY_BRIGHTNESS_SCREEN "b.s"
 #define KEY_BRIGHTNESS_LED "b.i"
 
+#define MAX_TARGETS 10
+#define TARGET_BUFF_SIZE ((43*MAX_TARGETS)+(MAX_TARGETS-1)+9)
+#define DEFAULT_TARGETS "{\"ts\":[{\"nid\":2,\"sd\":0,\"ed\":0}]}"
 
 #define DEFAULT_NODE_ID 1
 #define DEFAULT_DELAY 500
@@ -182,6 +185,8 @@ private:
 
     char mqtt_user[32];
     char mqtt_pass[32];
+    char targets[TARGET_BUFF_SIZE];
+
 };
 
 class DisplaySize

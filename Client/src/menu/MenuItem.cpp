@@ -21,12 +21,6 @@ MenuItem::~MenuItem()
 {
 }
 
-
-// void MenuItem::onDisplay()
-// {
-//     onDisplay(false);
-// }
-
 void MenuItem::onEvent(ButtonEvent be)
 {
    Log.traceln("MenuItem.onEvent - BEGIN");
@@ -41,11 +35,11 @@ void MenuItem::onEvent(ButtonEvent be)
     case ButtonEvent::LEFT:
         onButtonLeft();
         break;
-    case ButtonEvent::PUSH:
-        onButtonPush();
-        break;
     case ButtonEvent::RIGHT:
         onButtonRight();
+        break;
+    case ButtonEvent::PUSH:
+        onButtonPush();
         break;
     default:
         break;

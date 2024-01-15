@@ -15,7 +15,7 @@ ColorListMenu::ColorListMenu(menu_label_t label, menu_title_t title, menu_prompt
     this->key = key;
 
     windowSize = menuManager.getScreenMaxY(); // subtract for menu name
-    windowStart = 0;
+    windowStart = 0; // TODO - set according to current selected value
     activeIndex = windowStart;
 }
 
@@ -31,7 +31,7 @@ void ColorListMenu::onDisplay(bool active)
     displayManager.setCursor(0, 0);
     displayManager.println(menuTitle);
     uint8_t windowEnd = windowStart + windowSize - 1;
-    Log.traceln("ListMenu::onDisplay - start=%d, end=%d, ai=%d, ws=%d, ni=%d", windowStart, windowEnd, activeIndex, windowSize, numItems);
+    Log.traceln("ColorListMenu::onDisplay - start=%d, end=%d, ai=%d, ws=%d, ni=%d", windowStart, windowEnd, activeIndex, windowSize, numItems);
     for (uint8_t i = windowStart; i <= windowEnd; i++)
     {
         if (i == activeIndex)
@@ -42,6 +42,7 @@ void ColorListMenu::onDisplay(bool active)
         {
             displayManager.setTextColor(WHITE);
         }
+        displayManager.print(menuPrompt);
         displayManager.println(menuColors[i]->name);
         displayManager.setTextColor(WHITE);
     }
