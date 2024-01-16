@@ -5,6 +5,10 @@
  *      Author: cyberreefguru
  */
 #include "MenuManager.h" // TODO: fix this
+#include "StateManager.h"
+#include "DisplayManager.h"
+#include "ActionEventManager.h"
+#include "InputEventManager.h"
 
 MenuItem::MenuItem()
 {
@@ -15,10 +19,6 @@ MenuItem::MenuItem(menu_label_t label, menu_title_t title, menu_prompt_t prompt)
     this->menuTitle = title;
     this->menuLabel = label;
     this->menuPrompt = prompt;
-}
-
-MenuItem::~MenuItem()
-{
 }
 
 void MenuItem::onEvent(ButtonEvent be)

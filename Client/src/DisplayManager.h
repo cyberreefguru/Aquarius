@@ -53,9 +53,13 @@ public:
     void setRefresh(bool r=true);
     void setSize(DisplaySize size);
     void print(uint8_t d);
+    void print(uint16_t d);
+    void print(uint32_t d);
+    void print(float f);
+    void print(double d);
     void print(const char * m);
-    void print(String s);
     void println(const char * m);
+    void print(String s);
     void printf(const char *format, ...);
     void println();
     void clear();
@@ -65,7 +69,17 @@ public:
     void setTextColor(uint16_t fg);
     void setTextColor(uint16_t fg, uint16_t bg);
     void setBrightness(uint8_t v);
+    void dim(bool b);
+    void setCursorXY(uint16_t x, uint16_t y);
+    void setCursorX(uint16_t x);
+    void setCursorY(uint16_t y);
+    uint16_t getCursorX();
+    uint16_t getCursorY();
+    void addCursorX(int16_t x);
+    void addCursorY(int16_t y);
+    void addCursor(int16_t x, int16_t y);
 
+        
 protected:
     Adafruit_SSD1306 ssd1306;
     DisplaySize size;

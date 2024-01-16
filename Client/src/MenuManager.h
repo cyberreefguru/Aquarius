@@ -23,16 +23,7 @@
 #include "Helper.h"
 #include "PreferenceManager.h"
 
-#include "menu/MenuColor.h"
-
 #include "menu/MenuItem.h"
-#include "menu/ListMenu.h"
-#include "menu/NumberInputItem.h"
-#include "menu/SimpleMenuItem.h"
-#include "menu/ExitMenuItem.h"
-#include "menu/MultiNumberInputItem.h"
-#include "menu/ActionMenuItem.h"
-
 
 // #include "menu/ColorListItem.h"
 // #include "menu/BrightnessMenuItem.h"
@@ -236,7 +227,7 @@ public:
     void inputEventHandler(void *args, esp_event_base_t base, int32_t id, void *data);
     void actionEventHandler(void *args, esp_event_base_t base, int32_t id, void *data);
 
-    void doExit();
+    void doExit(bool active);
     void onResetPush();
     void onResetButton();
 

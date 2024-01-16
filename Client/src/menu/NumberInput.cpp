@@ -5,6 +5,7 @@
  *      Author: cyberreefguru
  */
 #include "NumberInput.h"
+#include "DisplayManager.h"
 
 NumberInput::NumberInput(menu_label_t label, menu_title_t title, menu_prompt_t prompt, uint32_t *value, uint8_t numDigits, uint8_t decimal)
 {
@@ -28,6 +29,13 @@ NumberInput::~NumberInput()
 void NumberInput::onDisplay(bool active)
 {
     Log.traceln("NumberInput::onDisplay - BEGIN");
+
+    if (menuPrompt == nullptr)
+    {
+        Log.errorln("NumberInput::onDisplay - Item missing labels!");
+        return;
+    }
+
     Log.traceln("NumberInput::onDisplay: value=%d", *value);
 
     displayManager.print(menuPrompt);

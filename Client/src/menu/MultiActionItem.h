@@ -12,9 +12,8 @@
 #include <Arduino.h>
 #include <ArduinoLog.h>
 
-// #include "ActionMenuItem.h"
-// #include "MenuManager.h"
-
+#include "MenuItem.h"
+#include "ActionButtonItem.h"
 
 class MultiActionItem : public MenuItem
 {
@@ -34,11 +33,10 @@ public:
     virtual void onOk();
     virtual void onCancel();
 
-
 protected:
     uint8_t curItem = 0;
-    ActionMenuItem *ok = nullptr;
-    ActionMenuItem *cancel = nullptr;
+    ActionButtonItem *ok = nullptr;
+    ActionButtonItem *cancel = nullptr;
 
 };
 

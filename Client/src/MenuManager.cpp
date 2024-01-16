@@ -5,8 +5,20 @@
  *      Author: cyberreefguru
  */
 #include "MenuManager.h"
+
+#include "menu/MenuColor.h"
+
+#include "menu/ListMenu.h"
+#include "menu/NumberInputItem.h"
+#include "menu/SimpleMenuItem.h"
+#include "menu/ExitMenuItem.h"
+#include "menu/MultiNumberInputItem.h"
+#include "menu/ActionMenuItem.h"
 #include "menu/MultiActionItem.h"
 #include "menu/ResetMenuItem.h"
+#include "menu/ActionNumberInput.h"
+
+using namespace std::placeholders;
 
 MenuManager menuManager;
 
@@ -42,21 +54,21 @@ NumberInputItem sensor = NumberInputItem("> Sensor Threshold", "Sensor Threshhol
 NumberInputItem brightness = NumberInputItem("> Brightness", "Brightness:", "> ", &vSensor, 3);
 
 // ExitMenuItem mexit = ExitMenuItem();
+// NumberInput servoStart = NumberInput("Start> ", "Start: ", "Start> ", &vServoStart, 3);
+// NumberInput servoEnd = NumberInput("End> ", "End: ", "End> ", &vServoEnd, 3);
+// MenuItem *si[2] = {&servoStart, &servoEnd};
+// MultiNumberInputItem servoMenu = MultiNumberInputItem("> Servo Settings", "Servo Values:", si, 2);
 
-NumberInput servoStart = NumberInput("Start> ", "Start: ", "Start> ", &vServoStart, 3);
-NumberInput servoEnd = NumberInput("End> ", "End: ", "End> ", &vServoEnd, 3);
-
-MenuItem *si[2] = {&servoStart, &servoEnd};
-
-MultiNumberInputItem servoMenu = MultiNumberInputItem("> Servo Settings", "Servo Values:", si, 2);
-
-ActionMenuItem mReset = ActionMenuItem("> Factory Reset", "Factory Reset?\n", "Press to Reset", std::bind(&MenuManager::onResetPush, menuManager));
+ActionMenuItem mReset = ActionMenuItem("> Factory Reset", "Factory Reset?", "Press to Reset", std::bind(&MenuManager::onResetPush, menuManager));
 ActionMenuItem mExit = ActionMenuItem("> Exit", "Exit", "> Exit", std::bind(&MenuManager::onResetButton, menuManager));
 
-// ActionMenuItem sStart = ActionMenuItem("Start> ", "Start: ", "Start> ", std::bind(&MenuManager::onServoStart, menuManager));
-// ActionMenuItem sEnd = ActionMenuItem("End> ", "End: ", "End> ", std::bind(&MenuManager::onServoEnd, menuManager));
-// ActionMenuItem *amts[2] = {&sStart, &sEnd};
-// MultiActionItem sMenu = MultiActionItem("> Servo A Settings", "Servo A Values:", amts, 2);
+ActionNumberInput mStart = ActionNumberInput("Start> ", "Start: ", "Start> ", &vServoStart, 3);
+ActionNumberInput mEnd = ActionNumberInput("End> ", "End: ", "End> ", &vServoEnd, 3);
+
+// ActionMenuItem mStart = ActionMenuItem("Start> ", "Start: ", "Start> ", std::bind(&MenuManager::onServoStart, menuManager));
+// ActionMenuItem mEnd = ActionMenuItem("End> ", "End: ", "End> ", std::bind(&MenuManager::onServoEnd, menuManager));
+ActionMenuItem *amts[2] = {&mStart, &mEnd};
+MultiActionItem mServo = MultiActionItem("> Servo A Settings", "Servo A Values:", amts, 2);
 
 // ResetMenuItem mreset = ResetMenuItem();
 
@@ -66,11 +78,12 @@ MenuItem *mmItems[] = {
     &selColor,
     &brightness,
     &sensor,
-    &servoMenu,
+    // &servoMenu,
+    &mServo,
     &mReset,
     &mExit,
 };
-ListMenu mainMenu = ListMenu("> Main Menu", "Main Menu:", "> ", mmItems, 8);
+ListMenu mainMenu = ListMenu("> Main Menu", "Main Menu:", "> ", mmItems, 9);
 
 MenuManager::MenuManager()
 {
@@ -120,7 +133,7 @@ void MenuManager::initialize()
                              std::bind(&MenuManager::onResetButton, this),
                              std::bind(&MenuManager::onResetPush, this));
 
-    mExit.setDisplayCallback(std::bind(&MenuManager::doExit, this));
+    mExit.setDisplayCallback(std::bind(&MenuManager::doExit, this, _1));
 
     menus.push(&mainMenu);
 
@@ -187,7 +200,7 @@ void MenuManager::push(MenuItem *item)
 {
     if (item != nullptr)
     {
-        Log.traceln("Push: %s", item->getMenuTitle());
+        Log.traceln("MenuManager::push - %s", item->getMenuTitle());
         // item->setActive(true);
         menus.push(item);
     }
@@ -246,7 +259,7 @@ void MenuManager::display()
     Log.traceln("MenuManager::display: END");
 }
 
-void MenuManager::doExit()
+void MenuManager::doExit(bool active)
 {
     Log.traceln("MenuManager::doExit - BEGIN");
     pop();

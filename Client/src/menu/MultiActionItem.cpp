@@ -8,6 +8,8 @@
 #include "MultiActionItem.h"
 #include "ActionMenuItem.h"
 
+using namespace std::placeholders;
+
 MultiActionItem::MultiActionItem(menu_label_t label, menu_title_t title, ActionMenuItem *items[], uint8_t numItems)
 {
     this->menuTitle = title;
@@ -16,10 +18,8 @@ MultiActionItem::MultiActionItem(menu_label_t label, menu_title_t title, ActionM
     this->items = (MenuItem **)items;
     this->numItems = numItems;
 
-    //     // ok = new ActionMenuItem("OK", "", "OK", this->item);
-    //     // cancel = new ActionMenuItem("CANCEL", "", "CANCEL", this->item);
-    this->ok = new ActionMenuItem("OK", "", "OK", std::bind(&MultiActionItem::onOk, this));
-    this->cancel = new ActionMenuItem("CANCEL", "", "CANCEL", std::bind(&MultiActionItem::onCancel, this));
+    this->ok = new ActionButtonItem("OK", std::bind(&MultiActionItem::onOk, this));
+    this->cancel = new ActionButtonItem("CANCEL", std::bind(&MultiActionItem::onCancel, this));
 }
 
 MultiActionItem::~MultiActionItem()
@@ -31,6 +31,8 @@ MultiActionItem::~MultiActionItem()
 
 void MultiActionItem::onOk()
 {
+    Log.traceln("MultiActionItem::onOk - BEGIN");
+
     // Execute action for each item
     for (uint8_t i = 0; i < numItems; i++)
     {
@@ -39,10 +41,14 @@ void MultiActionItem::onOk()
 
     // Reset and clear menu item
     onCancel();
+
+    Log.traceln("MultiActionItem::onOk - END");
 }
 
 void MultiActionItem::onCancel()
 {
+    Log.traceln("MultiActionItem::onCancel - BEGIN");
+
     // Reset current item
     curItem = 0;
 
@@ -51,26 +57,31 @@ void MultiActionItem::onCancel()
 
     // display the currnet top of the queue
     menuManager.display();
+
+    Log.traceln("MultiActionItem::onCancel - END");
 }
 
 void MultiActionItem::onDisplay(bool active)
 {
     Log.traceln("MultiActionItem::onDisplay - BEGIN");
-    if (menuLabel == nullptr)
+
+    if (menuTitle == nullptr)
     {
-        Log.errorln("MultiActionItem::onDisplay - Label is null!");
+        Log.errorln("MultiActionItem::onDisplay - title is null!");
         return;
     }
 
     displayManager.clear();
     displayManager.setCursor(0, 0);
     displayManager.println(menuTitle);
+    displayManager.addCursorY(4); // put a little gap beween title and menu item
 
     for (uint8_t i = 0; i < numItems; i++)
     {
         Log.traceln("Displaying Action[%d]", i);
         ((ActionMenuItem *)items[i])->onDisplay((curItem == i));
         displayManager.println(); // new line between items
+        displayManager.addCursorY(2); // put a little gap beween title and menu item
     }
 
     displayManager.println(); // new line between items and buttons

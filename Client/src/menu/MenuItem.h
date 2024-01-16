@@ -14,63 +14,58 @@
 #include <ArduinoLog.h>
 
 #include "ButtonEvent.h"
-#include "StateManager.h"
-#include "DisplayManager.h"
-#include "ActionEventManager.h"
-#include "InputEventManager.h"
 
-typedef const char* menu_title_t;
-typedef const char* menu_label_t;
-typedef const char* menu_prompt_t;
+typedef const char *menu_title_t;
+typedef const char *menu_label_t;
+typedef const char *menu_prompt_t;
 
 class MenuItem
 {
 public:
     MenuItem(menu_label_t label, menu_title_t title, menu_prompt_t prompt);
-    virtual ~MenuItem();
+    virtual ~MenuItem(){}
 
-    const char* getMenuLabel()
+    const char *getMenuLabel()
     {
         return menuLabel;
     }
-    const char* getMenuTitle()
+    const char *getMenuTitle()
     {
         return menuTitle;
     }
-    const char* getMenuPrompt()
+    const char *getMenuPrompt()
     {
         return menuPrompt;
     }
     bool hasChildren()
     {
-        return (numItems>0 && items != nullptr);
+        return (numItems > 0 && items != nullptr);
     }
     uint8_t getNumberChildren()
     {
         return numItems;
     }
-    MenuItem** getChildren()
+    MenuItem **getChildren()
     {
         return items;
     }
 
     virtual void onEvent(ButtonEvent be);
     // virtual void onDisplay();
-    virtual void onDisplay(bool active)=0; // must implement
-    virtual void onButtonUp(){}
-    virtual void onButtonDown(){}
-    virtual void onButtonLeft(){}
-    virtual void onButtonRight(){}
-    virtual void onButtonPush(){}
+    virtual void onDisplay(bool active) = 0; // must implement
+    virtual void onButtonUp() {}
+    virtual void onButtonDown() {}
+    virtual void onButtonLeft() {}
+    virtual void onButtonRight() {}
+    virtual void onButtonPush() {}
 
 protected:
     MenuItem();
-    const char *menuLabel; // shown when in a list
-    const char *menuTitle; // shown when onDisplay called
-    const char *menuPrompt; // shown when onDisplay called
-    uint8_t numItems = 0; // TODO - move to ListMenuItem or something
+    const char *menuLabel;      // shown when in a list
+    const char *menuTitle;      // shown when onDisplay called
+    const char *menuPrompt;     // shown when onDisplay called
+    uint8_t numItems = 0;       // TODO - move to ListMenuItem or something
     MenuItem **items = nullptr; // TODO - move to ListMenuItem or something
-    
 };
 
 #endif

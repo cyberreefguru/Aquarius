@@ -13,35 +13,22 @@
 #include <Arduino.h>
 #include <ArduinoLog.h>
 
-#include "MenuManager.h"
+#include "MenuItem.h"
 
-enum class ActionMenuType
-{
-    OK = 0,
-    CANCEL,
-};
-inline constexpr unsigned operator+(ActionMenuType const val) { return static_cast<unsigned>(val); }
-inline const char *operator++(ActionMenuType c)
-{
-    switch (c)
-    {
-    case ActionMenuType::OK:
-        return "OK";
-        break;
-    case ActionMenuType::CANCEL:
-        return "CANCEL";
-        break;
-    }
-}
+///@brief type definition for onDisplay callback
+typedef std::function<void(bool active)> DisplayCallback;
 
-typedef std::function<void()> DisplayCallback;
+///@brief type definitino for onAction callback
 typedef std::function<void()> ActionCallback;
+
+///@brief type definitino for onButtonXXX callback
 typedef std::function<void()> ButtonCallback;
 
 class ActionMenuItem : public MenuItem
 {
 public:
     ActionMenuItem() {}
+    ActionMenuItem(menu_label_t label, menu_title_t title, menu_prompt_t prompt);
     ActionMenuItem(menu_label_t label, menu_title_t title, menu_prompt_t prompt, ActionCallback cb);
     virtual ~ActionMenuItem() {}
 
@@ -51,17 +38,15 @@ public:
                            ButtonCallback left, ButtonCallback right,
                            ButtonCallback push);
 
-    void onAction();
-    void onDisplay(bool active);
-    //virtual void onDisplay() override;
+    virtual void onAction();
+    virtual void onDisplay(bool active);
     virtual void onButtonUp() override;
     virtual void onButtonDown() override;
     virtual void onButtonLeft() override;
     virtual void onButtonRight() override;
     virtual void onButtonPush() override;
 
-
-private:
+protected:
     DisplayCallback doDisplay = nullptr;
     ActionCallback doAction = nullptr;
     ButtonCallback doButtonUp = nullptr;
