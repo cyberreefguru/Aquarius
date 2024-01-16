@@ -13,9 +13,6 @@
 #include <Arduino.h>
 #include <ArduinoLog.h>
 
-// #include "MenuManager.h"
-
-#include "MenuItem.h"
 #include "ActionMenuItem.h"
 
 class ResetMenuItem : public ActionMenuItem

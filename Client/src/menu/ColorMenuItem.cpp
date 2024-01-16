@@ -7,6 +7,10 @@
 
 #include "ColorMenuItem.h"
 
+#include "DisplayManager.h"
+#include "MenuManager.h"
+
+
 ColorMenuItem::ColorMenuItem(const MenuColor *color)
 {
     this->color = color;

@@ -6,6 +6,10 @@
  */
 
 #include "ExitMenuItem.h"
+#include "MenuManager.h"
+// #include "DisplayManager.h"
+#include "StateManager.h"
+#include "ActionEventManager.h"
 
 ExitMenuItem::ExitMenuItem()
 {

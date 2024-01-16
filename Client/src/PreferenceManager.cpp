@@ -121,7 +121,7 @@ void PreferenceManager::reset()
     preferences.putBytes(KEY_TARGETS, targets, strnlen(targets, TARGET_BUFF_SIZE));
 }
 
-uint8_t PreferenceManager::getId()
+uint8_t PreferenceManager::getNodeId()
 {
     return preferences.getUChar(KEY_NODE_ID, DEFAULT_NODE_ID);
 }
@@ -240,6 +240,14 @@ uint8_t PreferenceManager::getServoStop()
 uint8_t PreferenceManager::getSensorThreshold()
 {
     return preferences.getShort(KEY_SENSOR_THRESHOLD, DEFAULT_SENSOR_THRESHOLD);
+}
+uint8_t PreferenceManager::getScreenBrightness()
+{
+    return preferences.getShort(KEY_BRIGHTNESS_SCREEN, DEFAULT_BRIGHTNESS_SCREEN);
+}
+uint8_t PreferenceManager::getLedBrightness()
+{
+    return preferences.getShort(KEY_BRIGHTNESS_LED, DEFAULT_BRIGHTNESS_LED);
 }
 uint8_t PreferenceManager::getDisplaySize()
 {

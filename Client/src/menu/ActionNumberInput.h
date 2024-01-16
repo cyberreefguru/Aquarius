@@ -22,21 +22,23 @@ class ActionNumberInput : public ActionMenuItem
 {
 public:
     ActionNumberInput() {}
-    ActionNumberInput(menu_label_t label, menu_title_t title, menu_prompt_t prompt, uint32_t *value, uint8_t numDigits, uint8_t decimal=0);
+    ActionNumberInput(menu_prompt_t prompt, ActionCallback onAction, uint8_t numDigits, uint8_t decimal=0);
+    // ActionNumberInput(menu_label_t label, menu_title_t title, menu_prompt_t prompt, uint8_t numDigits, uint8_t decimal=0);
     ~ActionNumberInput();
 
-    void initializeValue();
-    void setValue();
+    void setValue(uint32_t v);
+    uint32_t getValue();
 
     void onDisplay(bool active) override;
-    void onAction() override;
+    //void onAction() override;
     void onButtonUp() override;
     void onButtonDown() override;
     void onButtonLeft() override;
     void onButtonRight() override;
     void onButtonPush() override;
 
-    uint32_t *value;
+protected:
+    // uint32_t value;
     uint8_t curDigit;
     uint8_t numDigits;
     uint8_t decimal;

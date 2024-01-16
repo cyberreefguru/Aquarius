@@ -114,7 +114,8 @@
 #define DEFAULT_DISPLAY_SIZE DisplaySize::Regular
 
 #define DEFAULT_BRIGHTNESS_SCREEN 255
-#define DEFAULT_LED_BRIGHTNESS 25
+#define DEFAULT_BRIGHTNESS_LED 25
+
 #define MAX_HOSTNAME 64
 #define MAX_SSID 32
 #define MAX_USER_ID 32
@@ -129,7 +130,7 @@ public:
 
     void reset();
 
-    uint8_t getId();
+    uint8_t getNodeId();
 
     char *getWifiSsid();
     char *getWifiPassword();
@@ -162,6 +163,9 @@ public:
     uint8_t getServoStop();
 
     uint8_t getSensorThreshold();
+
+    uint8_t getScreenBrightness();
+    uint8_t getLedBrightness();
 
     uint8_t getDisplaySize();
 

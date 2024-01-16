@@ -5,15 +5,15 @@
  *      Author: cyberreefguru
  */
 
-#ifndef EMI_H
-#define EMI_H
+#ifndef ExitMenuItem_H
+#define ExitMenuItem_H
 
 #pragma once
 
 #include <Arduino.h>
 #include <ArduinoLog.h>
 
-#include "MenuManager.h"
+#include "MenuItem.h"
 
 class ExitMenuItem : public MenuItem
 {

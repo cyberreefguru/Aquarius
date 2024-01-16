@@ -6,6 +6,7 @@
  */
 
 #include "ResetMenuItem.h"
+#include "DisplayManager.h"
 #include "MenuManager.h"
 
 ResetMenuItem::ResetMenuItem()

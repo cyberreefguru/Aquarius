@@ -6,6 +6,8 @@
  */
 
 #include "SimpleMenuItem.h"
+#include "DisplayManager.h"
+#include "MenuManager.h"
 
 SimpleMenuItem::~SimpleMenuItem()
 {

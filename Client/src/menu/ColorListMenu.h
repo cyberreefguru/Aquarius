@@ -14,8 +14,18 @@
 
 #include "ListMenu.h"
 
-// NOTE: The definition of the ColorListMenu is in 
-//       ListMenu because of circular references that
-//       I simply could not resolve. I will keep trying.
+
+class ColorListMenu : public ListMenu
+{
+public:
+    ColorListMenu(menu_label_t label, menu_title_t title, menu_prompt_t prompt, const char* key);
+    virtual ~ColorListMenu();
+    // virtual void onDisplay();
+    virtual void onDisplay(bool active) override;
+    virtual void onButtonPush() override;
+
+    // std::bind(&MainMenu::save, this)
+    // onActivateCallback(item, b);
+};
 
 #endif

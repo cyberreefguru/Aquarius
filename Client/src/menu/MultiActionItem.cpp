@@ -5,6 +5,7 @@
  *      Author: cyberreefguru
  */
 #include "MenuManager.h"
+#include "DisplayManager.h"
 #include "MultiActionItem.h"
 #include "ActionMenuItem.h"
 
@@ -36,6 +37,7 @@ void MultiActionItem::onOk()
     // Execute action for each item
     for (uint8_t i = 0; i < numItems; i++)
     {
+        Log.traceln("MultiActionItem::onOk - calling onAction for item %d", i);
         ((ActionMenuItem *)items[i])->onAction();
     }
 

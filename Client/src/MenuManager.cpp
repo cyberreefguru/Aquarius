@@ -6,17 +6,22 @@
  */
 #include "MenuManager.h"
 
+#include "StateManager.h"
+#include "DisplayManager.h"
+#include "ActionEventManager.h"
+#include "InputEventManager.h"
+#include "PreferenceManager.h"
+
 #include "menu/MenuColor.h"
 
 #include "menu/ListMenu.h"
-#include "menu/NumberInputItem.h"
 #include "menu/SimpleMenuItem.h"
 #include "menu/ExitMenuItem.h"
-#include "menu/MultiNumberInputItem.h"
 #include "menu/ActionMenuItem.h"
 #include "menu/MultiActionItem.h"
 #include "menu/ResetMenuItem.h"
 #include "menu/ActionNumberInput.h"
+#include "menu/ColorListMenu.h"
 
 using namespace std::placeholders;
 
@@ -41,49 +46,47 @@ ColorListMenu colorProc = ColorListMenu("> Processing", "Processing Color:", "> 
 ColorListMenu colorSend = ColorListMenu("> Send", "Send Color:", "> ", KEY_COLOR_SEND);
 ColorListMenu colorWait = ColorListMenu("> Wait", "Wait Color:", "> ", KEY_COLOR_WAIT);
 
-MenuItem *cmItems[10] = {&colorInit, &colorConn, &colorConfig, &colorWait,
+MenuItem *cis[10] = {&colorInit, &colorConn, &colorConfig, &colorWait,
                          &colorRec, &colorProc, &colorSend,
                          &colorActive, &colorInact, &colorErr};
 
-ListMenu selColor = ListMenu("> Colors", "Colors:", "> ", cmItems, 10);
+ListMenu mColorsItem = ListMenu("> Colors", "Colors:", "> ", cis, 10);
 
-NumberInputItem ni = NumberInputItem("> Node ID", "Node ID:", "> ", &vNodeId, 2);
-SimpleMenuItem targets = SimpleMenuItem("> Targets");
+ActionNumberInput ni = ActionNumberInput("> ", std::bind(&MenuManager::doNodeId, menuManager), 2);
+ActionMenuItem *nis[1] = {&ni};
+MultiActionItem mNodeIdItem = MultiActionItem("> Node ID", "Node ID:", nis, 1);
 
-NumberInputItem sensor = NumberInputItem("> Sensor Threshold", "Sensor Threshhold:", ">", &vSensor, 3);
-NumberInputItem brightness = NumberInputItem("> Brightness", "Brightness:", "> ", &vSensor, 3);
+SimpleMenuItem mTargetsItem = SimpleMenuItem("> Targets");
 
-// ExitMenuItem mexit = ExitMenuItem();
-// NumberInput servoStart = NumberInput("Start> ", "Start: ", "Start> ", &vServoStart, 3);
-// NumberInput servoEnd = NumberInput("End> ", "End: ", "End> ", &vServoEnd, 3);
-// MenuItem *si[2] = {&servoStart, &servoEnd};
-// MultiNumberInputItem servoMenu = MultiNumberInputItem("> Servo Settings", "Servo Values:", si, 2);
+ActionNumberInput si = ActionNumberInput("Sensor > ", std::bind(&MenuManager::doSensor, menuManager), 3);
+ActionMenuItem *sis[1] = {&si};
+MultiActionItem mSensorItem = MultiActionItem("> Sensor Threshold", "Threshhold:", sis, 1);
 
-ActionMenuItem mReset = ActionMenuItem("> Factory Reset", "Factory Reset?", "Press to Reset", std::bind(&MenuManager::onResetPush, menuManager));
-ActionMenuItem mExit = ActionMenuItem("> Exit", "Exit", "> Exit", std::bind(&MenuManager::onResetButton, menuManager));
 
-ActionNumberInput mStart = ActionNumberInput("Start> ", "Start: ", "Start> ", &vServoStart, 3);
-ActionNumberInput mEnd = ActionNumberInput("End> ", "End: ", "End> ", &vServoEnd, 3);
+ActionNumberInput sbi = ActionNumberInput("Screen > ", std::bind(&MenuManager::doScreenBrightness, menuManager), 3);
+ActionNumberInput lbi = ActionNumberInput("LED    > ", std::bind(&MenuManager::doLedBrightness, menuManager), 3);
+ActionMenuItem *bis[2] = {&sbi, &lbi};
+MultiActionItem mBrightnessItem = MultiActionItem("> Brightness", "Brightness:", bis, 2);
 
-// ActionMenuItem mStart = ActionMenuItem("Start> ", "Start: ", "Start> ", std::bind(&MenuManager::onServoStart, menuManager));
-// ActionMenuItem mEnd = ActionMenuItem("End> ", "End: ", "End> ", std::bind(&MenuManager::onServoEnd, menuManager));
-ActionMenuItem *amts[2] = {&mStart, &mEnd};
-MultiActionItem mServo = MultiActionItem("> Servo A Settings", "Servo A Values:", amts, 2);
+ActionNumberInput mStart = ActionNumberInput("Start> ", std::bind(&MenuManager::doServoStart, menuManager), 3);
+ActionNumberInput mStop =  ActionNumberInput("End  > ", std::bind(&MenuManager::doServoEnd, menuManager), 3);
+ActionMenuItem *amts[2] = {&mStart, &mStop};
+MultiActionItem mServoItem = MultiActionItem("> Servo A Settings", "Servo A Values:", amts, 2);
 
-// ResetMenuItem mreset = ResetMenuItem();
+ActionMenuItem mResetItem = ActionMenuItem("> Factory Reset", "Factory Reset?", "Press to Reset", std::bind(&MenuManager::onResetPush, menuManager));
+ActionMenuItem mExitItem = ActionMenuItem("> Exit", "Exit", "> Exit", std::bind(&MenuManager::popAndDisplay, menuManager));
 
 MenuItem *mmItems[] = {
-    &ni,
-    &targets,
-    &selColor,
-    &brightness,
-    &sensor,
-    // &servoMenu,
-    &mServo,
-    &mReset,
-    &mExit,
+    &mNodeIdItem,
+    &mTargetsItem,
+    &mColorsItem,
+    &mBrightnessItem,
+    &mSensorItem,
+    &mServoItem,
+    &mResetItem,
+    &mExitItem,
 };
-ListMenu mainMenu = ListMenu("> Main Menu", "Main Menu:", "> ", mmItems, 9);
+ListMenu mainMenu = ListMenu("> Main Menu", "Main Menu:", "> ", mmItems, 8);
 
 MenuManager::MenuManager()
 {
@@ -127,13 +130,20 @@ void MenuManager::initialize()
         Log.infoln("Added input event handler!");
     }
 
-    mReset.setButtonCallback(std::bind(&MenuManager::onResetButton, this),
-                             std::bind(&MenuManager::onResetButton, this),
-                             std::bind(&MenuManager::onResetButton, this),
-                             std::bind(&MenuManager::onResetButton, this),
+    ni.setValue( prefManager.getNodeId() );
+    sbi.setValue( prefManager.getScreenBrightness() );
+    lbi.setValue( prefManager.getLedBrightness() );
+    si.setValue( prefManager.getSensorThreshold() );
+    mStart.setValue(prefManager.getServoStart() );
+    mStop.setValue(prefManager.getServoStop() );
+
+    mResetItem.setButtonCallback(std::bind(&MenuManager::popAndDisplay, this),
+                             std::bind(&MenuManager::popAndDisplay, this),
+                             std::bind(&MenuManager::popAndDisplay, this),
+                             std::bind(&MenuManager::popAndDisplay, this),
                              std::bind(&MenuManager::onResetPush, this));
 
-    mExit.setDisplayCallback(std::bind(&MenuManager::doExit, this, _1));
+    mExitItem.setDisplayCallback(std::bind(&MenuManager::doExit, this, _1));
 
     menus.push(&mainMenu);
 
@@ -216,6 +226,7 @@ void MenuManager::pop()
     {
         // We are at the root node, so don't pop
         // Exit menu system
+        Log.warningln("MenuManager::pop - top of menu -- can't remove main menu");
         displayManager.clear();
         actionEventManager.postEvent(ActionEvent::WAITING);
         stateManager.configure = false;
@@ -226,7 +237,7 @@ void MenuManager::pop()
     menus.pop(&item);
     if (&item != nullptr)
     {
-        Log.traceln("Pop: %s", item->getMenuTitle());
+        Log.traceln("MenuManager::pop - %s", item->getMenuTitle());
     }
     else
     {
@@ -259,6 +270,46 @@ void MenuManager::display()
     Log.traceln("MenuManager::display: END");
 }
 
+void MenuManager::doNodeId()
+{
+    Log.traceln("MultiActionItem::doNodeId - setting node ID to %d", ni.getValue());
+
+    prefManager.set(KEY_NODE_ID, ni.getValue());
+
+    Log.traceln("MenuManager::doNodeId - END");
+}
+
+void MenuManager::doSensor()
+{
+    Log.traceln("MenuManager::doSensor - BEGIN");
+
+    pop();
+    displayManager.setRefresh(true);
+
+    Log.traceln("MenuManager::doSensor - END");
+}
+
+void MenuManager::doScreenBrightness()
+{
+    Log.traceln("MenuManager::doScreenBrightness - BEGIN");
+
+    pop();
+    displayManager.setRefresh(true);
+
+    Log.traceln("MenuManager::doScreenBrightness - END");
+}
+
+void MenuManager::doLedBrightness()
+{
+    Log.traceln("MenuManager::doLedBrightness - BEGIN");
+
+    pop();
+    displayManager.setRefresh(true);
+
+    Log.traceln("MenuManager::doLedBrightness - END");
+}
+
+
 void MenuManager::doExit(bool active)
 {
     Log.traceln("MenuManager::doExit - BEGIN");
@@ -274,20 +325,21 @@ void MenuManager::onResetPush()
     Log.infoln("Reseting to factory settings...");
     prefManager.reset();
     Log.infoln("Reset!");
-    onResetButton();
+    popAndDisplay();
 }
 
-void MenuManager::onResetButton()
+void MenuManager::popAndDisplay()
 {
     pop();
     display();
+    displayManager.setRefresh(true);
 }
 
-void MenuManager::onServoStart()
+void MenuManager::doServoStart()
 {
-    Log.infoln("MenuManager::onServoStart");
+    Log.infoln("MenuManager::doServoStart");
 }
-void MenuManager::onServoEnd()
+void MenuManager::doServoEnd()
 {
-    Log.infoln("MenuManager::onServoEnd");
+    Log.infoln("MenuManager::doServoEnd");
 }

@@ -172,7 +172,7 @@ void StateManager::setNode(bool refresh)
     displayManager.clearRow(NODE_ROW, NODE_COL, NODE_ROW, 8);
     displayManager.setCursor(NODE_ROW, NODE_COL);
     displayManager.print("ID ");
-    displayManager.printf("%3.3d", prefManager.getId());
+    displayManager.printf("%3.3d", prefManager.getNodeId());
     displayManager.print(": ");
     displayManager.setRefresh(refresh);
 }

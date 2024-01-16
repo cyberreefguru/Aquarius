@@ -7,18 +7,25 @@
 #include "ActionNumberInput.h"
 #include "DisplayManager.h"
 
-ActionNumberInput::ActionNumberInput(menu_label_t label, menu_title_t title, menu_prompt_t prompt, uint32_t *value, uint8_t numDigits, uint8_t decimal)
+/**
+ * @brief 
+ * @param prompt 
+ * @param doAction 
+ * @param numDigits 
+ * @param decimal 
+ */
+ActionNumberInput::ActionNumberInput(menu_prompt_t prompt, ActionCallback doAction, uint8_t numDigits, uint8_t decimal)
 {
-    this->menuLabel = label;
-    this->menuTitle = title;
+    this->menuLabel = prompt;
+    this->menuTitle = prompt;
     this->menuPrompt = prompt;
 
-    this->value = value;
+    this->doAction = doAction;
+
     this->numDigits = numDigits;
     this->curDigit = 0;
     this->decimal = decimal;
     this->inputBuff = (uint8_t *)new uint8_t[numDigits];
-    initializeValue();
 }
 
 ActionNumberInput::~ActionNumberInput()
@@ -26,10 +33,10 @@ ActionNumberInput::~ActionNumberInput()
     free(inputBuff);
 }
 
-void ActionNumberInput::onAction()
-{
-    setValue();
-}
+// void ActionNumberInput::onAction()
+// {
+//     setValue();
+// }
 
 void ActionNumberInput::onDisplay(bool active)
 {
@@ -40,8 +47,6 @@ void ActionNumberInput::onDisplay(bool active)
         Log.errorln("ActionNumberInput::onDisplay - Item missing labels!");
         return;
     }
-
-    Log.traceln("ActionNumberInput::onDisplay - %s > value=%d", menuLabel, *value);
 
     displayManager.print(menuPrompt);
     for (uint8_t i = 0; i < numDigits; i++)
@@ -138,9 +143,9 @@ void ActionNumberInput::onButtonPush()
     curDigit = 0;
 }
 
-void ActionNumberInput::setValue()
+uint32_t ActionNumberInput::getValue()
 {
-    Log.traceln("ActionNumberInput::setValue - current value - %d", *value);
+    Log.traceln("ActionNumberInput::getValue - BEGIN");
 
     uint32_t v = 0;
     uint8_t base = 1;
@@ -150,19 +155,20 @@ void ActionNumberInput::setValue()
         v += inputBuff[i] * base;
         base *= 10;
     }
-    *value = v;
-    Log.traceln("ActionNumberInput::setValue - new value - %d", *value);
+    Log.traceln("ActionNumberInput::getValue - value - %d", v);
+
+    return v;
 }
 
-void ActionNumberInput::initializeValue()
+void ActionNumberInput::setValue(uint32_t v)
 {
-    Log.traceln("ActionNumberInput::initializeValue - current value - %d", *value);
+    Log.traceln("ActionNumberInput::initializeValue - value=%d", v);
     uint8_t base = 1;
     for (uint8_t i = 0; i < numDigits; i++)
     {
-        this->inputBuff[i] = (*value / base) % 10;
+        this->inputBuff[i] = (v / base) % 10;
         // Log.traceln("ActionNumberInput::initializeValue - i=%d, v=%d, b=%d. ib=%d", i, *value, base, inputBuff[i]);
         base *= 10;
     }
-    Log.traceln("ActionNumberInput::initializeValue - new value - %d", *value);
+    Log.traceln("ActionNumberInput::initializeValue - END");
 }

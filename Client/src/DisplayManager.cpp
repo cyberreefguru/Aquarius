@@ -203,6 +203,11 @@ void DisplayManager::print(String s)
  */
 void DisplayManager::println(const char *m)
 {
+    if( m ==  nullptr )
+    {
+        Log.errorln("DisplayManager::println - string pointer is null!");
+        return;
+    }
     ssd1306.println(m);
 }
 

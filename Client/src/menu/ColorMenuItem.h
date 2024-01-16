@@ -13,7 +13,6 @@
 #include <ArduinoLog.h>
 
 #include "MenuItem.h"
-#include "ListMenu.h"
 #include "menu/MenuColor.h"
 
 class ColorMenuItem : public MenuItem
