@@ -11,7 +11,7 @@
 #include "PreferenceManager.h"
 #include "PortManager.h"
 #include "MenuManager.h"
-
+#include "TargetManager.h"
 #include "DisplayManager.h"
 
 // IPAddress server(192, 168, 30, 210);
@@ -56,6 +56,9 @@ void setup()
 
   // Initialize menu
   menuManager.initialize();
+
+  // Initialize target manager
+  targetManager.initialize();
 
   // Fire initialization event
   actionEventManager.postEvent(ActionEvent::INITIALIZING);

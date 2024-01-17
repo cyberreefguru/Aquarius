@@ -4,14 +4,15 @@
  *  Created on: Nov 17, 2023
  *      Author: cyberreefguru
  */
+#ifndef PreferenceManager_H
+#define PreferenceManager_H
+
 #pragma once
 
 #include <ArduinoLog.h>
-#include <ArduinoJson.h>
 
 #include <Preferences.h>
 
-#include "Target.h"
 #include "menu/MenuColor.h"
 
 #define NAMESPACE "aquarius"
@@ -69,10 +70,6 @@
 #define KEY_BRIGHTNESS_SCREEN "b.s"
 #define KEY_BRIGHTNESS_LED "b.i"
 
-#define MAX_TARGETS 10
-#define TARGET_BUFF_SIZE ((43*MAX_TARGETS)+(MAX_TARGETS-1)+9)
-#define DEFAULT_TARGETS "{\"ts\":[{\"nid\":2,\"sd\":0,\"ed\":0}]}"
-
 #define DEFAULT_NODE_ID 1
 #define DEFAULT_DELAY 500
 
@@ -117,6 +114,11 @@
 
 #define DEFAULT_BRIGHTNESS_SCREEN 255
 #define DEFAULT_BRIGHTNESS_LED 25
+
+#define MAX_TARGETS 10
+#define TARGET_BUFF_SIZE ((43*MAX_TARGETS)+(MAX_TARGETS-1)+9)
+#define DEFAULT_TARGETS "{\"ts\":[{\"nid\":2,\"sd\":0,\"ed\":0}]}"
+
 
 #define MAX_HOSTNAME 64
 #define MAX_SSID 32
@@ -172,20 +174,13 @@ public:
 
     uint8_t getDisplaySize();
 
+    char *getTargets();
+
     void set(char const *key, uint8_t v);
     void set(char const *key, uint16_t v);
     void set(char const *key, uint32_t v);
     void set(char const *key, char *v, uint8_t len);
     void set(char const *key, MenuColor color);
-
-    void addTarget(Target * target);
-    void removeTarget(uint8_t targetIndex);
-    Target* getTargets();
-
-protected: 
-
-    uint32_t targetsToString(); // turn into char[]
-    bool targetsFromString(); // turn into jsondocument
 
 private:
     boolean config = false;
@@ -203,10 +198,6 @@ private:
     char mqtt_pass[32];
 
     char targetsBuffer[TARGET_BUFF_SIZE];
-    StaticJsonDocument<TARGET_BUFF_SIZE> targetJson;
-    Target *targets = nullptr;
-    uint8_t numTargets = 0;
-
 
 };
 
@@ -248,4 +239,6 @@ private:
 
 #ifdef __cplusplus
 } // extern "C"
+#endif
+
 #endif

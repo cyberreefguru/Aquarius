@@ -4,6 +4,8 @@
  *  Created on: Nov 15, 2023
  *      Author: cyberreefguru
  */
+#ifndef MessageBroker_H
+#define MessageBroker_H
 
 #pragma once
 
@@ -132,4 +134,6 @@ extern MessageBroker messageBroker;
 
 #ifdef __cplusplus
 } // extern "C"
+#endif
+
 #endif

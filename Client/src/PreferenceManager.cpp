@@ -17,7 +17,6 @@ PreferenceManager::PreferenceManager()
 /** Destructor */
 PreferenceManager::~PreferenceManager()
 {
-    free(targets);
 }
 
 bool PreferenceManager::initialize()
@@ -50,8 +49,6 @@ bool PreferenceManager::initialize()
         Log.traceln("Mqtt User: '%s', Pwd: '%s'", mqtt_user, mqtt_pass);
         Log.traceln("Targets: '%s'", targetsBuffer);
 
-        // Parse stored target information
-        targetsFromString();
         Log.traceln("PreferenceManager::initialize - preferences initialized!");
     }
     else
@@ -60,52 +57,6 @@ bool PreferenceManager::initialize()
     }
 
     return b;
-}
-
-/**
- * @brief turns targets into a JSON string
- * @return number of bytes in string
- */
-uint32_t PreferenceManager::targetsToString()
-{
-    Log.traceln("PreferenceManager::targetsToString - BEGIN");
-
-    // Clear buffer
-    memset(targetsBuffer, 0, TARGET_BUFF_SIZE);
-
-    // turn json into string
-    uint32_t s = serializeJson(targetJson, targetsBuffer, TARGET_BUFF_SIZE);
-
-    return s;
-}
-
-bool PreferenceManager::targetsFromString()
-{
-    Log.traceln("PreferenceManager::targetsFromString - BEGIN");
-
-    targetJson.clear();
-    DeserializationError err = deserializeJson(targetJson, targetsBuffer);
-    if (err)
-    {
-        Log.errorln("PreferenceManager::targetsFromString - failed to parse input: '%s'", targetsBuffer);
-        return false;
-    }
-
-    JsonArray array = targetJson[KEY_TARGETS];
-    uint8_t numTargets = array.size();
-    targets = new Target[numTargets];
-    for (uint8_t i = 0; i < numTargets; i++)
-    {
-        JsonObject t = array[i];
-        targets[i].sourceNodeId = prefManager.getNodeId();
-        targets[i].targetNodeId = t[KEY_TARGET_NODE_ID];
-        targets[i].startDelay = t[KEY_TARGET_START_DELAY];
-        targets[i].endDelay = t[KEY_TARGET_END_DELAY];
-        Log.traceln("Creating target[%d] > %d", i, targets[i].targetNodeId);
-    }
-
-    Log.traceln("PreferenceManager::targetsFromString - END");
-    return true;
 }
 
 void PreferenceManager::zeroBuffers()
@@ -308,6 +259,12 @@ uint8_t PreferenceManager::getDisplaySize()
 {
     return preferences.getUChar(KEY_DISPLAY_SIZE);
 }
+char* PreferenceManager::getTargets()
+{
+    return targetsBuffer;
+}
+
+
 void PreferenceManager::set(char const *key, uint8_t v)
 {
     preferences.putUChar(key, v);
