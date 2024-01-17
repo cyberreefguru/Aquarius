@@ -86,7 +86,7 @@ protected:
 
 private:
     bool refresh = false;
-    uint8_t brightness = 255;
+    // uint8_t brightness = 255;
     void displayTask( void * pvParameters );
     TaskHandle_t displayTaskHandle = NULL;
 

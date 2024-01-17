@@ -12,6 +12,8 @@ MessageBroker::MessageBroker() {}
 
 void MessageBroker::initialize()
 {
+    Log.traceln("MessageBroker::initialize - BEGIN");
+
     // Initialize Wifi
     if (WiFi.isConnected())
     {
@@ -44,33 +46,36 @@ void MessageBroker::initialize()
     // Connect to WIFI 
     // If successful, event manager will connect to MQTT.
     connectToWifi();
+
+    Log.traceln("MessageBroker::initialize - END");
+
 }
 
 void MessageBroker::connectToWifi()
 {
-    Log.infoln("Connecting to WIFI...");
+    Log.infoln("MessageBroker::connectToWifi - Connecting to WIFI...");
     WiFi.begin(WIFI_SSID, WIFI_PASS);
 }
 
 void MessageBroker::onWifiEvent(WiFiEvent_t event, WiFiEventInfo_t info)
 {
-    Log.traceln("[WiFi-event] event: %s", Helper::toString(event));
+    Log.traceln("MessageBroker::onWifiEvent - [WiFi-event]: %s", Helper::toString(event));
     switch (event)
     {
     case SYSTEM_EVENT_STA_GOT_IP:
-        Log.traceln("IP address: ");
+        Log.traceln("MessageBroker::onWifiEvent - IP address: ");
         Log.traceln(WiFi.localIP());
         actionEventManager.postEvent(ActionEvent::WIFI_UP);
         connectToMqtt();
         break;
     case SYSTEM_EVENT_STA_DISCONNECTED:
-        Log.traceln("WiFi lost connection");
+        Log.traceln("MessageBroker::onWifiEvent - WiFi lost connection");
         actionEventManager.postEvent(ActionEvent::WIFI_DOWN);
         xTimerStop(mqttReconnectTimer, 0); // ensure we don't reconnect to MQTT while reconnecting to Wi-Fi
         xTimerStart(wifiReconnectTimer, 0);
         break;
     case SYSTEM_EVENT_STA_CONNECTED:
-        Log.traceln("WiFi connected");
+        Log.traceln("MessageBroker::onWifiEvent - WiFi connected");
         break;
     }
 }
@@ -78,13 +83,13 @@ void MessageBroker::onWifiEvent(WiFiEvent_t event, WiFiEventInfo_t info)
 
 void MessageBroker::connectToMqtt()
 {
-    Log.infoln("Connecting to MQTT....");
+    Log.traceln("MessageBroker::connectToMqtt - connecting to MQTT....");
     client.connect();
 }
 
 void MessageBroker::onMqttConnect(bool sessionPresent)
 {
-    Log.traceln("Connected to MQTT");
+    Log.traceln("MessageBroker::onMqttConnect - BEGIN");
     client.subscribe(MQTT_CHANNEL_ALL, 2);
     client.subscribe(MQTT_CHANNEL_CMD, 2);
     client.subscribe(MQTT_CHANNEL_REG, 2);
@@ -101,40 +106,51 @@ void MessageBroker::onMqttConnect(bool sessionPresent)
     // Log.trace("Publishing at QoS 2, packetId: ");
     // Log.traceln("%d", packetIdPub2);
     actionEventManager.postEvent(ActionEvent::MQTT_UP);
+
+    Log.traceln("MessageBroker::onMqttConnect - END");
+
 }
 
 void MessageBroker::onMqttDisconnect(AsyncMqttClientDisconnectReason reason)
 {
+    Log.traceln("MessageBroker::onMqttDisconnect - BEGIN");
+
     actionEventManager.postEvent(ActionEvent::MQTT_DOWN);
     Log.errorln("Disconnected from MQTT.");
     if (WiFi.isConnected())
     {
         xTimerStart(mqttReconnectTimer, 0);
     }
+
+    Log.traceln("MessageBroker::onMqttDisconnect - END");
 }
 
 void MessageBroker::onMqttSubscribe(uint16_t packetId, uint8_t qos)
 {
-    Log.traceln("Subscribe acknowledged.");
-    Log.trace("  packetId: ");
+    Log.traceln("MessageBroker::onMqttSubscribe - BEGIN");
+    Log.traceln("MessageBroker::onMqttSubscribe - Subscribe acknowledged.");
+    Log.trace("MessageBroker::onMqttSubscribe - packetId: ");
     Log.traceln("%d", packetId);
-    Log.trace("  qos: ");
+    Log.trace("MessageBroker::onMqttSubscribe - qos: ");
     Log.traceln("%d", qos);
     if( packetId == 4 )
     {
         actionEventManager.postEvent(ActionEvent::WAITING);
     }
+    Log.traceln("MessageBroker::onMqttSubscribe - END");
 }
 
 void MessageBroker::onMqttUnsubscribe(uint16_t packetId)
 {
-    Log.traceln("Unsubscribe acknowledged.");
-    Log.trace("  packetId: ");
+    Log.traceln("MessageBroker::onMqttUnsubscribe - BEGIN");
+    Log.trace("MessageBroker::onMqttUnsubscribe - packetId: ");
     Log.traceln("%d", packetId);
 }
 
 void MessageBroker::onMqttMessage(char *topic, char *payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total)
 {
+    Log.traceln("MessageBroker::onMqttMessage - BEGIN");
+
     char new_payload[len+1];
     new_payload[len] = '\0';
     strncpy(new_payload, payload, len);
@@ -155,11 +171,16 @@ void MessageBroker::onMqttMessage(char *topic, char *payload, AsyncMqttClientMes
     Log.traceln(" payload: %s", new_payload);
 
     actionEventManager.postEvent(ActionEvent::MSG_RECEIVED, new_payload, len+1);
+
+    Log.traceln("MessageBroker::onMqttMessage - END");
+
 }
 
 void MessageBroker::onMqttPublish(uint16_t packetId)
 {
-    Log.traceln("Publish acknowledged.");
-    Log.trace("  packetId: ");
+    Log.traceln("MessageBroker::onMqttPublish - BEGIN");
+    Log.traceln("MessageBroker::onMqttPublish - Publish acknowledged.");
+    Log.trace("MessageBroker::onMqttPublish - packetId: ");
     Log.traceln("%d", packetId);
+    Log.traceln("MessageBroker::onMqttPublish - END");
 }

@@ -14,43 +14,98 @@ PreferenceManager::PreferenceManager()
 {
 }
 
+/** Destructor */
+PreferenceManager::~PreferenceManager()
+{
+    free(targets);
+}
+
 bool PreferenceManager::initialize()
 {
-    Log.infoln("Initializing preferences...");
+    Log.traceln("PreferenceManager::initialize - initializing preferences...");
     bool b = false;
 
     zeroBuffers();
 
-    if( preferences.begin(NAMESPACE, false) )
+    if (preferences.begin(NAMESPACE, false))
     {
-        if( preferences.isKey(KEY_CONFIGURED) == false)
+        if (preferences.isKey(KEY_CONFIGURED) == false)
         {
-            Log.infoln("Reseting preferences...");
+            Log.traceln("PreferenceManager::initialize - Reseting preferences...");
 
             // If we have no configured key, reset everything
             reset();
         }
 
-        Log.infoln("Reading preferences...");
+        Log.traceln("PreferenceManager::initialize - Reading preferences...");
         preferences.getBytes(KEY_HOST_NAME, hostname, MAX_HOSTNAME);
         preferences.getBytes(KEY_WIFI_SSID, wifi_ssid, MAX_SSID);
         preferences.getBytes(KEY_WIFI_PASSWORD, wifi_pass, MAX_PASSWORD);
         preferences.getBytes(KEY_MQTT_USER, mqtt_user, MAX_USER_ID);
         preferences.getBytes(KEY_MQTT_PASSWORD, mqtt_pass, MAX_PASSWORD);
-        
-        Log.infoln("Hostname: %s", hostname);
-        Log.infoln("SSID: %s, Pwd: %s", wifi_ssid, wifi_pass);
-        Log.infoln("Mqtt User: %s, Pwd: %s", mqtt_user, mqtt_pass);
-        
-        Log.infoln("Preferences initialized!");
+        preferences.getBytes(KEY_TARGETS, targetsBuffer, TARGET_BUFF_SIZE);
+
+        Log.traceln("Hostname: '%s'", hostname);
+        Log.traceln("SSID: '%s', Pwd: '%s'", wifi_ssid, wifi_pass);
+        Log.traceln("Mqtt User: '%s', Pwd: '%s'", mqtt_user, mqtt_pass);
+        Log.traceln("Targets: '%s'", targetsBuffer);
+
+        // Parse stored target information
+        targetsFromString();
+        Log.traceln("PreferenceManager::initialize - preferences initialized!");
     }
     else
     {
-        Log.errorln("Error starting preferences!");
+        Log.errorln("PreferenceManager::initialize - error starting preferences!");
     }
 
-
     return b;
+}
+
+/**
+ * @brief turns targets into a JSON string
+ * @return number of bytes in string
+ */
+uint32_t PreferenceManager::targetsToString()
+{
+    Log.traceln("PreferenceManager::targetsToString - BEGIN");
+
+    // Clear buffer
+    memset(targetsBuffer, 0, TARGET_BUFF_SIZE);
+
+    // turn json into string
+    uint32_t s = serializeJson(targetJson, targetsBuffer, TARGET_BUFF_SIZE);
+
+    return s;
+}
+
+bool PreferenceManager::targetsFromString()
+{
+    Log.traceln("PreferenceManager::targetsFromString - BEGIN");
+
+    targetJson.clear();
+    DeserializationError err = deserializeJson(targetJson, targetsBuffer);
+    if (err)
+    {
+        Log.errorln("PreferenceManager::targetsFromString - failed to parse input: '%s'", targetsBuffer);
+        return false;
+    }
+
+    JsonArray array = targetJson[KEY_TARGETS];
+    uint8_t numTargets = array.size();
+    targets = new Target[numTargets];
+    for (uint8_t i = 0; i < numTargets; i++)
+    {
+        JsonObject t = array[i];
+        targets[i].sourceNodeId = prefManager.getNodeId();
+        targets[i].targetNodeId = t[KEY_TARGET_NODE_ID];
+        targets[i].startDelay = t[KEY_TARGET_START_DELAY];
+        targets[i].endDelay = t[KEY_TARGET_END_DELAY];
+        Log.traceln("Creating target[%d] > %d", i, targets[i].targetNodeId);
+    }
+
+    Log.traceln("PreferenceManager::targetsFromString - END");
+    return true;
 }
 
 void PreferenceManager::zeroBuffers()
@@ -61,7 +116,7 @@ void PreferenceManager::zeroBuffers()
     memset(wifi_pass, 0, MAX_PASSWORD);
     memset(mqtt_user, 0, MAX_USER_ID);
     memset(mqtt_pass, 0, MAX_PASSWORD);
-    memset(targets, 0, TARGET_BUFF_SIZE);
+    memset(targetsBuffer, 0, TARGET_BUFF_SIZE);
 }
 
 void PreferenceManager::resetBuffers()
@@ -71,7 +126,7 @@ void PreferenceManager::resetBuffers()
     strncpy(wifi_pass, DEFAULT_WIFI_PASSWORD, strnlen(DEFAULT_WIFI_PASSWORD, MAX_PASSWORD));
     strncpy(mqtt_user, DEFAULT_MQTT_USER, strnlen(DEFAULT_MQTT_USER, MAX_USER_ID));
     strncpy(mqtt_pass, DEFAULT_MQTT_PASSWORD, strnlen(DEFAULT_MQTT_PASSWORD, MAX_PASSWORD));
-    strncpy(targets, DEFAULT_TARGETS, strnlen(DEFAULT_TARGETS, TARGET_BUFF_SIZE));
+    strncpy(targetsBuffer, DEFAULT_TARGETS, strnlen(DEFAULT_TARGETS, TARGET_BUFF_SIZE));
 }
 
 void PreferenceManager::reset()
@@ -118,7 +173,7 @@ void PreferenceManager::reset()
 
     preferences.putUChar(KEY_DISPLAY_SIZE, DEFAULT_DISPLAY_SIZE);
 
-    preferences.putBytes(KEY_TARGETS, targets, strnlen(targets, TARGET_BUFF_SIZE));
+    preferences.putBytes(KEY_TARGETS, targetsBuffer, strnlen(targetsBuffer, TARGET_BUFF_SIZE));
 }
 
 uint8_t PreferenceManager::getNodeId()
@@ -126,12 +181,12 @@ uint8_t PreferenceManager::getNodeId()
     return preferences.getUChar(KEY_NODE_ID, DEFAULT_NODE_ID);
 }
 
-char * PreferenceManager::getWifiSsid()
+char *PreferenceManager::getWifiSsid()
 {
     return wifi_ssid;
 }
 
-char* PreferenceManager::getWifiPassword()
+char *PreferenceManager::getWifiPassword()
 {
     return wifi_pass;
 }
@@ -151,12 +206,12 @@ uint32_t PreferenceManager::getWifiTimeout()
     return preferences.getULong(KEY_WIFI_TIMEOUT, DEFAULT_WIFI_TIMEOUT);
 }
 
-char* PreferenceManager::getMqttUserId()
+char *PreferenceManager::getMqttUserId()
 {
     return mqtt_user;
 }
 
-char* PreferenceManager::getMqttPassword()
+char *PreferenceManager::getMqttPassword()
 {
     return mqtt_pass;
 }
@@ -253,7 +308,7 @@ uint8_t PreferenceManager::getDisplaySize()
 {
     return preferences.getUChar(KEY_DISPLAY_SIZE);
 }
-void PreferenceManager::set( char const *key, uint8_t v)
+void PreferenceManager::set(char const *key, uint8_t v)
 {
     preferences.putUChar(key, v);
 }

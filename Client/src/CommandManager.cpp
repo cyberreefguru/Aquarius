@@ -6,6 +6,10 @@
  */
 
 #include "CommandManager.h"
+#include <ArduinoJson.h>
+#include "ActionEvent.h"
+#include "ActionEventManager.h"
+
 
 CommandManager commandManager;
 
@@ -13,29 +17,34 @@ CommandManager::CommandManager() {}
 
 void CommandManager::initialize()
 {
-    actionEventManager.addEventHandler([](void *arg, esp_event_base_t base, int32_t id, void *data)
-                                 { commandManager.eventHandler(arg, base, id, data); });
+    Log.traceln("CommandManager::initialize - BEGIN");
 
-    Log.infoln("Creating queue");
+    actionEventManager.addEventHandler([](void *arg, esp_event_base_t base, int32_t id, void *data)
+                                       { commandManager.eventHandler(arg, base, id, data); });
+
     commandQueueHandle = xQueueCreate(5, CMD_MAX_SIZE);
     if (commandQueueHandle == NULL)
     {
-        Helper::fatal("Failed to create command queue");
+        Helper::fatal("CommandManager::initialize - failed to create command queue");
+    }
+    else
+    {
+        Log.traceln("CommandManager::initialize - Queue created! Creating command task...");
     }
 
-    Log.infoln("Creating command task.");
     BaseType_t xReturned = xTaskCreate(
         [](void *pvParameters)
         { commandManager.commandTask(pvParameters); },
         "command_task",
         2048,
         NULL,
-        tskIDLE_PRIORITY+1,
+        tskIDLE_PRIORITY + 1,
         &commandTaskHandle);
     if (xReturned != pdPASS)
     {
-        Helper::fatal("FAILED TO CREATE COMMAND TASK");
+        Helper::fatal("CommandManager::initialize - FAILED TO CREATE COMMAND TASK");
     }
+    Log.traceln("CommandManager::initialize - END");
 }
 
 void CommandManager::eventHandler(void *arg, esp_event_base_t base, int32_t id, void *data)
@@ -45,7 +54,7 @@ void CommandManager::eventHandler(void *arg, esp_event_base_t base, int32_t id, 
     switch (event)
     {
     case ActionEvent::MSG_RECEIVED:
-        Log.infoln("message: %s", data);
+        Log.traceln("CommandManager::eventHandler - message: %s", data);
         if (xQueueSend(commandQueueHandle, data, portMAX_DELAY) != pdPASS)
         {
             Log.errorln("Unable to send message to queue!");

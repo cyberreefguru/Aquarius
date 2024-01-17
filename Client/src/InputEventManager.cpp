@@ -14,9 +14,9 @@ InputEventManager::InputEventManager() {}
 
 void InputEventManager::initialize()
 {
-    esp_err_t status;
+    Log.traceln("InputEventManager::initialize - BEGIN");
 
-    Log.infoln("Initializing input event manager");
+    esp_err_t status;
 
     inputArgs.queue_size = 10;
     inputArgs.task_name = "input_el"; // Task will be created
@@ -25,11 +25,11 @@ void InputEventManager::initialize()
     inputArgs.task_core_id = tskNO_AFFINITY;
     if (esp_event_loop_create(&inputArgs, &inputHandler) != ESP_OK)
     {
-        Log.fatalln("Unable to create input event loop");
+        Helper::fatal("InputEventManager::initialize - Unable to create input event loop");
     }
     else
     {
-        Log.infoln("Created input event loop");
+        Log.traceln("InputEventManager::initialize - Created input event loop");
     }
 
     status = addEventHandler([](void *arg,
@@ -39,14 +39,14 @@ void InputEventManager::initialize()
                              { inputEventManager.defaultEventHandler(arg, base, id, data); });
     if (status != ESP_OK)
     {
-        Log.fatalln("Error adding input event handler");
+        Helper::fatal("InputEventManager::initialize - Error adding input event handler");
     }
     else
     {
-        Log.infoln("Added event handler!");
+        Log.traceln("InputEventManager::initialize - Added event handler!");
     }
 
-    Log.infoln("input event manager initialization complete");
+    Log.traceln("InputEventManager::initialize - END");
 }
 
 esp_err_t InputEventManager::postEvent(ButtonAction action, ButtonEvent *event)
@@ -63,5 +63,4 @@ void InputEventManager::defaultEventHandler(void *args, esp_event_base_t base, i
 {
     ButtonAction be = (ButtonAction)id;
     ButtonEvent *ba = (ButtonEvent*)data;
-    // Log.infoln("IEM - Event: %s, Action: %s", ++be, ++(*ba));
 }

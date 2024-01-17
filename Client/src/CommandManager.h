@@ -9,12 +9,8 @@
 
 #include <Arduino.h>
 #include <ArduinoLog.h>
-#include <Adafruit_NeoPixel.h>
-#include <ArduinoJson.h>
 
 #include "Command.h"
-#include "ActionEvent.h"
-#include "ActionEventManager.h"
 
 extern "C"
 {

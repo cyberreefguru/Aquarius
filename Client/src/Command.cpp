@@ -16,7 +16,7 @@ Command::Command()
 
 uint32_t Command::fromJson(char *buffer)
 {
-    jsonDocument.clear();
+    //jsonDocument.clear();
     return serializeJson(jsonDocument, buffer, CMD_MAX_SIZE);
 }
 

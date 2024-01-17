@@ -14,9 +14,9 @@ ActionEventManager::ActionEventManager() {}
 
 void ActionEventManager::initialize()
 {
-    esp_err_t status;
+    Log.traceln("ActionEventManager::initialize - BEGIN");
 
-    Log.infoln("Initializing event manager");
+    esp_err_t status;
 
     eventLoopArgs.queue_size = 5;
     eventLoopArgs.task_name = "event_loop"; // Task will be created
@@ -25,11 +25,11 @@ void ActionEventManager::initialize()
     eventLoopArgs.task_core_id = tskNO_AFFINITY;
     if (esp_event_loop_create(&eventLoopArgs, &eventLoopHandler) != ESP_OK)
     {
-        Log.fatalln("Unable to create event loop");
+        Log.fatalln("ActionEventManager::initialize - Unable to create event loop");
     }
     else
     {
-        Log.infoln("Created event loop");
+        Log.traceln("ActionEventManager::initialize - Created event loop");
     }
 
     status = addEventHandler([](void *arg,
@@ -39,14 +39,14 @@ void ActionEventManager::initialize()
                              { actionEventManager.defaultEventHandler(arg, base, id, data); });
     if (status != ESP_OK)
     {
-        Log.fatalln("Error adding event handler");
+        Log.fatalln("ActionEventManager::initialize - Error adding event handler");
     }
     else
     {
-        Log.infoln("Added event handler!");
+        Log.traceln("ActionEventManager::initialize - Added event handler!");
     }
 
-    Log.infoln("ActionEvent manager initialization complete");
+    Log.traceln("ActionEventManager::initialize - END");
 }
 
 esp_err_t ActionEventManager::postInterruptEvent(ActionEvent event)
@@ -71,7 +71,5 @@ esp_err_t ActionEventManager::addEventHandler(esp_event_handler_t eventHandler)
 
 void ActionEventManager::defaultEventHandler(void *args, esp_event_base_t base, int32_t id, void *data)
 {
-    Log.infoln("EM - ActionEvent: %s", ++((ActionEvent)id));
-    // Log.infoln("EM - WIFI: %d, MQTT: %d, RSSI: %d, Active: %d, Processing: %d", stateManager.wifi, stateManager.mqtt,
-    //            stateManager.rssi, stateManager.active, stateManager.processing);
+    Log.infoln("ActionEventManager::defaultEventHandler - %s", ++((ActionEvent)id));
 }

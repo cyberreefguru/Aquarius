@@ -7,23 +7,29 @@
 
 #include "IndicatorManager.h"
 
-Adafruit_NeoPixel pixels(2, D7, NEO_RGB + NEO_KHZ800);
+Adafruit_NeoPixel indicators(2, D7, NEO_RGB + NEO_KHZ800);
 
 IndicatorManager indicatorManager;
 
 IndicatorManager::IndicatorManager() {}
 
+/**
+ * @brief Initializes the indicator manager
+ * 
+ */
 void IndicatorManager::initialize()
 {
-    pixels.begin();
-    pixels.setBrightness(25); // TODO: Get from preferences
-    setIndicators(DEFAULT_COLOR_CONFIGURE, DEFAULT_COLOR_DEACTIVE);
+    Log.traceln("IndicatorManager::initialize - BEGIN");
+
+    indicators.begin();
+    indicators.setBrightness( prefManager.getLedBrightness() );
+    setIndicators(prefManager.getConfigureColor(), prefManager.getDeactiveColor());
 
     actionEventManager.addEventHandler([](void *arg, esp_event_base_t base, int32_t id, void *data)
                                  { indicatorManager.eventHandler(arg, base, id, data); });
 
     flashMode = Mode::Solid;
-    Log.infoln("Creating flash task.");
+    Log.traceln("IndicatorManager::initialize - Creating flash task.");
     BaseType_t xReturned = xTaskCreate(
         [](void *pvParameters)
         { indicatorManager.flashTask(pvParameters); },
@@ -34,10 +40,19 @@ void IndicatorManager::initialize()
         &flashTaskHandle);
     if (xReturned != pdPASS)
     {
-        Log.errorln("FAILED TO CREATE FLASH TASK");
+        Log.errorln("IndicatorManager::initialize - FAILED TO CREATE FLASH TASK");
     }
+    Log.traceln("IndicatorManager::initialize - END");
 }
 
+/**
+ * @brief Responses to action events to change indicators as required.
+ * 
+ * @param arg 
+ * @param base 
+ * @param id 
+ * @param data 
+ */
 void IndicatorManager::eventHandler(void *arg, esp_event_base_t base, int32_t id, void *data)
 {
     ActionEvent event = (ActionEvent)id;
@@ -94,9 +109,14 @@ void IndicatorManager::eventHandler(void *arg, esp_event_base_t base, int32_t id
     }
 }
 
+/**
+ * @brief thread that keeps indicators up to date
+ * @param pvParameters 
+ */
 void IndicatorManager::flashTask(void *pvParameters)
 {
-    Log.infoln("Starting flash task. Mode=%d.", flashMode);
+    Log.traceln("IndicatorManager::flashTask - starting flash task. Flash mode=%d.", flashMode);
+
     uint8_t hbCounter = 0;
     uint32_t time = millis();
 
@@ -149,10 +169,15 @@ void IndicatorManager::flashTask(void *pvParameters)
     }
 }
 
+void IndicatorManager::setBrightness(uint8_t b)
+{
+    indicators.setBrightness( b );
+}
+
 void IndicatorManager::clearStatusIndicator(uint32_t color)
 {
-    pixels.setPixelColor(0, color);
-    pixels.show();
+    indicators.setPixelColor(0, color);
+    indicators.show();
 }
 
 void IndicatorManager::setStatusIndicator(uint32_t color)
@@ -178,9 +203,9 @@ void IndicatorManager::setIndicators(uint32_t color)
 }
 void IndicatorManager::show()
 {
-    pixels.setPixelColor(0, statusColor);
-    pixels.setPixelColor(1, stateColor);
-    pixels.show();
+    indicators.setPixelColor(0, statusColor);
+    indicators.setPixelColor(1, stateColor);
+    indicators.show();
 }
 
 void IndicatorManager::show(uint32_t status, uint32_t state)

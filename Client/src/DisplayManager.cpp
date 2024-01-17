@@ -8,9 +8,11 @@ DisplayManager::DisplayManager()
 
 void DisplayManager::initialize()
 {
+    Log.traceln("DisplayManager::initialize - BEGIN");
+
     ssd1306 = Adafruit_SSD1306(128, 64, &Wire);
     ssd1306.begin(SSD1306_SWITCHCAPVCC, 0x3C); // Address 0x3C for 128x32
-    setBrightness(brightness);
+    setBrightness( prefManager.getScreenBrightness() );
 
     ssd1306.clearDisplay();
     ssd1306.setTextSize(1);
@@ -18,10 +20,7 @@ void DisplayManager::initialize()
     ssd1306.clearDisplay();
     refresh = true;
 
-    // actionEventManager.addEventHandler([](void *arg, esp_event_base_t base, int32_t id, void *data)
-    //                                    { displayManager.eventHandler(arg, base, id, data); });
-
-    Log.infoln("Creating display task.");
+    Log.infoln("DisplayManager::initialize - creating display task.");
     BaseType_t xReturned = xTaskCreate(
         [](void *pvParameters)
         { displayManager.displayTask(pvParameters); },
@@ -32,8 +31,10 @@ void DisplayManager::initialize()
         &displayTaskHandle);
     if (xReturned != pdPASS)
     {
-        Log.errorln("FAILED TO CREATE DISPLAY TASK");
+        Log.errorln("DisplayManager::initialize - FAILED TO CREATE DISPLAY TASK");
     }
+
+    Log.traceln("DisplayManager::initialize - END");
 }
 
 /***
@@ -41,7 +42,7 @@ void DisplayManager::initialize()
  */
 void DisplayManager::displayTask(void *pvParameters)
 {
-    Log.infoln("Starting display task.");
+    Log.traceln("DisplayManager::displayTask - starting display task.");
     uint8_t clicks = 0;
 
     for (;;)

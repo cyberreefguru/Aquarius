@@ -33,11 +33,6 @@ ActionNumberInput::~ActionNumberInput()
     free(inputBuff);
 }
 
-// void ActionNumberInput::onAction()
-// {
-//     setValue();
-// }
-
 void ActionNumberInput::onDisplay(bool active)
 {
     Log.traceln("ActionNumberInput::onDisplay - BEGIN");
@@ -75,7 +70,7 @@ void ActionNumberInput::onDisplay(bool active)
 
 void ActionNumberInput::onButtonUp()
 {
-    Log.traceln("ActionNumberInput::onButtonUp - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
+    Log.traceln("ActionNumberInput::onButtonUp - BEGIN - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
     if (inputBuff[curDigit] == 9)
     {
         inputBuff[curDigit] = 0;
@@ -84,13 +79,13 @@ void ActionNumberInput::onButtonUp()
     {
         inputBuff[curDigit] = (inputBuff[curDigit] + 1);
     }
-    Log.traceln("ActionNumberInput::onButtonUp - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
+    Log.traceln("ActionNumberInput::onButtonUp - END - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
     onDisplay(false);
 }
 
 void ActionNumberInput::onButtonDown()
 {
-    Log.traceln("ActionNumberInput::onButtonDown - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
+    Log.traceln("ActionNumberInput::onButtonDown - BEGIN - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
     if (inputBuff[curDigit] == 0)
     {
         inputBuff[curDigit] = 9;
@@ -99,13 +94,13 @@ void ActionNumberInput::onButtonDown()
     {
         inputBuff[curDigit] = (inputBuff[curDigit] - 1);
     }
-    Log.traceln("ActionNumberInput::onButtonDown - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
+    Log.traceln("ActionNumberInput::onButtonDown - END - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
     onDisplay(false);
 }
 
 void ActionNumberInput::onButtonLeft()
 {
-    Log.traceln("ActionNumberInput::onButtonLeft - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
+    Log.traceln("ActionNumberInput::onButtonLeft - BEGIN - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
     if (curDigit == (numDigits - 1))
     {
         curDigit = 0;
@@ -115,14 +110,14 @@ void ActionNumberInput::onButtonLeft()
     {
         curDigit++;
     }
-    Log.traceln("ActionNumberInput::onButtonLeft - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
+    Log.traceln("ActionNumberInput::onButtonLeft - END - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
     onDisplay(false);
     // return b;
 }
 
 void ActionNumberInput::onButtonRight()
 {
-    Log.traceln("ActionNumberInput::onButtonRight - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
+    Log.traceln("ActionNumberInput::onButtonRight - BEGIN - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
     if (curDigit == 0)
     {
         curDigit = numDigits - 1;
@@ -132,21 +127,19 @@ void ActionNumberInput::onButtonRight()
     {
         curDigit--;
     }
-    Log.traceln("ActionNumberInput::onButtonRight - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
+    Log.traceln("ActionNumberInput::onButtonRight - END - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
     onDisplay(false);
     // return b;
 }
 
 void ActionNumberInput::onButtonPush()
 {
-    // active = false;
+    Log.traceln("ActionNumberInput::onButtonPush - %s", menuLabel);
     curDigit = 0;
 }
 
 uint32_t ActionNumberInput::getValue()
 {
-    Log.traceln("ActionNumberInput::getValue - BEGIN");
-
     uint32_t v = 0;
     uint8_t base = 1;
     // Set value based on input
@@ -162,7 +155,7 @@ uint32_t ActionNumberInput::getValue()
 
 void ActionNumberInput::setValue(uint32_t v)
 {
-    Log.traceln("ActionNumberInput::initializeValue - value=%d", v);
+    Log.traceln("ActionNumberInput::setValue - value=%d", v);
     uint8_t base = 1;
     for (uint8_t i = 0; i < numDigits; i++)
     {
@@ -170,5 +163,4 @@ void ActionNumberInput::setValue(uint32_t v)
         // Log.traceln("ActionNumberInput::initializeValue - i=%d, v=%d, b=%d. ib=%d", i, *value, base, inputBuff[i]);
         base *= 10;
     }
-    Log.traceln("ActionNumberInput::initializeValue - END");
 }

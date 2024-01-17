@@ -13,7 +13,7 @@ StateManager::StateManager() {}
 
 void StateManager::initialize()
 {
-    Log.infoln("Creating state task.");
+    Log.traceln("StateManager::initialize - creating state task.");
     BaseType_t xReturned = xTaskCreate(
         [](void *pvParameters)
         { stateManager.stateTask(pvParameters); },
@@ -24,13 +24,13 @@ void StateManager::initialize()
         &stateTaskHandle);
     if (xReturned != pdPASS)
     {
-        Log.errorln("FAILED TO CREATE STATE TASK");
+        Log.errorln("StateManager::initialize - FAILED TO CREATE STATE TASK");
     }
 }
 
 void StateManager::stateTask(void *pvParameters)
 {
-    Log.infoln("Starting state task.");
+    Log.traceln("StateManager::stateTask - starting state task.");
 
     startTime = millis(); // Capture current time
 
@@ -129,18 +129,20 @@ void StateManager::eventHandler(void *arg, esp_event_base_t base, int32_t id, vo
     lastEvent = event;
     displayManager.setRefresh(true);
 
-    // Log.infoln("WIFI: %d, MQTT: %d, RSSI: %d, Processing: %d", wifi, mqtt, rssi, processing);
+    // Log.traceln("WIFI: %d, MQTT: %d, RSSI: %d, Processing: %d", wifi, mqtt, rssi, processing);
 }
 
 void StateManager::initializeDisplay()
 {
+    Log.traceln("StateManager::initializeDisplay - BEGIN");
+
     if (stateManager.configure == true)
     {
-        // Log.traceln("StateManager - initial display returning");
+        Log.traceln("StateManager::initializeDisplay - in config mode; returning.");
         return;
     }
 
-    Log.traceln("Setting base status display");
+    Log.traceln("StateManager::initializeDisplay - setting base status display");
     displayManager.clear();
     setNode(false);
     setStatusMessage(++lastEvent, false);
@@ -153,11 +155,10 @@ void StateManager::display()
 {
     if (stateManager.configure == true)
     {
-        // Log.traceln("StateManager - display returning");
+        Log.traceln("StateManager::display - in config mode; returning.");
         return;
     }
 
-    // Log.traceln("State Manager - updating display");
     displayManager.setTextColor(WHITE, WHITE);
 
     setNode(false);

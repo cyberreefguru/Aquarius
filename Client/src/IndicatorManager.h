@@ -35,6 +35,7 @@ class IndicatorManager
 public:
     IndicatorManager();
     void initialize();
+    void setBrightness(uint8_t b);
 
 protected:
     void clearStatusIndicator(uint32_t color);
@@ -46,7 +47,7 @@ protected:
     void show(uint32_t color);
     void show(uint32_t status, uint32_t state);
     void eventHandler(void *args, esp_event_base_t base, int32_t id, void *data);
-
+    
     void flashTask( void * pvParameters );
     TaskHandle_t flashTaskHandle = NULL;
 

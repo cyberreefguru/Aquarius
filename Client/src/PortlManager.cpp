@@ -6,7 +6,7 @@ PortManager::PortManager() {}
 
 void PortManager::initialize()
 {
-    Log.traceln("Initializing GPIO...");
+    Log.traceln("PortManager::initialize - initializing GPIO...");
 
     // Set D0 on ESP to be interrupt input
     pinMode(INTR_PIN, INPUT_PULLUP);
@@ -14,7 +14,7 @@ void PortManager::initialize()
     // Initialize I2C bus for GPIO
     if (!gpio.begin_I2C())
     {
-        Helper::fatal("Unable to initialize GPIO I2C");
+        Helper::fatal("PortManager::initialize - Unable to initialize GPIO I2C");
     }
 
     // Set up port A as output
@@ -45,7 +45,7 @@ void PortManager::initialize()
 
     attachInterrupt(digitalPinToInterrupt(INTR_PIN), std::bind(&PortManager::isr, this), FALLING);
 
-    Log.infoln("Creating debounce task.");
+    Log.infoln("PortManager::initialize - Creating debounce task.");
     BaseType_t xReturned = xTaskCreate(
         [](void *pvParameters)
         { portManager.debounceTask(pvParameters); },
@@ -56,10 +56,10 @@ void PortManager::initialize()
         &debounceTaskHandle);
     if (xReturned != pdPASS)
     {
-        Helper::fatal("FAILED TO CREATE DEBOUNCE TASK");
+        Helper::fatal("PortManager::initialize - FAILED TO CREATE DEBOUNCE TASK");
     }
 
-    Log.traceln("GPIO Initialization Complete");
+    Log.traceln("PortManager::initialize - GPIO Initialization Complete");
 }
 
 void IRAM_ATTR PortManager::isr()
@@ -73,7 +73,7 @@ void IRAM_ATTR PortManager::isr()
 
 void PortManager::debounceTask(void *parameter)
 {
-    Log.infoln("Starting debounce task.");
+    Log.traceln("PortManager::debounceTask - Starting debounce task.");
 
     uint32_t threadNotification;
     uint32_t notifiedValue;
@@ -118,7 +118,7 @@ void PortManager::handleButtonAction(Button *b, uint16_t allPins)
         if (now - b->lastTrigger < 20)
         {
             // Too fast; debounce
-            Log.traceln("Debounce %d", b->pin);
+            Log.traceln("PortManager::handleButtonAction - debounce %d", b->pin);
             b->lastTrigger = now;
             return;
         }
@@ -126,7 +126,7 @@ void PortManager::handleButtonAction(Button *b, uint16_t allPins)
     else
     {
         // No change
-        Log.traceln("No state change: %d", b->pin);
+        Log.traceln("PortManager::handleButtonAction - No state change: %d", b->pin);
         return;
     }
 
@@ -137,7 +137,7 @@ void PortManager::handleButtonAction(Button *b, uint16_t allPins)
         // Log.traceln("PRESSED: %d, %d, %s", b->pin, b->action, ++(b->action));
         if( now - b->lastState < 100 )
         {
-            Log.traceln("Press too quickly, ingored");
+            Log.traceln("PortManager::handleButtonAction - Press too quickly, ingored");
             b->lastTrigger = now;
         }
         else

@@ -35,7 +35,7 @@ class MenuManager
 {
 public:
     MenuManager();
-    virtual ~MenuManager();
+    virtual ~MenuManager(){}
     void initialize();
     void push(MenuItem *item);
     MenuItem* peek();
@@ -63,7 +63,7 @@ public:
     void doLedBrightness();
     void doSensor();
     void doServoStart();
-    void doServoEnd();
+    void doServoStop();
 
 protected:
     ButtonEvent currentEvent = ButtonEvent::DOWN;

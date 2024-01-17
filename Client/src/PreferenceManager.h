@@ -7,6 +7,8 @@
 #pragma once
 
 #include <ArduinoLog.h>
+#include <ArduinoJson.h>
+
 #include <Preferences.h>
 
 #include "Target.h"
@@ -57,7 +59,7 @@
 #define KEY_SENSOR_THRESHOLD "s.t"
 
 #define KEY_TARGETS "ts"
-#define KEY_TARGET "t"
+// #define KEY_TARGET "t"
 #define KEY_TARGET_NODE_ID  "nid"
 #define KEY_TARGET_START_DELAY  "sd"
 #define KEY_TARGET_END_DELAY  "ed"
@@ -126,6 +128,7 @@ class PreferenceManager
 
 public:
     PreferenceManager();
+    virtual ~PreferenceManager();
     bool initialize();
 
     void reset();
@@ -175,6 +178,15 @@ public:
     void set(char const *key, char *v, uint8_t len);
     void set(char const *key, MenuColor color);
 
+    void addTarget(Target * target);
+    void removeTarget(uint8_t targetIndex);
+    Target* getTargets();
+
+protected: 
+
+    uint32_t targetsToString(); // turn into char[]
+    bool targetsFromString(); // turn into jsondocument
+
 private:
     boolean config = false;
     Preferences preferences;
@@ -189,7 +201,12 @@ private:
 
     char mqtt_user[32];
     char mqtt_pass[32];
-    char targets[TARGET_BUFF_SIZE];
+
+    char targetsBuffer[TARGET_BUFF_SIZE];
+    StaticJsonDocument<TARGET_BUFF_SIZE> targetJson;
+    Target *targets = nullptr;
+    uint8_t numTargets = 0;
+
 
 };
 
