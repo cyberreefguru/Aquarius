@@ -21,7 +21,7 @@ public:
     ListMenu() {}
     ListMenu(menu_label_t label, menu_title_t title, menu_prompt_t prompt, MenuItem **items, uint8_t numItems);
     virtual ~ListMenu();
-    // void onDisplay() override;
+
     void onDisplay(bool active) override;
     virtual void onButtonUp() override;
     virtual void onButtonDown() override;

@@ -1,8 +1,8 @@
-/*
- * MenuManager.cpp
- *
- *  Created on: Dec  30, 2023
- *      Author: cyberreefguru
+/**
+ * @brief Controls displaying menu to the screen
+ * @file MenuManager.cpp
+ * @date Dec  30, 2023
+ * @author cyberreefguru
  */
 #include "MenuManager.h"
 
@@ -11,17 +11,17 @@
 #include "ActionEventManager.h"
 #include "InputEventManager.h"
 #include "PreferenceManager.h"
+#include "TargetManager.h"
 
 #include "menu/MenuColor.h"
 
 #include "menu/ListMenu.h"
-#include "menu/SimpleMenuItem.h"
 #include "menu/ExitMenuItem.h"
-#include "menu/ActionMenuItem.h"
 #include "menu/MultiActionItem.h"
-#include "menu/ResetMenuItem.h"
 #include "menu/ActionNumberInput.h"
+#include "menu/TargetsMenuItem.h"
 #include "menu/ColorListMenu.h"
+#include "menu/ResetMenuItem.h"
 
 using namespace std::placeholders;
 
@@ -41,34 +41,33 @@ ColorListMenu colorSend = ColorListMenu("> Send", "Send Color:", "> ", KEY_COLOR
 ColorListMenu colorWait = ColorListMenu("> Wait", "Wait Color:", "> ", KEY_COLOR_WAIT);
 
 MenuItem *cis[10] = {&colorInit, &colorConn, &colorConfig, &colorWait,
-                         &colorRec, &colorProc, &colorSend,
-                         &colorActive, &colorInact, &colorErr};
+                     &colorRec, &colorProc, &colorSend,
+                     &colorActive, &colorInact, &colorErr};
 
 ListMenu mColorsItem = ListMenu("> Colors", "Colors:", "> ", cis, 10);
 
 ActionNumberInput iNodeId = ActionNumberInput("> ", std::bind(&MenuManager::doNodeId, menuManager), 2);
-ActionMenuItem *nis[1] = {&iNodeId};
+MenuItem *nis[1] = {&iNodeId};
 MultiActionItem mNodeIdItem = MultiActionItem("> Node ID", "Node ID:", nis, 1);
 
-SimpleMenuItem mTargetsItem = SimpleMenuItem("> Targets");
+TargetsMenuItem mTargetsItem = TargetsMenuItem("> Targets", "Select Target", "> ");
 
-ActionNumberInput iSensorThres = ActionNumberInput("Sensor > ", std::bind(&MenuManager::doSensor, menuManager), 3);
-ActionMenuItem *sis[1] = {&iSensorThres};
-MultiActionItem mSensorItem = MultiActionItem("> Sensor Threshold", "Threshhold:", sis, 1);
-
+ActionNumberInput iSensorThres = ActionNumberInput("> ", std::bind(&MenuManager::doSensor, menuManager), 3);
+MenuItem *sis[1] = {&iSensorThres};
+MultiActionItem mSensorItem = MultiActionItem("> Sensor Threshold", "Sensor Threshold:", sis, 1);
 
 ActionNumberInput iScreenBright = ActionNumberInput("Screen > ", std::bind(&MenuManager::doScreenBrightness, menuManager), 3);
 ActionNumberInput iLedBright = ActionNumberInput("LED    > ", std::bind(&MenuManager::doLedBrightness, menuManager), 3);
-ActionMenuItem *bis[2] = {&iScreenBright, &iLedBright};
+MenuItem *bis[2] = {&iScreenBright, &iLedBright};
 MultiActionItem mBrightnessItem = MultiActionItem("> Brightness", "Brightness:", bis, 2);
 
 ActionNumberInput iServoStart = ActionNumberInput("Start> ", std::bind(&MenuManager::doServoStart, menuManager), 3);
-ActionNumberInput iServoStop =  ActionNumberInput("End  > ", std::bind(&MenuManager::doServoStop, menuManager), 3);
-ActionMenuItem *amts[2] = {&iServoStart, &iServoStop};
-MultiActionItem mServoItem = MultiActionItem("> Servo A Settings", "Servo A Values:", amts, 2);
+ActionNumberInput iServoStop = ActionNumberInput("End  > ", std::bind(&MenuManager::doServoStop, menuManager), 3);
+MenuItem *amts[2] = {&iServoStart, &iServoStop};
+MultiActionItem mServoItem = MultiActionItem("> Servo Settings", "Servo Values:", amts, 2);
 
-ActionMenuItem mResetItem = ActionMenuItem("> Factory Reset", "Factory Reset?", "Press to Reset", std::bind(&MenuManager::onResetPush, menuManager));
-ActionMenuItem mExitItem = ActionMenuItem("> Exit", "Exit", "> Exit", std::bind(&MenuManager::popAndDisplay, menuManager));
+MenuItem mResetItem = MenuItem("> Factory Reset", "Factory Reset?", "Press to Reset");
+MenuItem mExitItem = MenuItem("> Exit", "Exit", "> Exit");
 
 MenuItem *mmItems[] = {
     &mNodeIdItem,
@@ -82,10 +81,23 @@ MenuItem *mmItems[] = {
 };
 ListMenu mainMenu = ListMenu("> Main Menu", "Main Menu:", "> ", mmItems, 8);
 
+/**
+ * @brief Constructor
+ */
 MenuManager::MenuManager()
 {
 }
 
+/**
+ * @brief Destructor
+ */
+MenuManager::~MenuManager()
+{
+}
+
+/**
+ * @brief Initializes the menu manager and menu system
+ */
 void MenuManager::initialize()
 {
     Log.infoln("MenuManager::initialize - BEGIN");
@@ -123,22 +135,26 @@ void MenuManager::initialize()
     }
 
     // Initialize values of input items
-    iNodeId.setValue( prefManager.getNodeId() );
-    iScreenBright.setValue( prefManager.getScreenBrightness() );
-    iLedBright.setValue( prefManager.getLedBrightness() );
-    iSensorThres.setValue( prefManager.getSensorThreshold() );
-    iServoStart.setValue(prefManager.getServoStart() );
-    iServoStop.setValue(prefManager.getServoStop() );
+    iNodeId.setValue(prefManager.getNodeId());
+    iScreenBright.setValue(prefManager.getScreenBrightness());
+    iLedBright.setValue(prefManager.getLedBrightness());
+    iSensorThres.setValue(prefManager.getSensorThreshold());
+    iServoStart.setValue(prefManager.getServoStart());
+    iServoStop.setValue(prefManager.getServoStop());
 
     // Initialize callbacks for reset item
+    mResetItem.setActionCallback(std::bind(&MenuManager::doResetPush, this));
     mResetItem.setButtonCallback(std::bind(&MenuManager::popAndDisplay, this),
-                             std::bind(&MenuManager::popAndDisplay, this),
-                             std::bind(&MenuManager::popAndDisplay, this),
-                             std::bind(&MenuManager::popAndDisplay, this),
-                             std::bind(&MenuManager::onResetPush, this));
+                                 std::bind(&MenuManager::popAndDisplay, this),
+                                 std::bind(&MenuManager::popAndDisplay, this),
+                                 std::bind(&MenuManager::popAndDisplay, this),
+                                 std::bind(&MenuManager::doResetPush, this));
 
     // Initialize callback for exit item
     mExitItem.setDisplayCallback(std::bind(&MenuManager::doExit, this, _1));
+    mExitItem.setActionCallback(std::bind(&MenuManager::popAndDisplay, this));
+
+    mTargetsItem.initialize();
 
     // Push main menu to menu stack
     menus.push(&mainMenu);
@@ -146,23 +162,39 @@ void MenuManager::initialize()
     Log.infoln("MenuManager::initialize - END");
 }
 
+/**
+ * @brief Handles system action events
+ * @param args args for event
+ * @param base event base
+ * @param id the action event
+ * @param data not used; null?
+ */
 void MenuManager::actionEventHandler(void *args, esp_event_base_t base, int32_t id, void *data)
 {
     ActionEvent ae = (ActionEvent)id;
 
+    // Received configure event; start displaying the menu system
     if (ae == ActionEvent::CONFIGURE)
     {
         stateManager.configure = true;
-        // Get the current menu item
-        MenuItem *item = nullptr;
-        menus.peek(&item);
-        if (item != nullptr)
-        {
-            item->onDisplay(false);
-        }
+        display();
+        // // Get the current menu item
+        // MenuItem *item = nullptr;
+        // menus.peek(&item);
+        // if (item != nullptr)
+        // {
+        //     item->onDisplay(false);
+        // }
     }
 }
 
+/**
+ * @brief Handles button input events, passes them to the menu item for processing
+ * @param args args for event
+ * @param base event base
+ * @param id the current action (press or release)
+ * @param data the current event (up, down, etc.)
+ */
 void MenuManager::inputEventHandler(void *args, esp_event_base_t base, int32_t id, void *data)
 {
     currentAction = (ButtonAction)id;
@@ -190,11 +222,15 @@ void MenuManager::inputEventHandler(void *args, esp_event_base_t base, int32_t i
         }
         else
         {
-            Log.traceln("UNHANDLED CONDITION");
+            Log.traceln("MenuManager::inputEventHandler - UNHANDLED CONDITION");
         }
     }
 }
 
+/**
+ * @brief Returns top of stack without removing it
+ * @return the current menu item
+ */
 MenuItem *MenuManager::peek()
 {
     MenuItem *item = nullptr;
@@ -202,13 +238,17 @@ MenuItem *MenuManager::peek()
     return item;
 }
 
+/**
+ * @brief Pushes menu item onto the stack
+ * @param item 
+ */
 void MenuManager::push(MenuItem *item)
 {
     if (item != nullptr)
     {
         Log.traceln("MenuManager::push - %s", item->getMenuTitle());
-        // item->setActive(true);
         menus.push(item);
+        item->onDisplay(true); // TODO - call display here instead?
     }
     else
     {
@@ -216,24 +256,28 @@ void MenuManager::push(MenuItem *item)
     }
 }
 
+/**
+ * @brief Removes the top of the menu item stack
+ */
 void MenuManager::pop()
 {
     if (menus.getSize() == 1)
     {
         // We are at the root node, so don't pop
-        // Exit menu system
         Log.warningln("MenuManager::pop - top of menu -- can't remove main menu");
+
+        // Exit menu system
+        stateManager.configure = false;
         displayManager.clear();
         actionEventManager.postEvent(ActionEvent::WAITING);
-        stateManager.configure = false;
         return;
     }
 
-    MenuItem *item;
-    menus.pop(&item);
+    MenuItem *item; // Create item temp variable
+    menus.pop(&item); // remove item from menu stack
     if (&item != nullptr)
     {
-        Log.traceln("MenuManager::pop - %s", item->getMenuTitle());
+        Log.traceln("MenuManager::pop - %s", item->getMenuLabel());
     }
     else
     {
@@ -241,6 +285,9 @@ void MenuManager::pop()
     }
 }
 
+/**
+ * @brief Calls onDisplay of the menu item at the top of the stack
+ */
 void MenuManager::display()
 {
     if (stateManager.configure == false)
@@ -260,7 +307,7 @@ void MenuManager::display()
         }
         else
         {
-            item->onDisplay(false);
+            item->onDisplay(true);
         }
     }
     Log.traceln("MenuManager::display: END");
@@ -291,7 +338,7 @@ void MenuManager::doScreenBrightness()
     uint8_t v = iScreenBright.getValue();
     prefManager.set(KEY_BRIGHTNESS_SCREEN, v);
     displayManager.setBrightness(v);
-    
+
     Log.traceln("MenuManager::doScreenBrightness - END");
 }
 
@@ -323,7 +370,6 @@ void MenuManager::doServoStop()
     Log.traceln("MenuManager::doServoStop - END");
 }
 
-
 void MenuManager::doExit(bool active)
 {
     Log.traceln("MenuManager::doExit - BEGIN");
@@ -334,7 +380,7 @@ void MenuManager::doExit(bool active)
     Log.traceln("MenuManager::doExit - END");
 }
 
-void MenuManager::onResetPush()
+void MenuManager::doResetPush()
 {
     Log.infoln("Reseting to factory settings...");
     prefManager.reset();

@@ -1,10 +1,9 @@
-/*
- * DisplayManager.h
- *
- *  Created on: Nov 26, 2023
- *      Author: cyberreefguru
+/**
+ * @brief Abstracts displaying items to the screen
+ * @file DisplayManager.cpp
+ * @date Nov 26, 2023
+ * @author cyberreefguru
  */
-
 
 #ifndef DisplayManager_H
 #define DisplayManager_H
@@ -78,7 +77,7 @@ public:
     void addCursorX(int16_t x);
     void addCursorY(int16_t y);
     void addCursor(int16_t x, int16_t y);
-
+    void drawButton(const char *text, bool active);
         
 protected:
     Adafruit_SSD1306 ssd1306;

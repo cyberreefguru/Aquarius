@@ -20,7 +20,6 @@ class ExitMenuItem : public MenuItem
 public:
     ExitMenuItem();
     virtual ~ExitMenuItem();
-    // void onDisplay();
     void onDisplay(bool active) override;
     void onButtonRight() override;
     void onButtonPush() override;

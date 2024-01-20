@@ -54,11 +54,11 @@ void setup()
   // Initialize ports
   portManager.initialize();
 
-  // Initialize menu
-  menuManager.initialize();
-
   // Initialize target manager
   targetManager.initialize();
+
+  // Initialize menu
+  menuManager.initialize();
 
   // Fire initialization event
   actionEventManager.postEvent(ActionEvent::INITIALIZING);

@@ -4,11 +4,26 @@
  *  Created on: Jan 7, 2024
  *      Author: cyberreefguru
  */
+
+/**
+ * @file ListMenu.cpp
+ * @brief displays a list of menu item labels; if button pushed, pushes that item to the stack
+ * @date Jan 7, 2024
+ * @author cyberreefguru
+*/
 #include "ListMenu.h"
 #include "DisplayManager.h"
 #include "MenuManager.h"
 
 
+/**
+ * @brief Constructor
+ * @param label 
+ * @param title 
+ * @param prompt 
+ * @param items 
+ * @param numItems 
+ */
 ListMenu::ListMenu(menu_label_t label, menu_title_t title, menu_prompt_t prompt, MenuItem **items, uint8_t numItems)
 {
     this->menuLabel = label;
@@ -22,15 +37,17 @@ ListMenu::ListMenu(menu_label_t label, menu_title_t title, menu_prompt_t prompt,
     activeIndex = windowStart;
 }
 
+/**
+ * @brief Desctructor
+ */
 ListMenu::~ListMenu()
 {
 }
 
-// void ListMenu::onDisplay(bool active)
-// {
-//     onDisplay();
-// }
-
+/**
+ * @brief Renders the list of menu item by displaying each item's label
+ * @param active if true, highlight item (unused)
+ */
 void ListMenu::onDisplay(bool active)
 {
     Log.traceln("ListMenu::onDisplay - BEGIN");
@@ -54,17 +71,7 @@ void ListMenu::onDisplay(bool active)
     {
         MenuItem *item = items[i];
         // Log.traceln("ListMenu::onDisplay - item.title='%s', item.label='%s'", item->getTitle(), item->getLabel());
-        if (i == activeIndex)
-        // if (item->isActive())
-        {
-            displayManager.setTextColor(BLACK, WHITE);
-        }
-        else
-        {
-            displayManager.setTextColor(WHITE);
-        }
-        displayManager.println(item->getMenuLabel());
-        displayManager.setTextColor(WHITE);
+        item->onLabelDisplay(i==activeIndex);
     }
     displayManager.setRefresh(true);
     Log.traceln("ListMenu::onDisplay - END");
@@ -96,7 +103,6 @@ void ListMenu::onButtonRight()
 void ListMenu::onButtonPush()
 {
     menuManager.push(items[activeIndex]);
-    items[activeIndex]->onDisplay(true);
 }
 
 MenuItem *ListMenu::getActive()

@@ -13,6 +13,7 @@
 #include <ArduinoLog.h>
 #include <ArduinoJson.h>
 
+#include "ArrayList.h"
 #include "Target.h"
 #include "PreferenceManager.h"
 
@@ -23,20 +24,21 @@ public:
     virtual ~TargetManager();
 
     void initialize();
-    void addTarget(Target * target);
-    void removeTarget(uint8_t targetIndex);
-    Target** getTargets();
+    void add(Target * target);
+    void remove(uint8_t targetIndex);
+    void remove(Target *target);
+    Target* get(uint8_t index);
+    uint8_t size();
+    ArrayList<Target* > *getTargets();
 
 
 protected: 
+    ArrayList<Target*> targets;
+    // uint8_t numTargets = 0;
     uint32_t toString(char *buff, uint32_t size); // turn into char[]
     bool fromString(char *buff); // turn into jsondocument
 
-    // Target **targets = nullptr;
-    // char targetsBuffer[TARGET_BUFF_SIZE];
     StaticJsonDocument<TARGET_BUFF_SIZE> targetJson;
-    Target *targets = nullptr;
-    uint8_t numTargets = 0;
 
 
 };

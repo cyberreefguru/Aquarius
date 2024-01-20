@@ -1,3 +1,9 @@
+/**
+ * @brief Abstracts displaying items to the screen
+ * @file DisplayManager.cpp
+ * @date Nov 26, 2023
+ * @author cyberreefguru
+ */
 #include "DisplayManager.h"
 
 DisplayManager displayManager;
@@ -379,4 +385,41 @@ void DisplayManager::clearRow(uint8_t srow, uint8_t scol, uint8_t erow, uint8_t 
     uint8_t height = (erow - srow + 1) * FONT_HEIGHT;
 
     ssd1306.fillRect(xstart, ystart, width, height, BLACK);
+}
+
+/**
+ * @brief Draws a button with the specified text
+ * @note button is 6 pixels taller and wider than text provided
+ * @param text text for button
+ * @param active if true, button is highlighted
+ */
+void DisplayManager::drawButton(const char *text, bool active)
+{
+    uint16_t x = ssd1306.getCursorX();
+    uint16_t y = ssd1306.getCursorY();
+    uint16_t h = FONT_HEIGHT + 6;
+    uint16_t w = FONT_WIDTH * strlen(text) + 6;
+
+    // Log.traceln("DisplayManager::drawButton - cursor (%d, %d), size (%d, %d)", x, y, h, w);
+
+    if( active )
+    {
+        ssd1306.fillRoundRect(x, y, w, h, 4, WHITE);
+        ssd1306.setCursor(x+3, y+3);
+        ssd1306.setTextColor(BLACK);
+        ssd1306.print(text);
+    }
+    else
+    {
+        ssd1306.drawRoundRect(x, y, w, h, 4, WHITE);
+        ssd1306.setCursor(x+3, y+3);
+        ssd1306.setTextColor(WHITE);
+        ssd1306.print(text);
+    }
+    ssd1306.setTextColor(WHITE);
+
+    // Log.traceln("DisplayManager::drawButton - cursor (%d, %d), size (%d, %d)", x, y, h, w);
+    ssd1306.setCursor(ssd1306.getCursorX()+3, y); // reset cursor
+    // Log.traceln("DisplayManager::drawButton - cursor (%d, %d), size (%d, %d)", x, y, h, w);
+
 }

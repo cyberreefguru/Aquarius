@@ -13,20 +13,13 @@
 #include <Arduino.h>
 #include <ArduinoLog.h>
 
-#include "ActionMenuItem.h"
+#include "MenuItem.h"
 
-class ResetMenuItem : public ActionMenuItem
+class ResetMenuItem : public MenuItem
 {
 public:
-    ResetMenuItem();
-    virtual ~ResetMenuItem(){}
+    ResetMenuItem(ActionCallback cb);
     void onDisplay(bool active) override;
-    // void onAction();
-    void onButtonUp() override;
-    void onButtonDown() override;
-    void onButtonLeft() override;
-    void onButtonRight() override;
-    void onButtonPush() override;
 
 protected:
 

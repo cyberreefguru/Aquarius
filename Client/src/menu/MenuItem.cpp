@@ -10,10 +10,19 @@
 #include "ActionEventManager.h"
 #include "InputEventManager.h"
 
+/**
+ * @brief default constructor
+ */
 MenuItem::MenuItem()
 {
 }
 
+/**
+ * @brief Constructor
+ * @param label Menu lable
+ * @param title Menu title
+ * @param prompt Menu prompt
+ */
 MenuItem::MenuItem(menu_label_t label, menu_title_t title, menu_prompt_t prompt)
 {
     this->menuTitle = title;
@@ -21,9 +30,144 @@ MenuItem::MenuItem(menu_label_t label, menu_title_t title, menu_prompt_t prompt)
     this->menuPrompt = prompt;
 }
 
+
+
+/**
+ * @brief sets the callback for overriding onDisplay
+ * @param cb the callback method
+ */
+void MenuItem::setDisplayCallback(DisplayCallback cb)
+{
+    doDisplay = cb;
+}
+
+/**
+ * @brief sets the callback for overriding onLabelDisplay
+ * @param cb the callback method
+ */
+void MenuItem::setLabelDisplayCallback(DisplayCallback cb)
+{
+    doLabelDisplay = cb;
+}
+
+/**
+ * @brief sets the callback for overriding onAction
+ * @param cb the callback method
+ */
+void MenuItem::setActionCallback(ActionCallback cb)
+{
+    doAction = cb;
+}
+
+/**
+ * @brief sets the callbacks for overriding button input events
+ * @param up overrides ButtonEvent::UP
+ * @param down overrides ButtonEvent::DOWN
+ * @param left overrides ButtonEvent::LEFT
+ * @param right overrides ButtonEvent::RIGHT
+ * @param push overrides ButtonEvent::PSUH
+ */
+void MenuItem::setButtonCallback(ButtonCallback up, ButtonCallback down,
+                                       ButtonCallback left, ButtonCallback right,
+                                       ButtonCallback push)
+{
+    doButtonUp = up;
+    doButtonDown = down;
+    doButtonLeft = left;
+    doButtonRight = right;
+    doButtonPush = push;
+}
+
+/**
+ * @brief displays the menu title and prompt
+ * @param active if true, highlights the prompt
+ */
+void MenuItem::onDisplay(bool active)
+{
+    Log.traceln("MenuItem::onDisplay - BEGIN");
+
+    if (menuTitle == nullptr || menuPrompt == nullptr)
+    {
+        Log.errorln("MenuItem::onDisplay - no title or prompt");
+        return;
+    }
+
+    if (doDisplay != nullptr)
+    {
+        Log.traceln("MenuItem::onDisplay - using callback");
+        doDisplay(active);
+    }
+    else
+    {
+        Log.traceln("MenuItem::onDisplay - no callback; rendering %s", menuLabel);
+
+        displayManager.clear();
+        displayManager.setCursor(0, 0);
+        displayManager.println(menuTitle);
+        displayManager.addCursorY(4); // put a little gap beween title and menu item
+
+        Log.traceln("MenuItem::onDisplay - active=%d", active);
+        if (active)
+        {
+            displayManager.setTextColor(BLACK, WHITE);
+        }
+        else
+        {
+            displayManager.setTextColor(WHITE);
+        }
+        displayManager.print(menuPrompt);
+        displayManager.setTextColor(WHITE);
+        displayManager.setRefresh(true);
+    }
+
+    Log.traceln("MenuItem::onDisplay - END");
+}
+
+/**
+ * @brief Displays the menu item's label and nothing else
+ * @param active if true, inverts screen color
+ */
+void MenuItem::onLabelDisplay(bool active)
+{
+    Log.traceln("MenuItem::onLabelDisplay - BEGIN");
+
+    if (menuLabel == nullptr)
+    {
+        Log.errorln("MenuItem::onLabelDisplay - label is null!");
+        return;
+    }
+
+    if (doLabelDisplay != nullptr)
+    {
+        Log.traceln("MenuItem::onLabelDisplay - using callback");
+        doDisplay(active);
+    }
+    else
+    {
+        Log.traceln("MenuItem::onLabelDisplay - no callback; rendering %s", menuLabel);
+        if (active)
+        {
+            displayManager.setTextColor(BLACK, WHITE);
+        }
+        else
+        {
+            displayManager.setTextColor(WHITE);
+        }
+        displayManager.println(menuLabel);
+        displayManager.setTextColor(WHITE);
+        displayManager.setRefresh(true);
+    }
+
+    Log.traceln("MenuItem::onLabelDisplay - END");
+}
+
+/**
+ * @brief Handles button presses on a menu item; calls appropriate function. Called by MenuManager
+ * @param be the button event
+ */
 void MenuItem::onEvent(ButtonEvent be)
 {
-   Log.traceln("MenuItem.onEvent - BEGIN");
+    Log.traceln("MenuItem.onEvent - BEGIN");
     switch (be)
     {
     case ButtonEvent::UP:
@@ -47,3 +191,74 @@ void MenuItem::onEvent(ButtonEvent be)
     Log.traceln("MenuItem.onEvent - END");
 }
 
+/**
+ * @brief Called when action is required; calls doAction callback if non-null.
+ *
+ */
+void MenuItem::onAction()
+{
+    if (doAction != nullptr)
+    {
+        doAction();
+    }
+}
+
+/**
+ * @brief Called when button pressed; calls doButtonUp callback if non-null.
+ *
+ */
+void MenuItem::onButtonUp()
+{
+    if (doButtonUp != nullptr)
+    {
+        doButtonUp();
+    }
+}
+
+/**
+ * @brief Called when button pressed; calls doButtonDown callback if non-null.
+ *
+ */
+void MenuItem::onButtonDown()
+{
+    if (doButtonDown != nullptr)
+    {
+        doButtonDown();
+    }
+}
+
+/**
+ * @brief Called when button pressed; calls doButtonLeft callback if non-null.
+ *
+ */
+void MenuItem::onButtonLeft()
+{
+    if (doButtonLeft != nullptr)
+    {
+        doButtonLeft();
+    }
+}
+
+/**
+ * @brief Called when button pressed; calls doButtonRight callback if non-null.
+ *
+ */
+void MenuItem::onButtonRight()
+{
+    if (doButtonRight != nullptr)
+    {
+        doButtonRight();
+    }
+}
+
+/**
+ * @brief Called when button pressed; calls doButtonPush callback if non-null.
+ *
+ */
+void MenuItem::onButtonPush()
+{
+    if (doButtonPush != nullptr)
+    {
+        doButtonPush();
+    }
+}

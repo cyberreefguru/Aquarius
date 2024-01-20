@@ -5,26 +5,41 @@
  *      Author: cyberreefguru
  */
 #include "TargetManager.h"
-//#include "PreferenceManager.h"
+// #include "PreferenceManager.h"
 
 TargetManager targetManager;
 
+/**
+ * @brief Constructor
+ * 
+ */
 TargetManager::TargetManager()
 {
-
 }
 
-TargetManager::~TargetManager() 
+/**
+ * @brief Destructor
+ * 
+ */
+TargetManager::~TargetManager()
 {
-    free(targets);
+    for (uint8_t i = 0; i < targets.size(); i++)
+    {
+        free(targets.get(i));
+    }
 }
 
+/**
+ * @brief Initializles the target manager. 
+ * @note Requires preferences to be initalized first.
+ * 
+ */
 void TargetManager::initialize()
 {
     Log.traceln("TargetManager::initialize - BEGIN");
 
     char *targetBuff = prefManager.getTargets();
-    if( fromString(targetBuff))
+    if (fromString(targetBuff))
     {
         Log.traceln("TargetManager::initialize - Parsed target json");
     }
@@ -34,6 +49,62 @@ void TargetManager::initialize()
     }
 
     Log.traceln("TargetManager::initialize - END");
+}
+
+/**
+ * @brief Adds target to the list
+ * @param target 
+ */
+void TargetManager::add(Target *target)
+{
+    targets.add(target);
+}
+
+/**
+ * @brief removes specified target from list
+ * @param targetIndex 
+ */
+void TargetManager::remove(uint8_t targetIndex)
+{
+    targets.removeAt(targetIndex);
+}
+
+/**
+ * @brief removes specified target from list
+ * @param target 
+ */
+void TargetManager::remove(Target *target)
+{
+    targets.remove(target);
+}
+
+/**
+ * @brief returns the specified target
+ * @param index 
+ * @return target or nullptr if index is out of bounds
+ */
+Target* TargetManager::get(uint8_t index)
+{
+    return targets.get(index);
+}
+
+/**
+ * @brief returns current size of target list
+ * @return size of list
+ */
+uint8_t TargetManager::size()
+{
+    return targets.size();
+}
+
+
+/**
+ * @brief returns list of targets
+ * @return ArrayList of Target pointers
+ */
+ArrayList<Target*> *TargetManager::getTargets()
+{
+    return &targets;
 }
 
 
@@ -56,6 +127,11 @@ uint32_t TargetManager::toString(char *buff, uint32_t size)
     return s;
 }
 
+/**
+ * @brief Creates target objects from JSON string
+ * @param buff buffer containing JSON string
+ * @return true if success, false otherwise
+ */
 bool TargetManager::fromString(char *buff)
 {
     Log.traceln("TargetManager::fromString - BEGIN");
@@ -70,15 +146,17 @@ bool TargetManager::fromString(char *buff)
 
     JsonArray array = targetJson[KEY_TARGETS];
     uint8_t numTargets = array.size();
-    targets = new Target[numTargets];
     for (uint8_t i = 0; i < numTargets; i++)
     {
         JsonObject t = array[i];
-        targets[i].sourceNodeId = prefManager.getNodeId();
-        targets[i].targetNodeId = t[KEY_TARGET_NODE_ID];
-        targets[i].startDelay = t[KEY_TARGET_START_DELAY];
-        targets[i].endDelay = t[KEY_TARGET_END_DELAY];
-        Log.traceln("TargetManager::fromString - creating target[%d] node ID = %d", i, targets[i].targetNodeId);
+        Target *target = new Target();
+        target->sourceNodeId = prefManager.getNodeId();
+        target->targetNodeId = t[KEY_TARGET_NODE_ID];
+        target->startDelay = t[KEY_TARGET_START_DELAY];
+        target->endDelay = t[KEY_TARGET_END_DELAY];
+        targets.add(target);
+
+        Log.traceln("TargetManager::fromString - creating target[%d] node ID = %d", i, target->targetNodeId);
     }
 
     Log.traceln("TargetManager::fromString - END");

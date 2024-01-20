@@ -1,22 +1,22 @@
-/*
- * MultiActionItem.cpp
- *
- *  Created on: Jan 8, 2024
- *      Author: cyberreefguru
+/**
+ * @brief Renders specified menu items and adds OK/CANCEL buttons.
+ * @note Calls onAction when OK pushed; pops item from stack when CANCEL pushed.
+ * @file MultiActionItem.cpp
+ * @date Jan 8, 2024
+ * @author cyberreefguru
  */
+#include "MultiActionItem.h"
 #include "MenuManager.h"
 #include "DisplayManager.h"
-#include "MultiActionItem.h"
-#include "ActionMenuItem.h"
 
 using namespace std::placeholders;
 
-MultiActionItem::MultiActionItem(menu_label_t label, menu_title_t title, ActionMenuItem *items[], uint8_t numItems)
+MultiActionItem::MultiActionItem(menu_label_t label, menu_title_t title, MenuItem *items[], uint8_t numItems)
 {
     this->menuTitle = title;
     this->menuLabel = label;
     this->menuPrompt = label;
-    this->items = (MenuItem **)items;
+    this->items = items;
     this->numItems = numItems;
 
     this->ok = new ActionButtonItem("OK", std::bind(&MultiActionItem::onOk, this));
@@ -38,7 +38,7 @@ void MultiActionItem::onOk()
     for (uint8_t i = 0; i < numItems; i++)
     {
         Log.traceln("MultiActionItem::onOk - calling onAction for item %d", i);
-        ((ActionMenuItem *)items[i])->onAction();
+        items[i]->onAction();
     }
 
     // Reset and clear menu item
@@ -80,14 +80,13 @@ void MultiActionItem::onDisplay(bool active)
 
     for (uint8_t i = 0; i < numItems; i++)
     {
-        Log.traceln("Displaying Action[%d]", i);
-        ((ActionMenuItem *)items[i])->onDisplay((curItem == i));
+        Log.traceln("MultiActionItem::onDisplay - Displaying MenuItem[%d], curItem=%d", i, curItem);
+        items[i]->onDisplay((curItem == i));
         displayManager.println(); // new line between items
         displayManager.addCursorY(2); // put a little gap beween title and menu item
     }
 
-    displayManager.println(); // new line between items and buttons
-
+    displayManager.addCursorY(2); // put a little gap beween item and next item
     ok->onDisplay((curItem == numItems));
     displayManager.print("  ");
     cancel->onDisplay((curItem == numItems + 1));
@@ -103,16 +102,19 @@ void MultiActionItem::onButtonUp()
     if (curItem >= 0 && curItem < numItems)
     {
         // @ Input; call up
-        ((ActionMenuItem *)items[curItem])->onButtonUp();
+        Log.traceln("MultiActionItem::onButtonUp: In component, sending button to component");
+        items[curItem]->onButtonUp();
     }
     else if (curItem == numItems)
     {
         // @ OK; move to next item
+        Log.traceln("MultiActionItem::onButtonDown: on OK, moving to last component");
         curItem--; 
     }
     else if (curItem == numItems + 1)
     {
         // @ Cancel; move to first item
+        Log.traceln("MultiActionItem::onButtonDown: on CANCEL, moving to first component");
         curItem = 0;
     }
     onDisplay(false);
@@ -124,16 +126,19 @@ void MultiActionItem::onButtonDown()
     if (curItem >= 0 && curItem < numItems)
     {
         // @ Input; call down
-        ((ActionMenuItem *)items[curItem])->onButtonDown();
+        Log.traceln("MultiActionItem::onButtonDown: In component, sending button to component");
+        items[curItem]->onButtonDown();
     }
     else if (curItem == numItems)
     {
         // @ OK; move to first item
+        Log.traceln("MultiActionItem::onButtonDown: on OK, moving to first component");
         curItem = 0;
     }
     else if (curItem == numItems + 1)
     {
         // @ Cancel; move to first item
+        Log.traceln("MultiActionItem::onButtonDown: on CANCEL, moving to first component");
         curItem = 0;
     }
     onDisplay(false);
@@ -146,16 +151,19 @@ void MultiActionItem::onButtonLeft()
     if (curItem >= 0 && curItem < numItems)
     {
         // @ Input; Send event to item
-        ((ActionMenuItem *)items[curItem])->onButtonLeft();
+        Log.traceln("MultiActionItem::onButtonLeft: In component, sending button to component");
+        items[curItem]->onButtonLeft();
     }
     else if (curItem == numItems)
     {
         // @ OK; move to last item
-        curItem = numItems - 1;
+        Log.traceln("MultiActionItem::onButtonLeft: on OK, moving to last component");
+        curItem--;
     }
     else if (curItem == numItems + 1)
     {
         // @ Cancel; Move to OK
+        Log.traceln("MultiActionItem::onButtonLeft: on CANCEL, moving to OK");
         curItem--;
     }
     onDisplay(false);
@@ -163,29 +171,33 @@ void MultiActionItem::onButtonLeft()
 
 void MultiActionItem::onButtonRight()
 {
-    Log.traceln("MultiActionItem::onButtonRight: curItem=%d", curItem);
+    Log.traceln("MultiActionItem::onButtonRight: BEGIN - curItem=%d", curItem);
 
     if (curItem >= 0 && curItem < numItems)
     {
         // @ Input; Send event to item
-        ((ActionMenuItem *)items[curItem])->onButtonRight();
+        Log.traceln("MultiActionItem::onButtonRight: In component, sending button to component");
+        items[curItem]->onButtonRight();
     }
     else if (curItem == numItems)
     {
         // @ OK; move to cancel
+        Log.traceln("MultiActionItem::onButtonRight: on OK, moving to CANCEl");
         curItem++;
     }
     else if (curItem == numItems + 1)
     {
         // @ Cancel; move to first item
+        Log.traceln("MultiActionItem::onButtonRight: on CANCEL, moving to first component");
         curItem = 0;
     }
     onDisplay(false);
+    Log.traceln("MultiActionItem::onButtonRight: END - curItem=%d", curItem);
 }
 
 void MultiActionItem::onButtonPush()
 {
-    Log.traceln("MultiActionItem::onButtonPush: curItem=%d", curItem);
+    Log.traceln("MultiActionItem::onButtonPush: BEGIN - curItem=%d", curItem);
 
     if (curItem >= 0 && curItem < numItems)
     {
@@ -193,17 +205,22 @@ void MultiActionItem::onButtonPush()
         // ((ActionMenuItem *)items[curItem])->onButtonPush();
 
         // Advance to next item
+        Log.traceln("MultiActionItem::onButtonPush: In component, moving to next menu item");
         curItem++;
         onDisplay(false);
     }
     else if (curItem == numItems)
     {
         // @ OK; Call onOk
+        Log.traceln("MultiActionItem::onButtonPush: In OK, calling onOK");
         onOk();
     }
     else if (curItem == numItems + 1)
     {
         // @ Cancel; call onCancel
+        Log.traceln("MultiActionItem::onButtonPush: In CANCEL, calling onCANCEL");
         onCancel();
     }
+    Log.traceln("MultiActionItem::onButtonPush: END - curItem=%d", curItem);
+
 }

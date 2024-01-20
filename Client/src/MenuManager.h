@@ -1,10 +1,9 @@
-/*
- * MenuManager.h
- *
- *  Created on: Dec  30, 2023
- *      Author: cyberreefguru
+/**
+ * @brief Controls displaying menu to the screen
+ * @file MenuManager.h
+ * @date Dec  30, 2023
+ * @author cyberreefguru
  */
-
 #ifndef MM_H
 #define MM_H
 
@@ -14,6 +13,7 @@
 #include <ArduinoLog.h>
 
 #include <SimpleStack.h>
+#include "ArrayList.h"
 
 #include "ButtonEvent.h"
 
@@ -35,7 +35,7 @@ class MenuManager
 {
 public:
     MenuManager();
-    virtual ~MenuManager(){}
+    virtual ~MenuManager();
     void initialize();
     void push(MenuItem *item);
     MenuItem* peek();
@@ -55,7 +55,9 @@ public:
     void actionEventHandler(void *args, esp_event_base_t base, int32_t id, void *data);
 
     void doExit(bool active);
-    void onResetPush();
+
+    void doResetPush();
+
     void popAndDisplay();
     
     void doNodeId();
@@ -68,8 +70,8 @@ public:
 protected:
     ButtonEvent currentEvent = ButtonEvent::DOWN;
     ButtonAction currentAction = ButtonAction::PRESS;
-    bool changed = false;
-
+    // bool changed = false;
+    ArrayList<MenuItem*> iTargets;
 };
 
 // end of add your includes here

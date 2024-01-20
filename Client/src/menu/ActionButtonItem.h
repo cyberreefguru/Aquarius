@@ -1,10 +1,10 @@
-/*
- * ActionButtonItem.h
- *
- *  Created on: Jan 12, 2024
- *      Author: cyberreefguru
+/**
+ * @brief Renders button with specified text (prompt) or calls doDisplay
+ * @note does NOT override doAction or onAction
+ * @file ActionButtonItem.h
+ * @date Jan 12, 2024
+ * @author cyberreefguru
  */
-
 #ifndef ActionButtonItem_H
 #define ActionButtonItem_H
 
@@ -13,10 +13,10 @@
 #include <Arduino.h>
 #include <ArduinoLog.h>
 
-#include "ActionMenuItem.h"
+#include "MenuItem.h"
 
 
-class ActionButtonItem : public ActionMenuItem
+class ActionButtonItem : public MenuItem
 {
 public:
     ActionButtonItem() {}

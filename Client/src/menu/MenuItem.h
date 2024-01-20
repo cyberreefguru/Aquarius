@@ -15,10 +15,27 @@
 
 #include "ButtonEvent.h"
 
+/// @brief type for menu titles
 typedef const char *menu_title_t;
+
+/// @brief type for menu labels
 typedef const char *menu_label_t;
+
+/// @brief type for menu prompts
 typedef const char *menu_prompt_t;
 
+///@brief type definition for onDisplay callback
+typedef std::function<void(bool active)> DisplayCallback;
+
+///@brief type definitino for onAction callback
+typedef std::function<void()> ActionCallback;
+
+///@brief type definitino for onButtonXXX callback
+typedef std::function<void()> ButtonCallback;
+
+/**
+ * @brief base class for menu items; provide default funtionality that can be overriden
+ */
 class MenuItem
 {
 public:
@@ -37,33 +54,39 @@ public:
     {
         return menuPrompt;
     }
-    bool hasChildren()
-    {
-        return (numItems > 0 && items != nullptr);
-    }
-    uint8_t getNumberChildren()
-    {
-        return numItems;
-    }
-    MenuItem **getChildren()
-    {
-        return items;
-    }
+
+    void setActionCallback(ActionCallback cb);
+    void setDisplayCallback(DisplayCallback cb);
+    void setLabelDisplayCallback(DisplayCallback cb);
+    void setButtonCallback(ButtonCallback up, ButtonCallback down,
+                           ButtonCallback left, ButtonCallback right,
+                           ButtonCallback push);
 
     virtual void onEvent(ButtonEvent be);
-    // virtual void onDisplay();
-    virtual void onDisplay(bool active) = 0; // must implement
-    virtual void onButtonUp() {}
-    virtual void onButtonDown() {}
-    virtual void onButtonLeft() {}
-    virtual void onButtonRight() {}
-    virtual void onButtonPush() {}
+    virtual void onDisplay(bool active);
+    virtual void onLabelDisplay(bool active);
+    virtual void onAction();
+    virtual void onButtonUp();
+    virtual void onButtonDown();
+    virtual void onButtonLeft();
+    virtual void onButtonRight();
+    virtual void onButtonPush();
 
 protected:
     MenuItem();
     const char *menuLabel;      // shown when in a list
     const char *menuTitle;      // shown when onDisplay called
     const char *menuPrompt;     // shown when onDisplay called
+
+    DisplayCallback doDisplay = nullptr;
+    DisplayCallback doLabelDisplay = nullptr;
+    ActionCallback doAction = nullptr;
+    ButtonCallback doButtonUp = nullptr;
+    ButtonCallback doButtonDown = nullptr;
+    ButtonCallback doButtonLeft = nullptr;
+    ButtonCallback doButtonRight = nullptr;
+    ButtonCallback doButtonPush = nullptr;
+
     uint8_t numItems = 0;       // TODO - move to ListMenuItem or something
     MenuItem **items = nullptr; // TODO - move to ListMenuItem or something
 };

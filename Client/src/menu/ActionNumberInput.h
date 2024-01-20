@@ -1,29 +1,23 @@
-/*
- * ActionNumberInput.h
- *
- *  Created on: Jan 8, 2024
- *      Author: cyberreefguru
- */
 /**
  * @file ActionNumberInput.h
  * @brief Allows user to input a number using buttons. Requires onAction to be called to set value.
-*/
-
+ * @date Jan 8, 2024
+ * @author cyberreefguru
+ */
 #ifndef ActionNumberInput_H
 #define ActionNumberInput_H
 
 #include <Arduino.h>
 #include <ArduinoLog.h>
 
-#include "ActionMenuItem.h"
+#include "MenuItem.h"
 
 
-class ActionNumberInput : public ActionMenuItem
+class ActionNumberInput : public MenuItem
 {
 public:
     ActionNumberInput() {}
     ActionNumberInput(menu_prompt_t prompt, ActionCallback onAction, uint8_t numDigits, uint8_t decimal=0);
-    // ActionNumberInput(menu_label_t label, menu_title_t title, menu_prompt_t prompt, uint8_t numDigits, uint8_t decimal=0);
     ~ActionNumberInput();
 
     void setValue(uint32_t v);
@@ -38,7 +32,6 @@ public:
     void onButtonPush() override;
 
 protected:
-    // uint32_t value;
     uint8_t curDigit;
     uint8_t numDigits;
     uint8_t decimal;

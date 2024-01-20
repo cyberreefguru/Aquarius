@@ -1,14 +1,18 @@
-/*
- * AcitonMenuItem.cpp
- *
- *  Created on: Dec  31, 2023
- *      Author: cyberreefguru
+/**
+ * @brief Renders button with specified text (prompt) or calls doDisplay
+ * @note does NOT override doAction or onAction
+ * @file ActionButtonItem.cpp
+ * @date Jan 12, 2024
+ * @author cyberreefguru
  */
-
 #include "ActionButtonItem.h"
 #include "DisplayManager.h"
-#include "MenuColor.h"
 
+/**
+ * @brief Constructor
+ * @param prompt text to render within button
+ * @param cb action to execute
+ */
 ActionButtonItem::ActionButtonItem(menu_prompt_t prompt, ActionCallback cb)
 {
     this->menuTitle = prompt;
@@ -17,35 +21,31 @@ ActionButtonItem::ActionButtonItem(menu_prompt_t prompt, ActionCallback cb)
     this->doAction = cb;
 }
 
+/**
+ * @brief calls doDisplay if defined or drawButton otherwise
+ * @param active if true, highlights button
+ */
 void ActionButtonItem::onDisplay(bool active)
 {
     Log.traceln("ActionButtonItem::onDisplay - BEGIN");
 
     if (doDisplay != nullptr)
     {
-        Log.traceln("ActionButtonItem::onDisplay - using callback");
+        Log.traceln("ActionButtonItem::onDisplay - using callback; rendering %s", menuPrompt); 
         doDisplay(active);
         return;
     }
-
-    if (menuPrompt == nullptr)
-    {
-        Log.errorln("Item missing labels!");
-        return;
-    }
-
-    Log.traceln("ActionButtonItem::onDisplay - no callback; rendering %s", menuPrompt);
-
-    if (active)
-    {
-        displayManager.setTextColor(BLACK, WHITE);
-    }
     else
     {
-        displayManager.setTextColor(WHITE);
+        if (menuPrompt == nullptr)
+        {
+            Log.errorln("ActionButtonItem::onDisplay - missing prompt!");
+            return;
+        }
+
+        Log.traceln("ActionButtonItem::onDisplay - no callback; rendering %s", menuPrompt);
+        displayManager.drawButton(menuPrompt, active);
     }
-    displayManager.print(menuPrompt);
-    displayManager.setTextColor(WHITE);
 
     Log.traceln("ActionButtonItem::onDisplay - END");
 }

@@ -23,7 +23,7 @@ void IndicatorManager::initialize()
 
     indicators.begin();
     indicators.setBrightness( prefManager.getLedBrightness() );
-    setIndicators(prefManager.getConfigureColor(), prefManager.getDeactiveColor());
+    setIndicators(prefManager.getInitializeColor(), prefManager.getDeactiveColor());
 
     actionEventManager.addEventHandler([](void *arg, esp_event_base_t base, int32_t id, void *data)
                                  { indicatorManager.eventHandler(arg, base, id, data); });
