@@ -13,7 +13,7 @@
 #include <ArduinoLog.h>
 
 #include "Target.h"
-#include "MultiActionItem.h"
+#include "MultiButtonItem.h"
 #include "ActionNumberInput.h"
 #include "ActionButtonItem.h"
 
@@ -22,25 +22,32 @@ using namespace std::placeholders;
 #include <utility>
 
 
-class TargetMenuItem : public MultiActionItem
+class TargetMenuItem : public MultiButtonItem
 {
 public:
     TargetMenuItem(Target *target);
     virtual ~TargetMenuItem();
 
 protected:
-    void initialize() override;
-    void onOk() override;
+    virtual void initialize();
     void doNodeId();
     void doStartDelay();
     void doStopDelay();
+    void doOk();
+    void doCancel();
     void doDelete();
+    // void doNumberLeft();
+    // void doNumberRight();
+    // void doButtonLeft();
+    // void doButtonRight();
 
 private:
     Target *target;
     ActionNumberInput *iNodeId = nullptr;
     ActionNumberInput *iStartDelay = nullptr;
     ActionNumberInput *iStopDelay = nullptr;
+    ActionButtonItem *iOk = nullptr;
+    ActionButtonItem *iCancel = nullptr;
     ActionButtonItem *iDelete = nullptr;
 };
 

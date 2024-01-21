@@ -112,7 +112,7 @@ void MultiActionItem::onDisplay(bool active)
 
     displayManager.addCursorY(2); // put a little gap beween item and next item
     ok->onDisplay((curItem == size));
-    displayManager.print("  ");
+    displayManager.print(" ");
     cancel->onDisplay((curItem == size + 1));
 
     displayManager.setRefresh(true);

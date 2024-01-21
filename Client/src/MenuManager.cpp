@@ -185,13 +185,6 @@ void MenuManager::actionEventHandler(void *args, esp_event_base_t base, int32_t 
     {
         stateManager.configure = true;
         display();
-        // // Get the current menu item
-        // MenuItem *item = nullptr;
-        // menus.peek(&item);
-        // if (item != nullptr)
-        // {
-        //     item->onDisplay(false);
-        // }
     }
 }
 
@@ -314,6 +307,7 @@ void MenuManager::display()
         }
         else
         {
+            Log.traceln("MenuManager::display - displaying %s", item->getMenuLabel());
             item->onDisplay(true);
         }
     }

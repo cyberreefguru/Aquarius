@@ -14,10 +14,12 @@ DisplayManager::DisplayManager()
 
 void DisplayManager::initialize()
 {
-    Log.traceln("DisplayManager::initialize - BEGIN");
+    // Log.traceln("DisplayManager::initialize - BEGIN");
 
     ssd1306 = Adafruit_SSD1306(128, 64, &Wire);
     ssd1306.begin(SSD1306_SWITCHCAPVCC, 0x3C); // Address 0x3C for 128x32
+    uint8_t b = prefManager.getScreenBrightness();
+    Log.traceln("DisplayManager::initialize - Setting screen brightness - %d", b);
     setBrightness( prefManager.getScreenBrightness() );
 
     ssd1306.clearDisplay();
@@ -40,7 +42,7 @@ void DisplayManager::initialize()
         Log.errorln("DisplayManager::initialize - FAILED TO CREATE DISPLAY TASK");
     }
 
-    Log.traceln("DisplayManager::initialize - END");
+    // Log.traceln("DisplayManager::initialize - END");
 }
 
 /***

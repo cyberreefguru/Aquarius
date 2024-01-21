@@ -237,23 +237,23 @@ uint32_t PreferenceManager::getMqttUpColor()
 }
 uint8_t PreferenceManager::getServoStart()
 {
-    return preferences.getShort(KEY_SERVO_START, DEFAULT_SERVO_START);
+    return preferences.getUChar(KEY_SERVO_START, DEFAULT_SERVO_START);
 }
 uint8_t PreferenceManager::getServoStop()
 {
-    return preferences.getShort(KEY_SERVO_STOP, DEFAULT_SERVO_STOP);
+    return preferences.getUChar(KEY_SERVO_STOP, DEFAULT_SERVO_STOP);
 }
 uint8_t PreferenceManager::getSensorThreshold()
 {
-    return preferences.getShort(KEY_SENSOR_THRESHOLD, DEFAULT_SENSOR_THRESHOLD);
+    return preferences.getUChar(KEY_SENSOR_THRESHOLD, DEFAULT_SENSOR_THRESHOLD);
 }
 uint8_t PreferenceManager::getScreenBrightness()
 {
-    return preferences.getShort(KEY_BRIGHTNESS_SCREEN, DEFAULT_BRIGHTNESS_SCREEN);
+    return preferences.getUChar(KEY_BRIGHTNESS_SCREEN, DEFAULT_BRIGHTNESS_SCREEN);
 }
 uint8_t PreferenceManager::getLedBrightness()
 {
-    return preferences.getShort(KEY_BRIGHTNESS_LED, DEFAULT_BRIGHTNESS_LED);
+    return preferences.getUChar(KEY_BRIGHTNESS_LED, DEFAULT_BRIGHTNESS_LED);
 }
 uint8_t PreferenceManager::getDisplaySize()
 {
@@ -265,22 +265,27 @@ char* PreferenceManager::getTargetsBuffer()
 }
 void PreferenceManager::set(char const *key, uint8_t v)
 {
+    Log.traceln("PreferenceManager::set - char(%s, %d)", key, v);
     preferences.putUChar(key, v);
 }
 void PreferenceManager::set(char const *key, uint16_t v)
 {
+    Log.traceln("PreferenceManager::set - short(%s, %d)", key, v);
     preferences.putUShort(key, v);
 }
 void PreferenceManager::set(char const *key, uint32_t v)
 {
+    Log.traceln("PreferenceManager::set - long(%s, %d)", key, v);
     preferences.putULong(key, v);
 }
 void PreferenceManager::set(char const *key, char *v, uint32_t len)
 {
+    Log.traceln("PreferenceManager::set - char*(%s, %s)", key, v);
     preferences.putBytes(key, v, len);
 }
 void PreferenceManager::set(char const *key, MenuColor color)
 {
+    Log.traceln("PreferenceManager::set - color(%s, %s)", key, color.name);
     uint32_t c = (uint32_t)color.value;
     preferences.putULong(key, c);
 }

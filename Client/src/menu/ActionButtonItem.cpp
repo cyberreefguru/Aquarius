@@ -11,6 +11,17 @@
 /**
  * @brief Constructor
  * @param prompt text to render within button
+ */
+ActionButtonItem::ActionButtonItem(menu_prompt_t prompt)
+{
+    this->menuTitle = prompt;
+    this->menuLabel = prompt;
+    this->menuPrompt = prompt;
+}
+
+/**
+ * @brief Constructor
+ * @param prompt text to render within button
  * @param cb action to execute
  */
 ActionButtonItem::ActionButtonItem(menu_prompt_t prompt, ActionCallback cb)

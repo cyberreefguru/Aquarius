@@ -15,18 +15,15 @@
 
 #include "MenuItem.h"
 
-
 class ActionButtonItem : public MenuItem
 {
 public:
     ActionButtonItem() {}
+    ActionButtonItem(menu_prompt_t prompt);
     ActionButtonItem(menu_prompt_t prompt, ActionCallback cb);
     virtual ~ActionButtonItem() {}
 
     virtual void onDisplay(bool active) override;
-
-private:
-
 };
 
 #endif

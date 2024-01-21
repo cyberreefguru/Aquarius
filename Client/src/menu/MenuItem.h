@@ -62,6 +62,12 @@ public:
                            ButtonCallback left, ButtonCallback right,
                            ButtonCallback push);
 
+    void setUpCallback(ButtonCallback u);
+    void setDownCallback(ButtonCallback d);
+    void setLeftCallback(ButtonCallback l);
+    void setRightCallback(ButtonCallback r);
+    void setPushCallback(ButtonCallback p);
+
     virtual void onEvent(ButtonEvent be);
     virtual void onDisplay(bool active);
     virtual void onLabelDisplay(bool active);

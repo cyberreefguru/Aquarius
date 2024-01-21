@@ -1,6 +1,6 @@
 /**
  * @brief Widget that allows the user to enter a number using buttons.
- * @note widget does not print title - it only renders the number input areas; 
+ * @note widget does not print title - it only renders the number input areas;
  *       must be encapsulated in a menu item for proper use.
  * @file ActionNumberInput.cpp
  * @date Jan 8, 2024
@@ -11,10 +11,10 @@
 
 /**
  * @brief constructor
- * @param prompt 
- * @param doAction 
- * @param numDigits 
- * @param decimal 
+ * @param prompt
+ * @param doAction
+ * @param numDigits
+ * @param decimal
  */
 ActionNumberInput::ActionNumberInput(menu_prompt_t prompt, ActionCallback doAction, uint8_t numDigits, uint8_t decimal)
 {
@@ -40,41 +40,46 @@ ActionNumberInput::~ActionNumberInput()
 
 /**
  * @brief Displays the number input item; renders prompt and then 'numdigits' of input area
- * @param active 
+ * @param active
  */
 void ActionNumberInput::onDisplay(bool active)
 {
     Log.traceln("ActionNumberInput::onDisplay - BEGIN");
 
-    if (menuLabel == nullptr || menuPrompt == nullptr)
+    // Call user provided callback if it exits
+    if (doDisplay != nullptr)
     {
-        Log.errorln("ActionNumberInput::onDisplay - Item missing labels!");
-        return;
+        doDisplay(active);
     }
-
-    // Log.traceln("ActionNumberInput::onDisplay - cursor (%d, %d)", displayManager.getCursorX(), displayManager.getCursorY());
-    displayManager.print(menuPrompt);
-    for (uint8_t i = 0; i < numDigits; i++)
     {
-        uint8_t index = (numDigits - 1) - i;
-        // Log.traceln("ActionNumberInput::onDisplay: digit=%d, value=%d", index, inputBuff[index]);
-        if (decimal > 0 && i == decimal)
+        // No callback, render item
+        if (menuPrompt == nullptr)
         {
-            displayManager.print(".");
+            Log.errorln("ActionNumberInput::onDisplay - Item missing labels!");
+            return;
         }
-        if (index == curDigit && active)
+
+        displayManager.print(menuPrompt);
+        for (uint8_t i = 0; i < numDigits; i++)
         {
-            displayManager.setTextColor(BLACK, WHITE);
-        }
-        else
-        {
+            uint8_t index = (numDigits - 1) - i;
+            // Log.traceln("ActionNumberInput::onDisplay: digit=%d, value=%d", index, inputBuff[index]);
+            if (index == curDigit && active)
+            {
+                displayManager.setTextColor(BLACK, WHITE);
+            }
+            else
+            {
+                displayManager.setTextColor(WHITE);
+            }
+            displayManager.print(inputBuff[index]);
             displayManager.setTextColor(WHITE);
+            if ((decimal > 0) && (index == decimal))
+            {
+                displayManager.print(".");
+            }
         }
-        displayManager.print(inputBuff[index]);
-        displayManager.setTextColor(WHITE);
     }
-    // displayManager.println();
-
     Log.traceln("ActionNumberInput::onDisplay - END");
 }
 
@@ -84,16 +89,23 @@ void ActionNumberInput::onDisplay(bool active)
 void ActionNumberInput::onButtonUp()
 {
     Log.traceln("ActionNumberInput::onButtonUp - BEGIN - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
-    if (inputBuff[curDigit] == 9)
+    if (doButtonUp != nullptr)
     {
-        inputBuff[curDigit] = 0;
+        doButtonUp();
     }
     else
     {
-        inputBuff[curDigit] = (inputBuff[curDigit] + 1);
+        increment(1);
+        // if (inputBuff[curDigit] == 9)
+        // {
+        //     inputBuff[curDigit] = 0;
+        // }
+        // else
+        // {
+        //     inputBuff[curDigit] = (inputBuff[curDigit] + 1);
+        // }
     }
     Log.traceln("ActionNumberInput::onButtonUp - END - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
-    onDisplay(false);
 }
 
 /**
@@ -102,16 +114,23 @@ void ActionNumberInput::onButtonUp()
 void ActionNumberInput::onButtonDown()
 {
     Log.traceln("ActionNumberInput::onButtonDown - BEGIN - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
-    if (inputBuff[curDigit] == 0)
+    if (doButtonDown != nullptr)
     {
-        inputBuff[curDigit] = 9;
+        doButtonDown();
     }
     else
     {
-        inputBuff[curDigit] = (inputBuff[curDigit] - 1);
+        increment(-1);
+        // if (inputBuff[curDigit] == 0)
+        // {
+        //     inputBuff[curDigit] = 9;
+        // }
+        // else
+        // {
+        //     inputBuff[curDigit] = (inputBuff[curDigit] - 1);
+        // }
     }
     Log.traceln("ActionNumberInput::onButtonDown - END - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
-    onDisplay(false);
 }
 
 /**
@@ -119,19 +138,24 @@ void ActionNumberInput::onButtonDown()
  */
 void ActionNumberInput::onButtonLeft()
 {
-    Log.traceln("ActionNumberInput::onButtonLeft - BEGIN - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
-    if (curDigit == (numDigits - 1))
+    Log.traceln("ActionNumberInput::onButtonLeft - BEGIN - '%s' > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
+    if (doButtonLeft != nullptr)
     {
-        curDigit = 0;
-        // active = false;
+        doButtonLeft();
     }
     else
     {
-        curDigit++;
+        previousDigit();
+        // if (curDigit == (numDigits - 1))
+        // {
+        //     curDigit = 0;
+        // }
+        // else
+        // {
+        //     curDigit++;
+        // }
     }
     Log.traceln("ActionNumberInput::onButtonLeft - END - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
-    onDisplay(false);
-    // return b;
 }
 
 /**
@@ -140,18 +164,23 @@ void ActionNumberInput::onButtonLeft()
 void ActionNumberInput::onButtonRight()
 {
     Log.traceln("ActionNumberInput::onButtonRight - BEGIN - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
-    if (curDigit == 0)
+    if (doButtonRight != nullptr)
     {
-        curDigit = numDigits - 1;
-        // active = false;
+        doButtonRight();
     }
     else
     {
-        curDigit--;
+        nextDigit();
+        // if (curDigit == 0)
+        // {
+        //     curDigit = numDigits - 1;
+        // }
+        // else
+        // {
+        //     curDigit--;
+        // }
     }
     Log.traceln("ActionNumberInput::onButtonRight - END - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
-    onDisplay(false);
-    // return b;
 }
 
 /**
@@ -160,11 +189,76 @@ void ActionNumberInput::onButtonRight()
 void ActionNumberInput::onButtonPush()
 {
     Log.traceln("ActionNumberInput::onButtonPush - %s", menuLabel);
-    curDigit = 0;
+    if (doButtonPush != nullptr)
+    {
+        doButtonPush();
+    }
+    else
+    {
+        curDigit = 0;
+    }
 }
+
+bool ActionNumberInput::increment(int8_t amount)
+{
+    bool b = false;
+    int8_t i = (int8_t)inputBuff[curDigit] + amount;
+    if (i > 9 || i < 0)
+    {
+        b = true;
+    }
+    i = i%10;
+    if( i<0 )
+    {
+        i = 10 + i;
+    }
+    inputBuff[curDigit] = i;
+    return b;
+}
+
+bool ActionNumberInput::nextDigit()
+{
+    bool b = false;
+    if (curDigit == 0)
+    {
+        curDigit = numDigits - 1;
+        b = true;
+    }
+    else
+    {
+        curDigit--;
+    }
+    return b;
+}
+
+bool ActionNumberInput::previousDigit()
+{
+    bool b = false;
+    if (curDigit == (numDigits - 1))
+    {
+        curDigit = 0;
+        b = true;
+    }
+    else
+    {
+        curDigit++;
+    }
+    return b;
+}
+
+// void ActionNumberInput::setMsb()
+// {
+//     curDigit = numDigits-1;
+// }
+// void ActionNumberInput::setLsb()
+// {
+//     curDigit = 0;
+// }
+
 
 /**
  * @brief returns value represented by inputs
+ * @note returns INTEGER value; decimal is not acknowledged
  * @return integer value represented by inputs
  */
 uint32_t ActionNumberInput::getValue()
@@ -184,6 +278,7 @@ uint32_t ActionNumberInput::getValue()
 
 /**
  * @brief Sets the value of the inputs to the specified number
+ * @note does NOT observe decimal point
  * @param v number to initialize inputs to
  */
 void ActionNumberInput::setValue(uint32_t v)

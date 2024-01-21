@@ -31,6 +31,12 @@ public:
     void onButtonRight() override;
     void onButtonPush() override;
 
+    bool increment(int8_t amount=1);
+    bool nextDigit();
+    bool previousDigit();
+    // void setMsb();
+    // void setLsb();
+
 protected:
     uint8_t curDigit;
     uint8_t numDigits;

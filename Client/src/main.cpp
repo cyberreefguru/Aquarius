@@ -31,12 +31,13 @@ void setup()
   // Initialize preferences
   prefManager.initialize();
 
-  // Set up event manager
+  // Set up action event manager
   // This should be set up before other managers
   // so they can post events as required
   actionEventManager.initialize();
 
-  // Set up input manager
+  // Set up input event manager
+  // Handles button pushes and other inputs
   inputEventManager.initialize();
 
   // Initialize display

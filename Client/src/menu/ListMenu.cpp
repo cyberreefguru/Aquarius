@@ -1,13 +1,6 @@
-/*
- * ListMenu.cpp
- *
- *  Created on: Jan 7, 2024
- *      Author: cyberreefguru
- */
-
 /**
  * @file ListMenu.cpp
- * @brief displays a list of menu item labels; if button pushed, pushes that item to the stack
+ * @brief displays a list of menu items via label; if button pushed, pushes that item to the stack
  * @date Jan 7, 2024
  * @author cyberreefguru
 */
@@ -15,22 +8,17 @@
 #include "DisplayManager.h"
 #include "MenuManager.h"
 
-
 /**
  * @brief Constructor
  * @param label 
  * @param title 
  * @param prompt 
- * @param items 
- * @param numItems 
  */
 ListMenu::ListMenu(menu_label_t label, menu_title_t title, menu_prompt_t prompt)
 {
     this->menuLabel = label;
     this->menuTitle = title;
     this->menuPrompt = prompt;
-    // this->items = items;
-    // this->numItems = numItems;
 
     windowSize = menuManager.getScreenMaxY() - 1; // subtract for menu name
     windowStart = 0;
@@ -67,14 +55,6 @@ void ListMenu::initialize(MenuItem **items, uint8_t numItems)
 void ListMenu::initialize(ArrayList<MenuItem*> *items)
 {
     this->items.addAll(*items);
-
-    // if( items != nullptr && items->size() > 0 )
-    // {
-    //     for(uint8_t i=0; i<items->size(); i++)
-    //     {
-    //         this->items.add(items->get(i));
-    //     }
-    // }
 }
 
 
@@ -127,8 +107,9 @@ void ListMenu::onButtonDown()
 
 void ListMenu::onButtonLeft()
 {
-    menuManager.pop();
-    menuManager.display();
+    menuManager.popAndDisplay();
+    // menuManager.pop();
+    // menuManager.display();
 }
 
 void ListMenu::onButtonRight()
@@ -143,7 +124,15 @@ void ListMenu::onButtonPush()
 
 MenuItem *ListMenu::getActive()
 {
-    return items[activeIndex];
+    if( activeIndex >=0 && activeIndex < items.size() )
+    {
+        return items[activeIndex];
+    }
+    else
+    {
+        Log.errorln("ListMenu:getActive - index out of bounds; returning null");
+        return nullptr;
+    }
 }
 
 uint8_t ListMenu::getActiveIndex()
@@ -178,6 +167,11 @@ void ListMenu::activateNext()
     {
         // We are within the window, advance index
         activeIndex++;
+    }
+    if( activeIndex > items.size()-1)
+    {
+        Log.warningln("ListMenu::activateNext - active index FUBARed; reseting");
+        activeIndex = 0;
     }
     Log.traceln("ListMenu::activateNext - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
 }
@@ -224,6 +218,11 @@ void ListMenu::activatePrevious()
     {
         // We are within the window, advance index
         activeIndex--;
+    }
+    if( activeIndex > items.size()-1)
+    {
+        Log.warningln("ListMenu::activatePrevious - active index FUBARed; reseting");
+        activeIndex = 0;
     }
     Log.traceln("ListMenu::activatePrevious - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
 }

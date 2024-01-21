@@ -30,8 +30,6 @@ MenuItem::MenuItem(menu_label_t label, menu_title_t title, menu_prompt_t prompt)
     this->menuPrompt = prompt;
 }
 
-
-
 /**
  * @brief sets the callback for overriding onDisplay
  * @param cb the callback method
@@ -76,6 +74,51 @@ void MenuItem::setButtonCallback(ButtonCallback up, ButtonCallback down,
     doButtonLeft = left;
     doButtonRight = right;
     doButtonPush = push;
+}
+
+/**
+ * @brief sets the callbacks for overriding button input events
+ * @param cb specified callback function
+ */
+void MenuItem::setUpCallback(ButtonCallback cb)
+{
+    doButtonUp = cb;
+}
+
+/**
+ * @brief sets the callbacks for overriding button input events
+ * @param cb specified callback function
+ */
+void MenuItem::setDownCallback(ButtonCallback cb)
+{
+    doButtonDown = cb;
+}
+
+/**
+ * @brief sets the callbacks for overriding button input events
+ * @param cb specified callback function
+ */
+void MenuItem::setLeftCallback(ButtonCallback cb)
+{
+    doButtonLeft = cb;
+}
+
+/**
+ * @brief sets the callbacks for overriding button input events
+ * @param cb specified callback function
+ */
+void MenuItem::setRightCallback(ButtonCallback cb)
+{
+    doButtonRight = cb;
+}
+
+/**
+ * @brief sets the callbacks for overriding button input events
+ * @param cb specified callback function
+ */
+void MenuItem::setPushCallback(ButtonCallback cb)
+{
+    doButtonPush = cb;
 }
 
 /**
@@ -166,7 +209,7 @@ void MenuItem::onLabelDisplay(bool active)
  */
 void MenuItem::onEvent(ButtonEvent be)
 {
-    Log.traceln("MenuItem.onEvent - BEGIN");
+    Log.traceln("MenuItem.onEvent - %s", ++be);
     switch (be)
     {
     case ButtonEvent::UP:

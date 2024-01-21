@@ -38,9 +38,6 @@ protected:
     ListMenu() {}
     ArrayList<MenuItem*> items;
 
-    // uint8_t numItems = 0;       // TODO - move to ListMenuItem or something
-    // MenuItem **items = nullptr; // TODO - move to ListMenuItem or something
-
     uint8_t activeIndex = 0;
     uint8_t windowSize = 0;
     uint8_t windowStart = 0;
@@ -48,8 +45,8 @@ protected:
 
     MenuItem *getActive();
     uint8_t getActiveIndex();
-    void activateNext();
-    void activatePrevious();
+    virtual void activateNext();
+    virtual void activatePrevious();
 
 private:
 };
