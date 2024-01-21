@@ -24,13 +24,13 @@
  * @param items 
  * @param numItems 
  */
-ListMenu::ListMenu(menu_label_t label, menu_title_t title, menu_prompt_t prompt, MenuItem **items, uint8_t numItems)
+ListMenu::ListMenu(menu_label_t label, menu_title_t title, menu_prompt_t prompt)
 {
     this->menuLabel = label;
     this->menuTitle = title;
     this->menuPrompt = prompt;
-    this->items = items;
-    this->numItems = numItems;
+    // this->items = items;
+    // this->numItems = numItems;
 
     windowSize = menuManager.getScreenMaxY() - 1; // subtract for menu name
     windowStart = 0;
@@ -45,6 +45,40 @@ ListMenu::~ListMenu()
 }
 
 /**
+ * @brief Initializes the ListMenu with the items to display
+ * @param items List of pointers to MenuItems
+ * @param numItems The number of items
+ */
+void ListMenu::initialize(MenuItem **items, uint8_t numItems)
+{
+    if( items != nullptr && numItems > 0 )
+    {
+        for(uint8_t i=0; i<numItems; i++)
+        {
+            this->items.add(items[i]);
+        }
+    }
+}
+
+/**
+ * @brief Initializes the ListMenu with the items to display
+ * @param items List of pointers to MenuItems
+ */
+void ListMenu::initialize(ArrayList<MenuItem*> *items)
+{
+    this->items.addAll(*items);
+
+    // if( items != nullptr && items->size() > 0 )
+    // {
+    //     for(uint8_t i=0; i<items->size(); i++)
+    //     {
+    //         this->items.add(items->get(i));
+    //     }
+    // }
+}
+
+
+/**
  * @brief Renders the list of menu item by displaying each item's label
  * @param active if true, highlight item (unused)
  */
@@ -52,7 +86,9 @@ void ListMenu::onDisplay(bool active)
 {
     Log.traceln("ListMenu::onDisplay - BEGIN");
 
-    if (items == nullptr || numItems == 0)
+    uint8_t size = items.size();
+
+    if (size == 0)
     {
         Log.errorln("ListMenu::onDisplay - no children to display");
         return;
@@ -62,11 +98,11 @@ void ListMenu::onDisplay(bool active)
     displayManager.setCursor(0, 0);
     displayManager.println(menuTitle);
     uint8_t windowEnd = windowStart + windowSize - 1;
-    if( windowEnd > numItems )
+    if( windowEnd > size )
     {
-        windowEnd = numItems-1;
+        windowEnd = size-1;
     }
-    Log.traceln("ListMenu::onDisplay - start=%d, end=%d, ai=%d, ws=%d, ni=%d", windowStart, windowEnd, activeIndex, windowSize, numItems);
+    Log.traceln("ListMenu::onDisplay - start=%d, end=%d, ai=%d, ws=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize, size);
     for (uint8_t i = windowStart; i <= windowEnd; i++)
     {
         MenuItem *item = items[i];
@@ -123,7 +159,7 @@ void ListMenu::activateNext()
     {
         // We are at the end of the window
         // See if we're also at the end of the list
-        if (activeIndex == numItems - 1)
+        if (activeIndex == items.size() - 1)
         {
             // we're out of items--cycle to top
             windowStart = 0;
@@ -149,6 +185,8 @@ void ListMenu::activateNext()
 void ListMenu::activatePrevious()
 {
     uint8_t windowEnd = windowStart + windowSize;
+    uint8_t size = items.size();
+
     Log.traceln("ListMenu::activatePrevious - start=%d, end=%d, active=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize);
     if (activeIndex == windowStart)
     {
@@ -158,19 +196,19 @@ void ListMenu::activatePrevious()
         {
             // We are at the start of the list
             // Side window to end of list
-            if (windowSize >= numItems)
+            if (windowSize >= size)
             {
                 // Windows size > number of items
                 // Set window to 0 and active to last item
                 windowStart = 0;
-                activeIndex = numItems - 1;
+                activeIndex = size - 1;
             }
             else
             {
                 // Window is < number items
                 // Compute starting point
-                windowStart = numItems - windowSize;
-                activeIndex = numItems - 1;
+                windowStart = size - windowSize;
+                activeIndex = size - 1;
             }
         }
         else

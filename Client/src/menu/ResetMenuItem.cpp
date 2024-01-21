@@ -14,8 +14,6 @@ ResetMenuItem::ResetMenuItem(ActionCallback cb)
     this->menuTitle = "Factory Reset?";
     this->menuLabel = "> Factory Reset";
     this->menuPrompt = "Push to Reset";
-    this->items = nullptr;
-    this->numItems = 0;
     this->doAction = cb;
 }
 

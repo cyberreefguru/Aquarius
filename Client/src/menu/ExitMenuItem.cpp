@@ -16,8 +16,6 @@ ExitMenuItem::ExitMenuItem()
     this->menuTitle = "Exit Menu";
     this->menuLabel = "> Exit";
     this->menuPrompt = menuLabel;
-    this->items = nullptr;
-    this->numItems = 0;
 }
 
 ExitMenuItem::~ExitMenuItem()

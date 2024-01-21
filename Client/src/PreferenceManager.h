@@ -88,7 +88,7 @@
 #define DEFAULT_MQTT_DELAY 500
 #define DEFAULT_MQTT_TIMEOUT 10 * 1000
 
-#define DEFAULT_COLOR_INITIALIZE (uint32_t)colorOrange.value
+#define DEFAULT_COLOR_INITIALIZE (uint32_t)colorYellow.value
 #define DEFAULT_COLOR_CONFIGURE (uint32_t)colorCyan.value
 #define DEFAULT_COLOR_SEND (uint32_t)colorBlue.value
 #define DEFAULT_COLOR_PROCESS (uint32_t)colorBlue.value

@@ -19,7 +19,7 @@
 #include "menu/ExitMenuItem.h"
 #include "menu/MultiActionItem.h"
 #include "menu/ActionNumberInput.h"
-#include "menu/TargetsMenuItem.h"
+#include "menu/TargetListMenuItem.h"
 #include "menu/ColorListMenu.h"
 #include "menu/ResetMenuItem.h"
 
@@ -44,34 +44,34 @@ MenuItem *cis[10] = {&colorInit, &colorConn, &colorConfig, &colorWait,
                      &colorRec, &colorProc, &colorSend,
                      &colorActive, &colorInact, &colorErr};
 
-ListMenu mColorsItem = ListMenu("> Colors", "Colors:", "> ", cis, 10);
+ListMenu mColorsItem = ListMenu("> Colors", "Colors:", "> ");
 
 ActionNumberInput iNodeId = ActionNumberInput("> ", std::bind(&MenuManager::doNodeId, menuManager), 2);
 MenuItem *nis[1] = {&iNodeId};
-MultiActionItem mNodeIdItem = MultiActionItem("> Node ID", "Node ID:", nis, 1);
+MultiActionItem mNodeIdItem = MultiActionItem("> Node ID", "Node ID:", "");
 
-TargetsMenuItem mTargetsItem = TargetsMenuItem("> Targets", "Select Target", "> ");
+TargetListMenuItem mTargetListItem = TargetListMenuItem("> Targets", "Select Target", "> ");
 
 ActionNumberInput iSensorThres = ActionNumberInput("> ", std::bind(&MenuManager::doSensor, menuManager), 3);
 MenuItem *sis[1] = {&iSensorThres};
-MultiActionItem mSensorItem = MultiActionItem("> Sensor Threshold", "Sensor Threshold:", sis, 1);
+MultiActionItem mSensorItem = MultiActionItem("> Sensor Threshold", "Sensor Threshold:", "");
 
 ActionNumberInput iScreenBright = ActionNumberInput("Screen > ", std::bind(&MenuManager::doScreenBrightness, menuManager), 3);
 ActionNumberInput iLedBright = ActionNumberInput("LED    > ", std::bind(&MenuManager::doLedBrightness, menuManager), 3);
 MenuItem *bis[2] = {&iScreenBright, &iLedBright};
-MultiActionItem mBrightnessItem = MultiActionItem("> Brightness", "Brightness:", bis, 2);
+MultiActionItem mBrightnessItem = MultiActionItem("> Brightness", "Brightness:", "");
 
 ActionNumberInput iServoStart = ActionNumberInput("Start> ", std::bind(&MenuManager::doServoStart, menuManager), 3);
 ActionNumberInput iServoStop = ActionNumberInput("End  > ", std::bind(&MenuManager::doServoStop, menuManager), 3);
 MenuItem *amts[2] = {&iServoStart, &iServoStop};
-MultiActionItem mServoItem = MultiActionItem("> Servo Settings", "Servo Values:", amts, 2);
+MultiActionItem mServoItem = MultiActionItem("> Servo Settings", "Servo Values:", "");
 
 MenuItem mResetItem = MenuItem("> Factory Reset", "Factory Reset?", "Press to Reset");
 MenuItem mExitItem = MenuItem("> Exit", "Exit", "> Exit");
 
 MenuItem *mmItems[] = {
     &mNodeIdItem,
-    &mTargetsItem,
+    &mTargetListItem,
     &mColorsItem,
     &mBrightnessItem,
     &mSensorItem,
@@ -79,7 +79,7 @@ MenuItem *mmItems[] = {
     &mResetItem,
     &mExitItem,
 };
-ListMenu mainMenu = ListMenu("> Main Menu", "Main Menu:", "> ", mmItems, 8);
+ListMenu mainMenu = ListMenu("> Main Menu", "Main Menu:", "> ");
 
 /**
  * @brief Constructor
@@ -134,6 +134,15 @@ void MenuManager::initialize()
         Log.infoln("Added input event handler!");
     }
 
+    // Initialize menu items
+    mNodeIdItem.initialize(nis, 1);
+    mSensorItem.initialize(sis, 1);
+    mBrightnessItem.initialize(bis, 2);
+    mServoItem.initialize(amts, 2);
+    mColorsItem.initialize(cis, 10);
+    mainMenu.initialize(mmItems, 8);
+    mTargetListItem.initialize();
+
     // Initialize values of input items
     iNodeId.setValue(prefManager.getNodeId());
     iScreenBright.setValue(prefManager.getScreenBrightness());
@@ -153,8 +162,6 @@ void MenuManager::initialize()
     // Initialize callback for exit item
     mExitItem.setDisplayCallback(std::bind(&MenuManager::doExit, this, _1));
     mExitItem.setActionCallback(std::bind(&MenuManager::popAndDisplay, this));
-
-    mTargetsItem.initialize();
 
     // Push main menu to menu stack
     menus.push(&mainMenu);
@@ -240,7 +247,7 @@ MenuItem *MenuManager::peek()
 
 /**
  * @brief Pushes menu item onto the stack
- * @param item 
+ * @param item
  */
 void MenuManager::push(MenuItem *item)
 {
@@ -273,7 +280,7 @@ void MenuManager::pop()
         return;
     }
 
-    MenuItem *item; // Create item temp variable
+    MenuItem *item;   // Create item temp variable
     menus.pop(&item); // remove item from menu stack
     if (&item != nullptr)
     {

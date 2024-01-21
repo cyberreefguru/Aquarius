@@ -87,8 +87,6 @@ protected:
     ButtonCallback doButtonRight = nullptr;
     ButtonCallback doButtonPush = nullptr;
 
-    uint8_t numItems = 0;       // TODO - move to ListMenuItem or something
-    MenuItem **items = nullptr; // TODO - move to ListMenuItem or something
 };
 
 #endif

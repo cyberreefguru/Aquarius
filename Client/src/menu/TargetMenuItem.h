@@ -1,8 +1,8 @@
-/*
- * TargetMenuItem.h
- *
- *  Created on: Jan 6, 2024
- *      Author: cyberreefguru
+/**
+ * @file TargetMenuItem.h
+ * @brief Menu item that renders a target for editing
+ * @date Jan 19, 2024
+ * @author cyberreefguru
  */
 #ifndef TargetMenuItem_H
 #define TargetMenuItem_H
@@ -13,13 +13,26 @@
 #include <ArduinoLog.h>
 
 #include "Target.h"
-#include "MenuItem.h"
+#include "MultiActionItem.h"
+#include "ActionNumberInput.h"
 
-class TargetMenuItem : public MenuItem
+using namespace std::placeholders;
+#include <functional>
+#include <utility>
+
+
+class TargetMenuItem : public MultiActionItem
 {
 public:
     TargetMenuItem(Target *target);
     virtual ~TargetMenuItem();
+
+protected:
+    void initialize() override;
+    void doNodeId();
+    void doStartDelay();
+    void doStopDelay();
+    void doDelete();
 
 private:
     Target *target;

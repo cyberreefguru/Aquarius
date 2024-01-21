@@ -12,15 +12,17 @@
 #include <Arduino.h>
 #include <ArduinoLog.h>
 
-#include "MenuItem.h"
+#include "ListMenu.h"
 #include "ActionButtonItem.h"
 
-class MultiActionItem : public MenuItem
+class MultiActionItem : public ListMenu
 {
 public:
-    // MultiActionItem(){}
-    MultiActionItem(menu_label_t label, menu_title_t title, MenuItem **i, uint8_t numItems);
+    MultiActionItem(menu_label_t label, menu_title_t title, menu_prompt_t prompt);
     virtual ~MultiActionItem();
+
+    void initialize(MenuItem **items, uint8_t numItems) override;
+    void initialize(ArrayList<MenuItem*> *items) override;
 
     virtual void onDisplay(bool active) override;
     virtual void onButtonUp() override;
@@ -33,6 +35,9 @@ public:
     virtual void onCancel();
 
 protected:
+    MultiActionItem(){}
+    virtual void initialize();
+
     uint8_t curItem = 0;
     ActionButtonItem *ok = nullptr;
     ActionButtonItem *cancel = nullptr;

@@ -94,7 +94,7 @@ void MenuItem::onDisplay(bool active)
 
     if (doDisplay != nullptr)
     {
-        Log.traceln("MenuItem::onDisplay - using callback");
+        Log.traceln("MenuItem::onDisplay - using callback; rendering %s", menuLabel);
         doDisplay(active);
     }
     else
@@ -106,7 +106,6 @@ void MenuItem::onDisplay(bool active)
         displayManager.println(menuTitle);
         displayManager.addCursorY(4); // put a little gap beween title and menu item
 
-        Log.traceln("MenuItem::onDisplay - active=%d", active);
         if (active)
         {
             displayManager.setTextColor(BLACK, WHITE);
@@ -129,7 +128,7 @@ void MenuItem::onDisplay(bool active)
  */
 void MenuItem::onLabelDisplay(bool active)
 {
-    Log.traceln("MenuItem::onLabelDisplay - BEGIN");
+    // Log.traceln("MenuItem::onLabelDisplay - BEGIN");
 
     if (menuLabel == nullptr)
     {
@@ -139,7 +138,7 @@ void MenuItem::onLabelDisplay(bool active)
 
     if (doLabelDisplay != nullptr)
     {
-        Log.traceln("MenuItem::onLabelDisplay - using callback");
+        Log.traceln("MenuItem::onLabelDisplay - using callback; rendering %s", menuLabel);
         doDisplay(active);
     }
     else
@@ -158,7 +157,7 @@ void MenuItem::onLabelDisplay(bool active)
         displayManager.setRefresh(true);
     }
 
-    Log.traceln("MenuItem::onLabelDisplay - END");
+    // Log.traceln("MenuItem::onLabelDisplay - END");
 }
 
 /**

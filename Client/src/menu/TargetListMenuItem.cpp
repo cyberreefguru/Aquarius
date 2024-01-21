@@ -1,15 +1,16 @@
 /**
- * @file TargetsMenuItem.cpp
+ * @file TargetListMenuItem.cpp
  * @brief Menu item that lists all targets for editing
+ * @note Must call initialize before using this item
  * @date Jan 19, 2024
  * @author cyberreefguru
 */
-#include "TargetsMenuItem.h"
+#include "TargetListMenuItem.h"
 #include "DisplayManager.h"
 #include "MenuManager.h"
 #include "TargetManager.h"
 
-TargetsMenuItem::TargetsMenuItem(menu_label_t label, menu_title_t title, menu_prompt_t prompt)
+TargetListMenuItem::TargetListMenuItem(menu_label_t label, menu_title_t title, menu_prompt_t prompt)
 {
     this->menuLabel = label;
     this->menuTitle = title;
@@ -20,39 +21,47 @@ TargetsMenuItem::TargetsMenuItem(menu_label_t label, menu_title_t title, menu_pr
     activeIndex = windowStart;
 }
 
-TargetsMenuItem::~TargetsMenuItem()
+TargetListMenuItem::~TargetListMenuItem()
 {
-    free(items);
+    // Clean up target menu list by freeing all memory
+    uint8_t size = items.size();
+    for(uint8_t i=0;i<size; i++)
+    {
+        MenuItem* item = items[i];
+        items.removeAt(i);
+        delete(item);
+    }
+    items.clear();
 }
 
-void TargetsMenuItem::initialize()
+void TargetListMenuItem::initialize()
 {
-    Log.traceln("TargetsMenuItem::initialize - BEGIN");
+    Log.traceln("TargetListMenuItem::initialize - BEGIN");
 
-    // ArrayList<TargetMenuItem*> *targetMenuItems;
     ArrayList<Target*> *targets = targetManager.getTargets();
     if( targets != nullptr )
     {
-        numItems = targets->size();
-        Log.traceln("TargetsMenuItem::TargetsMenuItem - size=%d", numItems);
-        items = (MenuItem**)(new TargetMenuItem* [numItems]);
-
-        for(uint8_t i=0;i<numItems; i++)
+        uint8_t size = targets->size();
+   
+        Log.traceln("TargetListMenuItem::initialize - size=%d", size);
+        for(uint8_t i=0;i<size; i++)
         {
-            items[i] = new TargetMenuItem(targets->get(i));
+            TargetMenuItem *tmi = new TargetMenuItem(targets->get(i));
+            Log.traceln("TargetListMenuItem::initialize - target=%s", tmi->getMenuLabel());
+            items.add( tmi);
         }
     }
     else
     {
-        Log.errorln("TargetsMenuItem::TargetsMenuItem - targets is null");
+        Log.errorln("TargetListMenuItem::initialize - targets is null");
     }
-    Log.traceln("TargetsMenuItem::initialize - END");
+    Log.traceln("TargetListMenuItem::initialize - END");
 
 }
 
-// void TargetsMenuItem::onDisplay(bool active)
+// void TargetListMenuItem::onDisplay(bool active)
 // {
-//     Log.traceln("TargetsMenuItem::onDisplay - BEGIN");
+//     Log.traceln("TargetListMenuItem::onDisplay - BEGIN");
 
 //     displayManager.clear();
 //     displayManager.setCursor(0, 0);
@@ -62,7 +71,7 @@ void TargetsMenuItem::initialize()
 //     {
 //         windowEnd = numItems-1;
 //     }
-//     Log.traceln("TargetsMenuItem::onDisplay - start=%d, end=%d, ai=%d, ws=%d, ni=%d", windowStart, windowEnd, activeIndex, windowSize, numItems);
+//     Log.traceln("TargetListMenuItem::onDisplay - start=%d, end=%d, ai=%d, ws=%d, ni=%d", windowStart, windowEnd, activeIndex, windowSize, numItems);
 //     for (uint8_t i = windowStart; i <= windowEnd; i++)
 //     {
 //         if (i == activeIndex)
@@ -78,10 +87,10 @@ void TargetsMenuItem::initialize()
 //         displayManager.setTextColor(WHITE);
 //     }
 //     displayManager.setRefresh(true);
-//     Log.traceln("TargetsMenuItem::onDisplay - END");
+//     Log.traceln("TargetListMenuItem::onDisplay - END");
 // }
 
-// void TargetsMenuItem::onButtonPush()
+// void TargetListMenuItem::onButtonPush()
 // {
 //     Log.traceln("Saving color: %s", menuColors[activeIndex]->name);
 

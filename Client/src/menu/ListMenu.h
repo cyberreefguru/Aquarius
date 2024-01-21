@@ -13,14 +13,19 @@
 #include <Arduino.h>
 #include <ArduinoLog.h>
 
+#include "ArrayList.h"
+
 #include "menu/MenuItem.h"
 
 class ListMenu : public MenuItem
 {
 public:
-    ListMenu() {}
-    ListMenu(menu_label_t label, menu_title_t title, menu_prompt_t prompt, MenuItem **items, uint8_t numItems);
+    ListMenu(menu_label_t label, menu_title_t title, menu_prompt_t prompt);
+    // ListMenu(menu_label_t label, menu_title_t title, menu_prompt_t prompt, MenuItem **items, uint8_t numItems);
     virtual ~ListMenu();
+
+    virtual void initialize(MenuItem **items, uint8_t numItems);
+    virtual void initialize(ArrayList<MenuItem*> *items);
 
     void onDisplay(bool active) override;
     virtual void onButtonUp() override;
@@ -30,6 +35,12 @@ public:
     virtual void onButtonPush() override;
 
 protected:
+    ListMenu() {}
+    ArrayList<MenuItem*> items;
+
+    // uint8_t numItems = 0;       // TODO - move to ListMenuItem or something
+    // MenuItem **items = nullptr; // TODO - move to ListMenuItem or something
+
     uint8_t activeIndex = 0;
     uint8_t windowSize = 0;
     uint8_t windowStart = 0;

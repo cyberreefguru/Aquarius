@@ -20,14 +20,10 @@ class ColorMenuItem : public MenuItem
 public:
     ColorMenuItem(const MenuColor *color);
     virtual ~ColorMenuItem();
-    void onDisplay(bool active) override;
-    void onButtonPush() override;
 
 private:
     const MenuColor* color;
-
-//std::bind(&MainMenu::save, this)
-//onActivateCallback(item, b);
+    // char buf[22];
 
 };
 
