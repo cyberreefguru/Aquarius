@@ -11,7 +11,7 @@ TargetManager targetManager;
 
 /**
  * @brief Constructor
- * 
+ *
  */
 TargetManager::TargetManager()
 {
@@ -19,29 +19,30 @@ TargetManager::TargetManager()
 
 /**
  * @brief Destructor
- * 
+ *
  */
 TargetManager::~TargetManager()
 {
-    for (uint8_t i = 0; i < targets.size(); i++)
+    for (uint8_t i = 0; i < targetList.size(); i++)
     {
-        free(targets.get(i));
+        free(targetList.get(i));
     }
 }
 
 /**
- * @brief Initializles the target manager. 
+ * @brief Initializles the target manager.
  * @note Requires preferences to be initalized first.
- * 
+ *
  */
 void TargetManager::initialize()
 {
     Log.traceln("TargetManager::initialize - BEGIN");
 
-    char *targetBuff = prefManager.getTargets();
-    if (fromString(targetBuff))
+    char *buf = prefManager.getTargetsBuffer();
+    Log.traceln("TargetManager::initialize - target buf: %s", buf);
+    if (fromString(buf) > 0)
     {
-        Log.traceln("TargetManager::initialize - Parsed target json");
+        Log.traceln("TargetManager::initialize - Parsed target json - %s", buf);
     }
     else
     {
@@ -53,39 +54,39 @@ void TargetManager::initialize()
 
 /**
  * @brief Adds target to the list
- * @param target 
+ * @param target
  */
 void TargetManager::add(Target *target)
 {
-    targets.add(target);
+    targetList.add(target);
 }
 
 /**
  * @brief removes specified target from list
- * @param targetIndex 
+ * @param targetIndex
  */
 void TargetManager::remove(uint8_t targetIndex)
 {
-    targets.removeAt(targetIndex);
+    targetList.removeAt(targetIndex);
 }
 
 /**
  * @brief removes specified target from list
- * @param target 
+ * @param target
  */
 void TargetManager::remove(Target *target)
 {
-    targets.remove(target);
+    targetList.remove(target);
 }
 
 /**
  * @brief returns the specified target
- * @param index 
+ * @param index
  * @return target or nullptr if index is out of bounds
  */
-Target* TargetManager::get(uint8_t index)
+Target *TargetManager::get(uint8_t index)
 {
-    return targets.get(index);
+    return targetList.get(index);
 }
 
 /**
@@ -94,19 +95,48 @@ Target* TargetManager::get(uint8_t index)
  */
 uint8_t TargetManager::size()
 {
-    return targets.size();
+    return targetList.size();
 }
-
 
 /**
  * @brief returns list of targets
  * @return ArrayList of Target pointers
  */
-ArrayList<Target*> *TargetManager::getTargets()
+ArrayList<Target*> *TargetManager::getTargetList()
 {
-    return &targets;
+    return &targetList;
 }
 
+void TargetManager::save()
+{
+    //  {"ts":[{"nid":2,"sd":0,"ed":0}]}
+
+    uint8_t size = targetList.size();
+    targetJson.clear();
+
+    // create an empty array
+    JsonArray array = targetJson.createNestedArray(KEY_TARGETS);
+    for (uint8_t i = 0; i < size; i++)
+    {
+        Target *target = targetList.get(i);
+        JsonObject t = array.createNestedObject();
+        t[KEY_TARGET_NODE_ID] = target->targetNodeId;
+        t[KEY_TARGET_START_DELAY] = target->startDelay;
+        t[KEY_TARGET_END_DELAY] = target->stopDelay;
+    }
+
+    char *buf = prefManager.getTargetsBuffer();
+    uint32_t s = toString(buf, TARGET_BUFF_SIZE);
+    if( s > 0 )
+    {
+        Log.traceln("TargetManager::save - saving targets(%d) - %s", s, buf);
+        prefManager.set(KEY_TARGETS, buf, s);
+    }
+    else
+    {
+        Log.errorln("TargetManager::save - failed to serialize!");
+    }
+}
 
 /**
  * @brief turns targets into a JSON string
@@ -121,6 +151,9 @@ uint32_t TargetManager::toString(char *buff, uint32_t size)
 
     // turn json into string
     uint32_t s = serializeJson(targetJson, buff, size);
+
+    Log.traceln("TargetManager::toString - target buf: %s", buff);
+
 
     Log.traceln("TargetManager::toString - END");
 
@@ -137,12 +170,15 @@ bool TargetManager::fromString(char *buff)
     Log.traceln("TargetManager::fromString - BEGIN");
 
     targetJson.clear();
-    DeserializationError err = deserializeJson(targetJson, buff);
+    Log.traceln("TargetManager::fromString - target buf1: %s", buff);
+    DeserializationError err = deserializeJson(targetJson, (const char*)buff);
     if (err)
     {
         Log.errorln("TargetManager::fromString - failed to parse input: '%s'", buff);
+        // todo - reset targets??
         return false;
     }
+    Log.traceln("TargetManager::fromString - target buf2: %s", buff);
 
     JsonArray array = targetJson[KEY_TARGETS];
     uint8_t numTargets = array.size();
@@ -153,11 +189,12 @@ bool TargetManager::fromString(char *buff)
         target->sourceNodeId = prefManager.getNodeId();
         target->targetNodeId = t[KEY_TARGET_NODE_ID];
         target->startDelay = t[KEY_TARGET_START_DELAY];
-        target->endDelay = t[KEY_TARGET_END_DELAY];
-        targets.add(target);
+        target->stopDelay = t[KEY_TARGET_END_DELAY];
+        targetList.add(target);
 
         Log.traceln("TargetManager::fromString - creating target[%d] node ID = %d", i, target->targetNodeId);
     }
+    Log.traceln("TargetManager::fromString - target buf3: %s", buff);
 
     Log.traceln("TargetManager::fromString - END");
     return true;

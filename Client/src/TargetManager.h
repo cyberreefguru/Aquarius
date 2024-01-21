@@ -28,12 +28,12 @@ public:
     void remove(uint8_t targetIndex);
     void remove(Target *target);
     Target* get(uint8_t index);
+    ArrayList<Target*> *getTargetList();
+    void save();
     uint8_t size();
-    ArrayList<Target* > *getTargets();
-
 
 protected: 
-    ArrayList<Target*> targets;
+    ArrayList<Target*> targetList;
     // uint8_t numTargets = 0;
     uint32_t toString(char *buff, uint32_t size); // turn into char[]
     bool fromString(char *buff); // turn into jsondocument

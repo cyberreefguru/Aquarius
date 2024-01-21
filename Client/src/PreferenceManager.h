@@ -116,7 +116,7 @@
 #define DEFAULT_BRIGHTNESS_LED 25
 
 #define MAX_TARGETS 10
-#define TARGET_BUFF_SIZE ((43*MAX_TARGETS)+(MAX_TARGETS-1)+9)
+#define TARGET_BUFF_SIZE ((43*MAX_TARGETS)+(MAX_TARGETS-1)+9) + 1
 #define DEFAULT_TARGETS "{\"ts\":[{\"nid\":2,\"sd\":0,\"ed\":0}]}"
 
 
@@ -174,12 +174,12 @@ public:
 
     uint8_t getDisplaySize();
 
-    char *getTargets();
+    char *getTargetsBuffer();
 
     void set(char const *key, uint8_t v);
     void set(char const *key, uint16_t v);
     void set(char const *key, uint32_t v);
-    void set(char const *key, char *v, uint8_t len);
+    void set(char const *key, char *v, uint32_t len);
     void set(char const *key, MenuColor color);
 
 private:

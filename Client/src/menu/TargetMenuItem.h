@@ -15,6 +15,7 @@
 #include "Target.h"
 #include "MultiActionItem.h"
 #include "ActionNumberInput.h"
+#include "ActionButtonItem.h"
 
 using namespace std::placeholders;
 #include <functional>
@@ -29,6 +30,7 @@ public:
 
 protected:
     void initialize() override;
+    void onOk() override;
     void doNodeId();
     void doStartDelay();
     void doStopDelay();
@@ -36,6 +38,10 @@ protected:
 
 private:
     Target *target;
+    ActionNumberInput *iNodeId = nullptr;
+    ActionNumberInput *iStartDelay = nullptr;
+    ActionNumberInput *iStopDelay = nullptr;
+    ActionButtonItem *iDelete = nullptr;
 };
 
 #endif

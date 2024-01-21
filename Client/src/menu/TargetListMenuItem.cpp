@@ -38,7 +38,10 @@ void TargetListMenuItem::initialize()
 {
     Log.traceln("TargetListMenuItem::initialize - BEGIN");
 
-    ArrayList<Target*> *targets = targetManager.getTargets();
+    ArrayList<Target*> *targets = targetManager.getTargetList();
+    
+    Log.traceln("TargetListMenuItem::initialize - targets: %s", prefManager.getTargetsBuffer() );
+
     if( targets != nullptr )
     {
         uint8_t size = targets->size();
@@ -58,44 +61,3 @@ void TargetListMenuItem::initialize()
     Log.traceln("TargetListMenuItem::initialize - END");
 
 }
-
-// void TargetListMenuItem::onDisplay(bool active)
-// {
-//     Log.traceln("TargetListMenuItem::onDisplay - BEGIN");
-
-//     displayManager.clear();
-//     displayManager.setCursor(0, 0);
-//     displayManager.println(menuTitle);
-//     uint8_t windowEnd = windowStart + windowSize - 1;
-//     if( windowEnd > numItems )
-//     {
-//         windowEnd = numItems-1;
-//     }
-//     Log.traceln("TargetListMenuItem::onDisplay - start=%d, end=%d, ai=%d, ws=%d, ni=%d", windowStart, windowEnd, activeIndex, windowSize, numItems);
-//     for (uint8_t i = windowStart; i <= windowEnd; i++)
-//     {
-//         if (i == activeIndex)
-//         {
-//             displayManager.setTextColor(BLACK, WHITE);
-//         }
-//         else
-//         {
-//             displayManager.setTextColor(WHITE);
-//         }
-//         displayManager.print(menuPrompt);
-//         displayManager.println(menuColors[i]->name);
-//         displayManager.setTextColor(WHITE);
-//     }
-//     displayManager.setRefresh(true);
-//     Log.traceln("TargetListMenuItem::onDisplay - END");
-// }
-
-// void TargetListMenuItem::onButtonPush()
-// {
-//     Log.traceln("Saving color: %s", menuColors[activeIndex]->name);
-
-//     prefManager.set(key, (uint32_t)menuColors[activeIndex]->value);
-    
-//     menuManager.pop();
-//     menuManager.display();
-// }

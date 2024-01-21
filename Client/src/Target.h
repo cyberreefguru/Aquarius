@@ -22,7 +22,7 @@ public:
     uint8_t sourceNodeId = 0;
     uint8_t targetNodeId = 0;
     uint32_t startDelay = 0;
-    uint32_t endDelay = 0;
+    uint32_t stopDelay = 0;
 
     uint32_t fromJson(char* buffer); // turn into char[]
     const JsonDocument& toJson(char* buff); // turn into jsondocument

@@ -30,7 +30,7 @@ bool PreferenceManager::initialize()
     {
         if (preferences.isKey(KEY_CONFIGURED) == false)
         {
-            Log.traceln("PreferenceManager::initialize - Reseting preferences...");
+            Log.traceln("PreferenceManager::initialize - Resetting preferences...");
 
             // If we have no configured key, reset everything
             reset();
@@ -259,12 +259,10 @@ uint8_t PreferenceManager::getDisplaySize()
 {
     return preferences.getUChar(KEY_DISPLAY_SIZE);
 }
-char* PreferenceManager::getTargets()
+char* PreferenceManager::getTargetsBuffer()
 {
     return targetsBuffer;
 }
-
-
 void PreferenceManager::set(char const *key, uint8_t v)
 {
     preferences.putUChar(key, v);
@@ -277,7 +275,7 @@ void PreferenceManager::set(char const *key, uint32_t v)
 {
     preferences.putULong(key, v);
 }
-void PreferenceManager::set(char const *key, char *v, uint8_t len)
+void PreferenceManager::set(char const *key, char *v, uint32_t len)
 {
     preferences.putBytes(key, v, len);
 }

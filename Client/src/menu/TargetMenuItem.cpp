@@ -5,9 +5,8 @@
  * @author cyberreefguru
  */
 #include "TargetMenuItem.h"
+#include "TargetManager.h"
 
-// #include "DisplayManager.h"
-// #include "MenuManager.h"
 
 TargetMenuItem::TargetMenuItem(Target *target)
 {
@@ -15,7 +14,7 @@ TargetMenuItem::TargetMenuItem(Target *target)
     this->menuTitle = "Edit Target:";
     this->menuLabel = "Target ";
     this->menuPrompt = "";
-    
+
     initialize();
 }
 
@@ -34,14 +33,17 @@ void TargetMenuItem::initialize()
 {
     MultiActionItem::initialize();
 
-    ActionNumberInput *iNodeId = new ActionNumberInput("Target Node > ", std::bind(&TargetMenuItem::doNodeId, this), 2);
+    iNodeId = new ActionNumberInput("Target Node > ", std::bind(&TargetMenuItem::doNodeId, this), 2);
     iNodeId->setValue(target->targetNodeId);
 
-    ActionNumberInput *iStartDelay = new ActionNumberInput("Start Delay > ", std::bind(&TargetMenuItem::doStartDelay, this), 3);
+    iStartDelay = new ActionNumberInput("Start Delay > ", std::bind(&TargetMenuItem::doStartDelay, this), 6, 2);
     iStartDelay->setValue(target->startDelay);
 
-    ActionNumberInput *iStopDelay = new ActionNumberInput("Stop Delay  > ", std::bind(&TargetMenuItem::doStopDelay, this), 3);
-    iStopDelay->setValue(target->endDelay);
+    iStopDelay = new ActionNumberInput("Stop Delay  > ", std::bind(&TargetMenuItem::doStopDelay, this), 6, 2);
+    iStopDelay->setValue(target->stopDelay);
+
+    iDelete = new ActionButtonItem("DELETE", std::bind(&TargetMenuItem::doDelete, this));
+    iStopDelay->setValue(target->stopDelay);
 
     items.add(iNodeId);
     items.add(iStartDelay);
@@ -49,20 +51,34 @@ void TargetMenuItem::initialize()
     
 }
 
+void TargetMenuItem::onOk()
+{
+    target->targetNodeId = iNodeId->getValue();
+    target->startDelay = iStartDelay->getValue();
+    target->stopDelay = iStopDelay->getValue();
+    targetManager.save();
+    MultiActionItem::onCancel();
+}
+
 void TargetMenuItem::doNodeId()
 {
+    target->targetNodeId = iNodeId->getValue();
 }
 
 void TargetMenuItem::doStartDelay()
 {
+    target->startDelay = iStartDelay->getValue();
 }
 
 void TargetMenuItem::doStopDelay()
 {
+    target->stopDelay = iStopDelay->getValue();
 }
 
 void TargetMenuItem::doDelete()
 {
+    targetManager.remove(target);
+    targetManager.save();
 }
 
 // void TargetMenuItem::onButtonPush()
