@@ -14,10 +14,11 @@
 
 #include "ArrayList.h"
 
+#include "menu/MenuItem.h"
 #include "ListMenu.h"
 
 #include "TargetMenuItem.h"
-
+#include "TargetCreateMenuItem.h"
 
 class TargetListMenuItem : public ListMenu
 {
@@ -27,7 +28,7 @@ public:
     void initialize();
     
 protected:
-
+    TargetCreateMenuItem *tcmi = nullptr;
 };
 
 #endif

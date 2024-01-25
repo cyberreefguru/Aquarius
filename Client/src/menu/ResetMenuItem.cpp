@@ -1,13 +1,11 @@
-/*
- * ResetMenuItem.h
- *
- *  Created on: Jan 14, 2024
- *      Author: cyberreefguru
- */
-
+/**
+ * @brief menu item to reset preferences
+ * @file TargetCreateMenuItem.h
+ * @date Jan 14, 2024
+ * @author cyberreefguru
+ * 
+*/
 #include "ResetMenuItem.h"
-// #include "DisplayManager.h"
-// #include "MenuManager.h"
 
 ResetMenuItem::ResetMenuItem(ActionCallback cb)
 {

@@ -43,6 +43,7 @@ protected:
 
 private:
     Target *target;
+    char l[21];
     ActionNumberInput *iNodeId = nullptr;
     ActionNumberInput *iStartDelay = nullptr;
     ActionNumberInput *iStopDelay = nullptr;

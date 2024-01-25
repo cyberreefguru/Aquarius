@@ -1,10 +1,10 @@
-/*
- * ResetMenuItem.h
- *
- *  Created on: Jan 14, 2024
- *      Author: cyberreefguru
- */
-
+/**
+ * @brief menu item to reset preferences
+ * @file TargetCreateMenuItem.h
+ * @date Jan 14, 2024
+ * @author cyberreefguru
+ * 
+*/
 #ifndef ResetMenuItem_H
 #define EMI_H
 

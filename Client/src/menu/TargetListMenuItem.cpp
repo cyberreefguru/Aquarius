@@ -38,6 +38,10 @@ void TargetListMenuItem::initialize()
 {
     Log.traceln("TargetListMenuItem::initialize - BEGIN");
 
+    // Create create menu item
+    tcmi = new TargetCreateMenuItem(nullptr);
+    items.add(tcmi);
+
     ArrayList<Target*> *targets = targetManager.getTargetList();
     
     Log.traceln("TargetListMenuItem::initialize - targets: %s", prefManager.getTargetsBuffer() );

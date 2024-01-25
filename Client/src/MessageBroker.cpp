@@ -31,10 +31,13 @@ void MessageBroker::initialize()
     client.setClientId("aquarius_client");
     client.onConnect([this](bool b)
                      { this->onMqttConnect(b); });
-    // client.onDisconnect(onMqttDisconnect);
+    client.onDisconnect([this](AsyncMqttClientDisconnectReason reason)
+                     { this->onMqttDisconnect(reason); });
     client.onSubscribe([this](uint16_t packetId, uint8_t qos){this->onMqttSubscribe(packetId, qos);});
     client.onUnsubscribe([this](uint16_t packetId){this->onMqttUnsubscribe(packetId);});
-    client.onMessage([this](char *topic, char *payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total){this->onMqttMessage(topic, payload, properties, len, index, total);});
+    client.onMessage([this](char *topic, char *payload, AsyncMqttClientMessageProperties properties, 
+    size_t len, size_t index, size_t total){this->onMqttMessage(topic, payload, properties,
+     len, index, total);});
     client.onPublish([this](uint16_t packetId){this->onMqttPublish(packetId);});
 
     // Initialize timeout timers

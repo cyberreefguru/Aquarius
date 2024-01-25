@@ -16,7 +16,7 @@ TargetMenuItem::TargetMenuItem(Target *target)
 {
     this->target = target;
     this->menuTitle = "Edit Target:";
-    this->menuLabel = "Target ";
+    this->menuLabel = (const char*)l;
     this->menuPrompt = "";
 
     initialize();
@@ -47,6 +47,8 @@ void TargetMenuItem::initialize()
 {
     MultiButtonItem::initialize();
 
+    snprintf(l, 21, "> Target %d", target->targetNodeId);
+    
     iNodeId = new     ActionNumberInput("Node  > ", std::bind(&TargetMenuItem::doNodeId, this), 2);
     iNodeId->setValue(target->targetNodeId);
     // iNodeId->setLeftCallback(std::bind(&TargetMenuItem::doNumberLeft, this));
@@ -151,6 +153,7 @@ void TargetMenuItem::doOk()
     target->targetNodeId = iNodeId->getValue();
     target->startDelay = iStartDelay->getValue();
     target->stopDelay = iStopDelay->getValue();
+    snprintf(l, 21, "> Target %d", target->targetNodeId);
     targetManager.save();
     menuManager.popAndDisplay();
 }

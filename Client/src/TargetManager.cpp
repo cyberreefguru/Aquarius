@@ -39,7 +39,7 @@ void TargetManager::initialize()
     Log.traceln("TargetManager::initialize - BEGIN");
 
     char *buf = prefManager.getTargetsBuffer();
-    Log.traceln("TargetManager::initialize - target buf: %s", buf);
+    // Log.traceln("TargetManager::initialize - target buf: %s", buf);
     if (fromString(buf) > 0)
     {
         Log.traceln("TargetManager::initialize - Parsed target json - %s", buf);
@@ -144,7 +144,7 @@ void TargetManager::save()
  */
 uint32_t TargetManager::toString(char *buff, uint32_t size)
 {
-    Log.traceln("TargetManager::toString - BEGIN");
+    // Log.traceln("TargetManager::toString - BEGIN");
 
     // Clear buffer
     memset(buff, 0, size);
@@ -154,8 +154,7 @@ uint32_t TargetManager::toString(char *buff, uint32_t size)
 
     Log.traceln("TargetManager::toString - target buf: %s", buff);
 
-
-    Log.traceln("TargetManager::toString - END");
+    // Log.traceln("TargetManager::toString - END");
 
     return s;
 }
@@ -167,10 +166,9 @@ uint32_t TargetManager::toString(char *buff, uint32_t size)
  */
 bool TargetManager::fromString(char *buff)
 {
-    Log.traceln("TargetManager::fromString - BEGIN");
+    // Log.traceln("TargetManager::fromString - BEGIN");
 
     targetJson.clear();
-    Log.traceln("TargetManager::fromString - target buf1: %s", buff);
     DeserializationError err = deserializeJson(targetJson, (const char*)buff);
     if (err)
     {
@@ -178,7 +176,6 @@ bool TargetManager::fromString(char *buff)
         // todo - reset targets??
         return false;
     }
-    Log.traceln("TargetManager::fromString - target buf2: %s", buff);
 
     JsonArray array = targetJson[KEY_TARGETS];
     uint8_t numTargets = array.size();
@@ -192,10 +189,8 @@ bool TargetManager::fromString(char *buff)
         target->stopDelay = t[KEY_TARGET_END_DELAY];
         targetList.add(target);
 
-        Log.traceln("TargetManager::fromString - creating target[%d] node ID = %d", i, target->targetNodeId);
+        Log.traceln("TargetManager::fromString - target[%d] node ID = %d", i, target->targetNodeId);
     }
-    Log.traceln("TargetManager::fromString - target buf3: %s", buff);
-
-    Log.traceln("TargetManager::fromString - END");
+    // Log.traceln("TargetManager::fromString - END");
     return true;
 }
