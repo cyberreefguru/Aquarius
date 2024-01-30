@@ -1,8 +1,8 @@
-/*
- * MenuItem.cpp
- *
- *  Created on: Dec  31, 2023
- *      Author: cyberreefguru
+/**
+ * @brief base class for all menu items; provides default handlers and renderers
+ * @file MenuItem.cpp
+ * @date Jan 7, 2024
+ * @author cyberreefguru
  */
 #include "MenuManager.h" // TODO: fix this
 #include "StateManager.h"
@@ -181,12 +181,12 @@ void MenuItem::onLabelDisplay(bool active)
 
     if (doLabelDisplay != nullptr)
     {
-        Log.traceln("MenuItem::onLabelDisplay - using callback; rendering %s", menuLabel);
+        Log.traceln("MenuItem::onLabelDisplay - using callback; rendering '%s'", menuLabel);
         doDisplay(active);
     }
     else
     {
-        Log.traceln("MenuItem::onLabelDisplay - no callback; rendering %s", menuLabel);
+        Log.traceln("MenuItem::onLabelDisplay - no callback; rendering '%s'", menuLabel);
         if (active)
         {
             displayManager.setTextColor(BLACK, WHITE);

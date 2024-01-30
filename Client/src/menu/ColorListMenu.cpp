@@ -1,9 +1,10 @@
-/*
- * ColorListMenu.cpp
- *
- *  Created on: Dec  31, 2023
- *      Author: cyberreefguru
- */
+/**
+ * @brief Displays list of ColorList
+ * @file ColorListMenu.cpp
+ * @date Dec 31, 2023
+ * @author cyberreefguru
+ * 
+*/
 #include "ColorListMenu.h"
 #include "ColorMenuItem.h"
 #include "DisplayManager.h"
@@ -49,39 +50,10 @@ ColorListMenu::~ColorListMenu()
     items.clear();
 }
 
-
-// void ColorListMenu::onDisplay(bool active)
-// {
-//     Log.traceln("ColorListMenu::onDisplay - BEGIN");
-
-//     uint8_t size = items.size();
-//     displayManager.clear();
-//     displayManager.setCursor(0, 0);
-//     displayManager.println(menuTitle);
-//     uint8_t windowEnd = windowStart + windowSize - 1;
-//     if( windowEnd > size )
-//     {
-//         windowEnd = size-1;
-//     }
-//     Log.traceln("ColorListMenu::onDisplay - start=%d, end=%d, ai=%d, ws=%d, size=%d", windowStart, windowEnd, activeIndex, windowSize, size);
-//     for (uint8_t i = windowStart; i <= windowEnd; i++)
-//     {
-//         if (i == activeIndex)
-//         {
-//             displayManager.setTextColor(BLACK, WHITE);
-//         }
-//         else
-//         {
-//             displayManager.setTextColor(WHITE);
-//         }
-//         displayManager.print(menuPrompt);
-//         displayManager.println(menuColors[i]->name);
-//         displayManager.setTextColor(WHITE);
-//     }
-//     displayManager.setRefresh(true);
-//     Log.traceln("ColorListMenu::onDisplay - END");
-// }
-
+/**
+ * @brief overrrifs buttong push and saves the value to preferences.
+ * 
+ */
 void ColorListMenu::onButtonPush()
 {
     Log.traceln("Saving color: %s", menuColors[activeIndex]->name);
@@ -89,6 +61,4 @@ void ColorListMenu::onButtonPush()
     prefManager.set(key, (uint32_t)menuColors[activeIndex]->value);
     menuManager.popAndDisplay();
 
-    // menuManager.pop();
-    // menuManager.display();
 }

@@ -280,7 +280,7 @@ void PreferenceManager::set(char const *key, uint32_t v)
 }
 void PreferenceManager::set(char const *key, char *v, uint32_t len)
 {
-    Log.traceln("PreferenceManager::set - char*(%s, %s)", key, v);
+    Log.traceln("PreferenceManager::set - k='%s', v='%s'", key, v);
     preferences.putBytes(key, v, len);
 }
 void PreferenceManager::set(char const *key, MenuColor color)

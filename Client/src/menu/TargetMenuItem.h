@@ -27,23 +27,25 @@ class TargetMenuItem : public MultiButtonItem
 public:
     TargetMenuItem(Target *target);
     virtual ~TargetMenuItem();
+    virtual Target* getTarget();
 
 protected:
+    TargetMenuItem(){}
     virtual void initialize();
-    void doNodeId();
-    void doStartDelay();
-    void doStopDelay();
-    void doOk();
-    void doCancel();
-    void doDelete();
+    virtual void doNodeId();
+    virtual void doStartDelay();
+    virtual void doStopDelay();
+    virtual void doOk();
+    virtual void doCancel();
+    virtual void doDelete();
+    
     // void doNumberLeft();
     // void doNumberRight();
     // void doButtonLeft();
     // void doButtonRight();
 
-private:
-    Target *target;
-    char l[21];
+    Target *target = nullptr;
+    char label[21];
     ActionNumberInput *iNodeId = nullptr;
     ActionNumberInput *iStartDelay = nullptr;
     ActionNumberInput *iStopDelay = nullptr;

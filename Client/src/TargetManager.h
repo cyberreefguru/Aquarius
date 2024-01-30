@@ -1,8 +1,8 @@
-/*
- * TargetManager.h
- *
- *  Created on: Jan 17, 2024
- *      Author: cyberreefguru
+/**
+ * @brief Manages all targets
+ * @file TargetManager.h
+ * @date Jan 17, 2024
+ * @author cyberreefguru
  */
 #ifndef TargetManager_H
 #define TargetManager_H
@@ -15,7 +15,9 @@
 
 #include "ArrayList.h"
 #include "Target.h"
+
 #include "PreferenceManager.h"
+
 
 class TargetManager
 {
@@ -31,6 +33,7 @@ public:
     ArrayList<Target*> *getTargetList();
     void save();
     uint8_t size();
+    void dumpTargets(const char *label);
 
 protected: 
     ArrayList<Target*> targetList;
@@ -39,8 +42,6 @@ protected:
     bool fromString(char *buff); // turn into jsondocument
 
     StaticJsonDocument<TARGET_BUFF_SIZE> targetJson;
-
-
 };
 
 // end of add your includes here

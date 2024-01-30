@@ -116,7 +116,8 @@
 #define DEFAULT_BRIGHTNESS_LED 25
 
 #define MAX_TARGETS 10
-#define TARGET_BUFF_SIZE ((43*MAX_TARGETS)+(MAX_TARGETS-1)+9) + 1
+// #define TARGET_BUFF_SIZE ((43*MAX_TARGETS)+(MAX_TARGETS-1)+9) + 1
+#define TARGET_BUFF_SIZE 768
 #define DEFAULT_TARGETS "{\"ts\":[{\"nid\":2,\"sd\":0,\"ed\":0}]}"
 
 

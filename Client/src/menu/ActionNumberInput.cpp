@@ -44,7 +44,7 @@ ActionNumberInput::~ActionNumberInput()
  */
 void ActionNumberInput::onDisplay(bool active)
 {
-    Log.traceln("ActionNumberInput::onDisplay - BEGIN");
+    // Log.traceln("ActionNumberInput::onDisplay - BEGIN");
 
     // Call user provided callback if it exits
     if (doDisplay != nullptr)
@@ -80,7 +80,7 @@ void ActionNumberInput::onDisplay(bool active)
             }
         }
     }
-    Log.traceln("ActionNumberInput::onDisplay - END");
+    // Log.traceln("ActionNumberInput::onDisplay - END");
 }
 
 /**

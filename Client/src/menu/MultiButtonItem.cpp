@@ -70,6 +70,8 @@ void MultiButtonItem::initialize(ArrayList<MenuItem *> *items, ArrayList<ActionB
  */
 void MultiButtonItem::initialize()
 {
+    Log.traceln("MultiButtonItem::initialize - BEGIN");
+    Log.traceln("MultiButtonItem::initialize - END");
 }
 
 /**
@@ -220,6 +222,8 @@ void MultiButtonItem::onButtonRight()
 
 void MultiButtonItem::onButtonPush()
 {
+    // If user is on an item, activate next item in the list
+    // If user is on a button, call onButtonPush
     if (inItemRange())
     {
         activateNext();

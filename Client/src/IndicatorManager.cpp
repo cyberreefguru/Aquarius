@@ -102,7 +102,7 @@ void IndicatorManager::eventHandler(void *arg, esp_event_base_t base, int32_t id
     case ActionEvent::ERROR:
         flashMode = Mode::Flash;
         flashRate = 100;
-        setSystemIndicator(prefManager.getErrorColor());
+        setStatusIndicator(prefManager.getErrorColor());
         break;
     default:
         break;

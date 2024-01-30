@@ -27,7 +27,7 @@ using namespace std::placeholders;
 
 MenuManager menuManager;
 
-SimpleStack<MenuItem *> menus(5); // max 5 levels
+SimpleStack<MenuItem *> menus(7); // max 7 levels
 
 ColorListMenu colorActive = ColorListMenu("> Active", "Active Color:", "> ", KEY_COLOR_ACTIVE);
 ColorListMenu colorInact = ColorListMenu("> Deactive", "Deactive Color:", "> ", KEY_COLOR_DEACTIVE);
@@ -290,6 +290,7 @@ void MenuManager::pop()
  */
 void MenuManager::display()
 {
+    Log.traceln("MenuManager::display - BEGIN");
     if (stateManager.configure == false)
     {
         Log.traceln("MenuManager::display - not in configuration mode; returning");
@@ -311,7 +312,7 @@ void MenuManager::display()
             item->onDisplay(true);
         }
     }
-    Log.traceln("MenuManager::display: END");
+    Log.traceln("MenuManager::display - END");
 }
 
 void MenuManager::doNodeId()

@@ -7,6 +7,7 @@
 #include "TargetMenuItem.h"
 #include "TargetManager.h"
 #include "MenuManager.h"
+#include "Helper.h"
 
 /**
  * @brief Constructor
@@ -16,7 +17,7 @@ TargetMenuItem::TargetMenuItem(Target *target)
 {
     this->target = target;
     this->menuTitle = "Edit Target:";
-    this->menuLabel = (const char*)l;
+    this->menuLabel = (const char *)label;
     this->menuPrompt = "";
 
     initialize();
@@ -27,29 +28,52 @@ TargetMenuItem::TargetMenuItem(Target *target)
  */
 TargetMenuItem::~TargetMenuItem()
 {
+    targetManager.dumpTargets("tmi1-");
+
     for (uint8_t i = 0; i < items.size(); i++)
     {
         MenuItem *item = items[i];
-        items.removeAt(i);
         delete (item);
     }
     items.clear();
+
     for (uint8_t i = 0; i < buttons.size(); i++)
     {
         MenuItem *item = buttons[i];
-        buttons.removeAt(i);
         delete (item);
     }
     buttons.clear();
+    targetManager.dumpTargets("tmi2-");
+}
+
+/**
+ * @brief returns pointer to the target within this menu item
+ * @return target pointer
+ */
+Target* TargetMenuItem::getTarget()
+{
+    return target;
 }
 
 void TargetMenuItem::initialize()
 {
+    Log.traceln("TargetMenuItem::initialize - BEGIN");
+
+    if (target == nullptr)
+    {
+        Helper::fatal("TargetMenuItem::initialize - target is null!");
+    }
+
     MultiButtonItem::initialize();
 
-    snprintf(l, 21, "> Target %d", target->targetNodeId);
-    
-    iNodeId = new     ActionNumberInput("Node  > ", std::bind(&TargetMenuItem::doNodeId, this), 2);
+    // Log.traceln("TargetMenuItem::initialize -  target node id - %d @ %X", target->targetNodeId, target);
+    if (label == nullptr)
+    {
+        Helper::fatal("TargetMenuItem::initialize - label buffer is null!");
+    }
+    snprintf(label, 21, "> Target %d", target->targetNodeId);
+
+    iNodeId = new ActionNumberInput("Node  > ", std::bind(&TargetMenuItem::doNodeId, this), 2);
     iNodeId->setValue(target->targetNodeId);
     // iNodeId->setLeftCallback(std::bind(&TargetMenuItem::doNumberLeft, this));
     // iNodeId->setRightCallback(std::bind(&TargetMenuItem::doNumberRight, this));
@@ -60,7 +84,7 @@ void TargetMenuItem::initialize()
     // iStartDelay->setLeftCallback(std::bind(&TargetMenuItem::doNumberLeft, this));
     // iStartDelay->setRightCallback(std::bind(&TargetMenuItem::doNumberRight, this));
 
-    iStopDelay = new  ActionNumberInput("Stop  > ", std::bind(&TargetMenuItem::doStopDelay, this), 6, 2);
+    iStopDelay = new ActionNumberInput("Stop  > ", std::bind(&TargetMenuItem::doStopDelay, this), 6, 2);
     iStopDelay->setValue(target->stopDelay);
     // iStopDelay->setLeftCallback(std::bind(&TargetMenuItem::doNumberLeft, this));
     // iStopDelay->setRightCallback(std::bind(&TargetMenuItem::doNumberRight, this));
@@ -75,77 +99,15 @@ void TargetMenuItem::initialize()
     iDelete = new ActionButtonItem("DELETE");
     iDelete->setPushCallback(std::bind(&TargetMenuItem::doDelete, this));
     iDelete->setRightCallback(std::bind(&TargetMenuItem::doButtonRight, this));
-    
+
     items.add(iNodeId);
     items.add(iStartDelay);
     items.add(iStopDelay);
     buttons.add(iOk);
     buttons.add(iCancel);
     buttons.add(iDelete);
+    Log.traceln("TargetMenuItem::initialize - END");
 }
-
-// void TargetMenuItem::doNumberLeft()
-// {
-//     MenuItem* item = getActive();
-//     if( item != nullptr )
-//     {
-//         Log.traceln("active='%s'", item->getMenuLabel());
-//         ActionNumberInput *ani = (ActionNumberInput*)item;
-//         if( ani->previousDigit() )
-//         {
-//             //ani->nextDigit();
-//             ani->setMsb();
-//             activatePrevious();
-//         }
-//     }
-// }
-
-// void TargetMenuItem::doNumberRight()
-// {
-//     MenuItem* item = getActive();
-//     if( item != nullptr )
-//     {
-//         Log.traceln("active='%s'", item->getMenuLabel());
-//         ActionNumberInput *ani = (ActionNumberInput*)item;
-//         if( ani->nextDigit() )
-//         {
-//             // ani->previousDigit();
-//             ani->setLsb();
-//             activateNext();
-//         }
-//     }
-// }
-
-// void TargetMenuItem::doButtonLeft()
-// {
-//     activatePrevious();
-//     Log.trace("TargetMenuItem::doButtonLeft - active='%s'", getActive()->getMenuLabel());
-//     if( inItemRange() )
-//     {
-//         ActionNumberInput *ani = (ActionNumberInput*)getActive();
-//         if( ani != nullptr )
-//         {
-//             ani->setLsb();
-//         }
-//     }
-//     onDisplay(false);
-// }
-
-// void TargetMenuItem::doButtonRight()
-// {
-//     activateNext();
-//     Log.trace("TargetMenuItem::doButtonRight - active='%s'", getActive()->getMenuLabel());
-
-//     if( inItemRange() )
-//     {
-//         ActionNumberInput *ani = (ActionNumberInput*)getActive();
-//         if( ani != nullptr )
-//         {
-//             ani->setMsb();
-//         }
-//     }
-// }
-
 
 void TargetMenuItem::doOk()
 {
@@ -153,8 +115,9 @@ void TargetMenuItem::doOk()
     target->targetNodeId = iNodeId->getValue();
     target->startDelay = iStartDelay->getValue();
     target->stopDelay = iStopDelay->getValue();
-    snprintf(l, 21, "> Target %d", target->targetNodeId);
+    snprintf(label, 21, "> Target %d", target->targetNodeId);
     targetManager.save();
+
     menuManager.popAndDisplay();
 }
 
@@ -167,11 +130,10 @@ void TargetMenuItem::doCancel()
 void TargetMenuItem::doDelete()
 {
     Log.traceln("TargetMenuItem::doDelete - removing item");
-    
-    // TODO - remove target menu items
-    
+
     targetManager.remove(target);
     targetManager.save();
+    menuManager.popAndDisplay();
 }
 
 void TargetMenuItem::doNodeId()

@@ -1,11 +1,12 @@
-/*
- * TargetManager.cpp
- *
- *  Created on: Jan 17, 2024
- *      Author: cyberreefguru
+/**
+ * @brief Manages all targets
+ * @file TargetManager.cpp
+ * @note Must call initialize before using this item
+ * @date Jan 17, 2024
+ * @author cyberreefguru
  */
 #include "TargetManager.h"
-// #include "PreferenceManager.h"
+#include "Helper.h"
 
 TargetManager targetManager;
 
@@ -39,10 +40,10 @@ void TargetManager::initialize()
     Log.traceln("TargetManager::initialize - BEGIN");
 
     char *buf = prefManager.getTargetsBuffer();
-    // Log.traceln("TargetManager::initialize - target buf: %s", buf);
+    Log.traceln("TargetManager::initialize - saved json: %s", buf);
     if (fromString(buf) > 0)
     {
-        Log.traceln("TargetManager::initialize - Parsed target json - %s", buf);
+        Log.traceln("TargetManager::initialize - Parsed %d targets into %X.", targetList.size(), &targetList);
     }
     else
     {
@@ -102,13 +103,16 @@ uint8_t TargetManager::size()
  * @brief returns list of targets
  * @return ArrayList of Target pointers
  */
-ArrayList<Target*> *TargetManager::getTargetList()
+ArrayList<Target *> *TargetManager::getTargetList()
 {
     return &targetList;
 }
 
 void TargetManager::save()
 {
+    Log.traceln("TargetManager::save - BEGIN");
+
+    // Example target JSON
     //  {"ts":[{"nid":2,"sd":0,"ed":0}]}
 
     uint8_t size = targetList.size();
@@ -127,15 +131,16 @@ void TargetManager::save()
 
     char *buf = prefManager.getTargetsBuffer();
     uint32_t s = toString(buf, TARGET_BUFF_SIZE);
-    if( s > 0 )
+    if (s > 0)
     {
-        Log.traceln("TargetManager::save - saving targets(%d) - %s", s, buf);
+        Log.traceln("TargetManager::save - saving targets; size=%d", s);
         prefManager.set(KEY_TARGETS, buf, s);
     }
     else
     {
         Log.errorln("TargetManager::save - failed to serialize!");
     }
+    Log.traceln("TargetManager::save - BEGIN");
 }
 
 /**
@@ -169,11 +174,13 @@ bool TargetManager::fromString(char *buff)
     // Log.traceln("TargetManager::fromString - BEGIN");
 
     targetJson.clear();
-    DeserializationError err = deserializeJson(targetJson, (const char*)buff);
+    DeserializationError err = deserializeJson(targetJson, (const char *)buff);
     if (err)
     {
-        Log.errorln("TargetManager::fromString - failed to parse input: '%s'", buff);
-        // todo - reset targets??
+        Log.errorln("TargetManager::fromString - failed to parse input - %s : '%s'", err.c_str(), buff);
+        Helper::fatal("TargetManager::fromString - ERROR READING TARGET JSON");
+
+        // TODO - reset targets??
         return false;
     }
 
@@ -189,8 +196,17 @@ bool TargetManager::fromString(char *buff)
         target->stopDelay = t[KEY_TARGET_END_DELAY];
         targetList.add(target);
 
-        Log.traceln("TargetManager::fromString - target[%d] node ID = %d", i, target->targetNodeId);
+        Log.traceln("TargetManager::fromString - target[%d].nid=%d @ %X", i, target->targetNodeId, target);
     }
     // Log.traceln("TargetManager::fromString - END");
     return true;
+}
+
+void TargetManager::dumpTargets(const char *label)
+{
+    uint8_t size = targetList.size();
+    for (uint8_t j = 0; j < size; j++)
+    {
+        Log.traceln("%s target[%d].nid=%d @ %X", label, j, targetList.get(j)->targetNodeId, targetList.get(j));
+    }
 }

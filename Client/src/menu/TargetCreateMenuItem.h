@@ -15,19 +15,26 @@
 
 #include "TargetMenuItem.h"
 
-class TargetCreateMenuItem : public MenuItem
+class TargetCreateMenuItem : public TargetMenuItem
 {
 public:
-    TargetCreateMenuItem(ActionCallback cb);
+    TargetCreateMenuItem();
+    ~TargetCreateMenuItem();
 
     void initialize();
-    void onDisplay(bool active) override;
-    void onButtonPush() override;
+    // void onDisplay(bool active) override;
+    // void onButtonUp() override;
+    // void onButtonDown() override;
+    // void onButtonLeft() override;
+    // void onButtonRight() override;
+    // void onButtonPush() override;
+
+    void doOk() override;
+
 
 protected:
-    Target *target = nullptr;
-    TargetMenuItem *tmi = nullptr;
-
+    // Target *target = nullptr;
+    
 };
 
 #endif

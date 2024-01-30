@@ -1,10 +1,9 @@
-/*
- * MenuItem.h
- *
- *  Created on: Jan 7, 2024
- *      Author: cyberreefguru
+/**
+ * @brief base class for all menu items; provides default handlers and renderers
+ * @file MenuItem.cpp
+ * @date Jan 7, 2024
+ * @author cyberreefguru
  */
-
 #pragma once
 
 #ifndef MenuItem_H

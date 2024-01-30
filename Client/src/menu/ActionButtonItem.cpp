@@ -38,7 +38,7 @@ ActionButtonItem::ActionButtonItem(menu_prompt_t prompt, ActionCallback cb)
  */
 void ActionButtonItem::onDisplay(bool active)
 {
-    Log.traceln("ActionButtonItem::onDisplay - BEGIN");
+    // Log.traceln("ActionButtonItem::onDisplay - BEGIN");
 
     if (doDisplay != nullptr)
     {
@@ -58,5 +58,5 @@ void ActionButtonItem::onDisplay(bool active)
         displayManager.drawButton(menuPrompt, active);
     }
 
-    Log.traceln("ActionButtonItem::onDisplay - END");
+    // Log.traceln("ActionButtonItem::onDisplay - END");
 }
