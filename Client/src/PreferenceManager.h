@@ -175,6 +175,8 @@ public:
 
     uint8_t getDisplaySize();
 
+    uint32_t getUnsignedLong(const char *key);
+
     char *getTargetsBuffer();
 
     void set(char const *key, uint8_t v);

@@ -263,6 +263,16 @@ char* PreferenceManager::getTargetsBuffer()
 {
     return targetsBuffer;
 }
+/**
+ * @brief gets unsigned long value from preference using key
+ * @param key key to find value
+ * @return value stored at key or 0 if no value
+ */
+uint32_t PreferenceManager::getUnsignedLong(const char* key)
+{
+    return preferences.getULong(key, 0);
+}
+
 void PreferenceManager::set(char const *key, uint8_t v)
 {
     Log.traceln("PreferenceManager::set - char(%s, %d)", key, v);

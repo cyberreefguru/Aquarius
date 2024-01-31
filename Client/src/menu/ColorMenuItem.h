@@ -18,13 +18,11 @@
 class ColorMenuItem : public MenuItem
 {
 public:
-    ColorMenuItem(const MenuColor *color);
+    ColorMenuItem(uint8_t index);
     virtual ~ColorMenuItem();
 
 private:
-    const MenuColor* color;
-    // char buf[22];
-
+    uint8_t index;
 };
 
 #endif

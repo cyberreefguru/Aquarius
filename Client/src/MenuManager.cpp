@@ -16,12 +16,10 @@
 #include "menu/MenuColor.h"
 
 #include "menu/ListMenu.h"
-#include "menu/ExitMenuItem.h"
 #include "menu/MultiActionItem.h"
 #include "menu/ActionNumberInput.h"
 #include "menu/TargetListMenuItem.h"
 #include "menu/ColorListMenu.h"
-#include "menu/ResetMenuItem.h"
 
 using namespace std::placeholders;
 
@@ -66,7 +64,7 @@ ActionNumberInput iServoStop = ActionNumberInput("End  > ", std::bind(&MenuManag
 MenuItem *amts[2] = {&iServoStart, &iServoStop};
 MultiActionItem mServoItem = MultiActionItem("> Servo Settings", "Servo Values:", "");
 
-MenuItem mResetItem = MenuItem("> Factory Reset", "Factory Reset?", "Press to Reset");
+MenuItem mResetItem = MenuItem("> Factory Reset", "Factory Reset?", "Push to Reset");
 MenuItem mExitItem = MenuItem("> Exit", "Exit", "> Exit");
 
 MenuItem *mmItems[] = {
@@ -112,11 +110,11 @@ void MenuManager::initialize()
                                                 { menuManager.actionEventHandler(arg, base, id, data); });
     if (status != ESP_OK)
     {
-        Log.fatalln("Error adding action event handler");
+        Log.fatalln("MenuManager::initialize - Error adding action event handler");
     }
     else
     {
-        Log.infoln("Added action event handler!");
+        Log.infoln("MenuManager::initialize - added action event handler!");
     }
 
     // Add event handlers for input events
@@ -127,14 +125,20 @@ void MenuManager::initialize()
                                                { menuManager.inputEventHandler(arg, base, id, data); });
     if (status != ESP_OK)
     {
-        Log.fatalln("Error adding input event handler");
+        Log.fatalln("MenuManager::initialize - Error adding input event handler");
     }
     else
     {
-        Log.infoln("Added input event handler!");
+        Log.infoln("MenuManager::initialize - added input event handler!");
     }
 
     // Initialize menu items
+    for(uint8_t i=0; i<10; i++)
+    {
+        ColorListMenu *cls = (ColorListMenu*)cis[i];
+        cls->initialize();
+    }
+
     mNodeIdItem.initialize(nis, 1);
     mSensorItem.initialize(sis, 1);
     mBrightnessItem.initialize(bis, 2);
@@ -290,7 +294,7 @@ void MenuManager::pop()
  */
 void MenuManager::display()
 {
-    Log.traceln("MenuManager::display - BEGIN");
+    // Log.traceln("MenuManager::display - BEGIN");
     if (stateManager.configure == false)
     {
         Log.traceln("MenuManager::display - not in configuration mode; returning");
@@ -308,73 +312,73 @@ void MenuManager::display()
         }
         else
         {
-            Log.traceln("MenuManager::display - displaying %s", item->getMenuLabel());
+            Log.traceln("MenuManager::display - displaying '%s'", item->getMenuLabel());
             item->onDisplay(true);
         }
     }
-    Log.traceln("MenuManager::display - END");
+    // Log.traceln("MenuManager::display - END");
 }
 
 void MenuManager::doNodeId()
 {
-    Log.traceln("MultiActionItem::doNodeId - setting node ID to %d", iNodeId.getValue());
+    // Log.traceln("MultiActionItem::doNodeId - setting node ID to %d", iNodeId.getValue());
 
     prefManager.set(KEY_NODE_ID, iNodeId.getValue());
 
-    Log.traceln("MenuManager::doNodeId - END");
+    // Log.traceln("MenuManager::doNodeId - END");
 }
 
 void MenuManager::doSensor()
 {
-    Log.traceln("MenuManager::doSensor - BEGIN");
+    // Log.traceln("MenuManager::doSensor - BEGIN");
 
     prefManager.set(KEY_SENSOR_THRESHOLD, iSensorThres.getValue());
 
-    Log.traceln("MenuManager::doSensor - END");
+    // Log.traceln("MenuManager::doSensor - END");
 }
 
 void MenuManager::doScreenBrightness()
 {
-    Log.traceln("MenuManager::doScreenBrightness - BEGIN");
+    // Log.traceln("MenuManager::doScreenBrightness - BEGIN");
 
     uint8_t v = iScreenBright.getValue();
     prefManager.set(KEY_BRIGHTNESS_SCREEN, v);
     displayManager.setBrightness(v);
 
-    Log.traceln("MenuManager::doScreenBrightness - END");
+    // Log.traceln("MenuManager::doScreenBrightness - END");
 }
 
 void MenuManager::doLedBrightness()
 {
-    Log.traceln("MenuManager::doLedBrightness - BEGIN");
+    // Log.traceln("MenuManager::doLedBrightness - BEGIN");
 
     uint8_t v = iLedBright.getValue();
     prefManager.set(KEY_BRIGHTNESS_LED, v);
     indicatorManager.setBrightness(v);
 
-    Log.traceln("MenuManager::doLedBrightness - END");
+    // Log.traceln("MenuManager::doLedBrightness - END");
 }
 
 void MenuManager::doServoStart()
 {
-    Log.traceln("MenuManager::doServoStart - BEGIN");
+    // Log.traceln("MenuManager::doServoStart - BEGIN");
 
     prefManager.set(KEY_SERVO_START, iServoStart.getValue());
 
-    Log.traceln("MenuManager::doServoStart - END");
+    // Log.traceln("MenuManager::doServoStart - END");
 }
 void MenuManager::doServoStop()
 {
-    Log.traceln("MenuManager::doServoStop - BEGIN");
+    // Log.traceln("MenuManager::doServoStop - BEGIN");
 
     prefManager.set(KEY_SERVO_START, iServoStop.getValue());
 
-    Log.traceln("MenuManager::doServoStop - END");
+    // Log.traceln("MenuManager::doServoStop - END");
 }
 
 void MenuManager::doExit(bool active)
 {
-    Log.traceln("MenuManager::doExit - BEGIN");
+    // Log.traceln("MenuManager::doExit - BEGIN");
     pop();
     // stateManager.configure = false;
     actionEventManager.postEvent(ActionEvent::WAITING);
@@ -384,7 +388,7 @@ void MenuManager::doExit(bool active)
 
 void MenuManager::doResetPush()
 {
-    Log.infoln("Reseting to factory settings...");
+    Log.infoln("Resetting to factory settings...");
     prefManager.reset();
     Log.infoln("Reset!");
     popAndDisplay();

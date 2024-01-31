@@ -23,15 +23,6 @@ ColorListMenu::ColorListMenu(menu_label_t label, menu_title_t title, menu_prompt
     this->menuTitle = title;
     this->menuPrompt = prompt;
     this->key = key;
-
-    windowSize = menuManager.getScreenMaxY(); // subtract for menu name
-    windowStart = 0;                          // TODO - set according to current selected value
-    activeIndex = windowStart;
-
-    for (uint8_t i = 0; i < numMenuColors; i++)
-    {
-        items.add(new ColorMenuItem(menuColors[i]));
-    }
 }
 
 /**
@@ -44,10 +35,40 @@ ColorListMenu::~ColorListMenu()
     for (uint8_t i = 0; i < size; i++)
     {
         MenuItem *item = items[i];
-        items.removeAt(i);
         delete (item);
     }
     items.clear();
+}
+
+/**
+ * @brief Initializes the menu and sets active item
+ */
+void ColorListMenu::initialize()
+{
+    windowSize = menuManager.getScreenMaxY(); // subtract for menu name
+    windowStart = 0;                          // TODO - set according to current selected value
+    activeIndex = windowStart;
+
+    uint32_t c = prefManager.getUnsignedLong(key);
+    Log.traceln("ColorListMenu::ColorListMenu - Building color list menu: %X", c);
+    for (uint8_t i = 0; i < numMenuColors; i++)
+    {
+        items.add(new ColorMenuItem(i));
+        if( c == (uint32_t)menuColors[i]->value )
+        {
+            activeIndex = i;
+            if( i > windowSize/2 )
+            {
+                windowStart = i-windowSize/2;
+            }
+            else
+            {
+                windowStart = 0;
+            }
+            Log.traceln("ColorListMenu::ColorListMenu - active=%d, start=%d", activeIndex, windowStart);
+        }
+    }
+
 }
 
 /**

@@ -20,7 +20,7 @@ class ColorListMenu : public ListMenu
 public:
     ColorListMenu(menu_label_t label, menu_title_t title, menu_prompt_t prompt, const char* key);
     virtual ~ColorListMenu();
-
+    void initialize();
     virtual void onButtonPush() override;
 
 };

@@ -127,7 +127,7 @@ void MenuItem::setPushCallback(ButtonCallback cb)
  */
 void MenuItem::onDisplay(bool active)
 {
-    Log.traceln("MenuItem::onDisplay - BEGIN");
+    // Log.traceln("MenuItem::onDisplay - BEGIN");
 
     if (menuTitle == nullptr || menuPrompt == nullptr)
     {
@@ -162,7 +162,7 @@ void MenuItem::onDisplay(bool active)
         displayManager.setRefresh(true);
     }
 
-    Log.traceln("MenuItem::onDisplay - END");
+    // Log.traceln("MenuItem::onDisplay - END");
 }
 
 /**
