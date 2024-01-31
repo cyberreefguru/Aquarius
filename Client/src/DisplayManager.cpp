@@ -22,11 +22,14 @@ void DisplayManager::initialize()
     Log.traceln("DisplayManager::initialize - Setting screen brightness - %d", b);
     setBrightness( prefManager.getScreenBrightness() );
 
-    ssd1306.clearDisplay();
     ssd1306.setTextSize(1);
     ssd1306.setTextColor(SSD1306_WHITE);
     ssd1306.clearDisplay();
-    refresh = true;
+    ssd1306.drawBitmap(0, 0, aquarius_boot_bitmap, 128, 64, WHITE);    
+    ssd1306.display();
+    delay(1000);
+    ssd1306.clearDisplay();
+    ssd1306.display();
 
     Log.infoln("DisplayManager::initialize - creating display task.");
     BaseType_t xReturned = xTaskCreate(

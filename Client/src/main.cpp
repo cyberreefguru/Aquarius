@@ -64,6 +64,9 @@ void setup()
   // Fire initialization event
   actionEventManager.postEvent(ActionEvent::INITIALIZING);
 
+  // Set initial screen
+  stateManager.initializeDisplay();
+
   // Initialize WIFI and MQTT
   messageBroker.initialize();
 

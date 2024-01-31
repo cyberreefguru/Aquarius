@@ -19,6 +19,8 @@
 
 #include "PreferenceManager.h"
 
+#include "images/boot_logo.h"
+
 extern "C"
 {
 #include "freertos/FreeRTOS.h"
