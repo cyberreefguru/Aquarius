@@ -56,15 +56,7 @@ void ColorListMenu::initialize()
         items.add(new ColorMenuItem(i));
         if( c == (uint32_t)menuColors[i]->value )
         {
-            activeIndex = i;
-            if( i > windowSize/2 )
-            {
-                windowStart = i-windowSize/2;
-            }
-            else
-            {
-                windowStart = 0;
-            }
+            setSelectedIndex(i);
             Log.traceln("ColorListMenu::ColorListMenu - active=%d, start=%d", activeIndex, windowStart);
         }
     }

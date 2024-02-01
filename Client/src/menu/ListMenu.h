@@ -34,6 +34,8 @@ public:
     virtual void onButtonRight() override;
     virtual void onButtonPush() override;
 
+    void setSelectedIndex(uint8_t index);
+
 protected:
     ListMenu() {}
     ArrayList<MenuItem*> items;

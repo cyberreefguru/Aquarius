@@ -58,6 +58,23 @@ void ListMenu::initialize(ArrayList<MenuItem *> *items)
 }
 
 /**
+ * @brief Sets current list item to the selected index
+ * @param index 
+ */
+void ListMenu::setSelectedIndex(uint8_t index)
+{
+    activeIndex = index;
+    if (index > windowSize / 2)
+    {
+        windowStart = index - windowSize / 2;
+    }
+    else
+    {
+        windowStart = 0;
+    }
+}
+
+/**
  * @brief Renders the list of menu item by displaying each item's label
  * @param active if true, highlight item (unused)
  */
@@ -174,7 +191,7 @@ uint8_t ListMenu::getActiveIndex()
 
 /**
  * @brief activate the next menu item in the list; wraps to first if at last
- * 
+ *
  */
 void ListMenu::activateNext()
 {
