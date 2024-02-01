@@ -1,6 +1,6 @@
 /**
  * @brief Abstracts displaying items to the screen
- * @file DisplayManager.cpp
+ * @file DisplayManager.h
  * @date Nov 26, 2023
  * @author cyberreefguru
  */
@@ -45,12 +45,46 @@ extern "C"
 #define UPTIME_ROW 7
 #define UPTIME_COL 0
 
+
+/**
+ * @brief Describes which information is displayed
+ */
+enum class DisplayState
+{
+    DETAILED=0,
+    LARGE,
+    MENU,
+} ;
+inline constexpr unsigned operator+ (DisplayState const val) { return static_cast<unsigned>(val); }
+inline const char* operator++(DisplayState a)
+{
+    switch (a)
+    {
+    case DisplayState::DETAILED:
+        return "DETAILED";
+        break;
+    case DisplayState::LARGE:
+        return "LARGE";
+        break;
+    case DisplayState::MENU:
+        return "MENU";
+        break;
+    default:
+        return "UNkNOWN";
+        break;
+    }
+}
+
+/**
+ * @brief Controls displaying items to the screen
+ */
 class DisplayManager
 {
 public:
     DisplayManager();
     void initialize();
     // void eventHandler(void *arg, esp_event_base_t base, int32_t id, void *data);
+    void setInitialScreen();
     void setRefresh(bool r=true);
     void setSize(DisplaySize size);
     void print(uint8_t d);

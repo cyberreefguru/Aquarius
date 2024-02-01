@@ -187,8 +187,8 @@ void MenuManager::actionEventHandler(void *args, esp_event_base_t base, int32_t 
     // Received configure event; start displaying the menu system
     if (ae == ActionEvent::CONFIGURE)
     {
-        stateManager.configure = true;
-        display();
+        // stateManager.configure = true;
+        // display();
     }
 }
 
@@ -208,12 +208,12 @@ void MenuManager::inputEventHandler(void *args, esp_event_base_t base, int32_t i
 
     if (currentAction == ButtonAction::PRESS)
     {
-        if (stateManager.processing == false && stateManager.configure == false)
+        if (stateManager.processing == false && stateManager.displayState != DisplayState::MENU)
         {
             // We have a button event, we're not doing anything, and we're not already in memu mode
             actionEventManager.postEvent(ActionEvent::CONFIGURE);
         }
-        else if (stateManager.configure == true)
+        else if (stateManager.displayState == DisplayState::MENU)
         {
             Log.traceln("MenuManager::inputEventHandler - passing event to menu item");
             // Get the current menu item
@@ -269,10 +269,9 @@ void MenuManager::pop()
     {
         // We are at the root node, so don't pop
         Log.warningln("MenuManager::pop - top of menu -- can't remove main menu");
-
         // Exit menu system
-        stateManager.configure = false;
-        displayManager.clear();
+        // stateManager.configure = false;
+        // displayManager.clear();
         actionEventManager.postEvent(ActionEvent::WAITING);
         return;
     }
@@ -295,12 +294,7 @@ void MenuManager::pop()
 void MenuManager::display()
 {
     // Log.traceln("MenuManager::display - BEGIN");
-    if (stateManager.configure == false)
-    {
-        Log.traceln("MenuManager::display - not in configuration mode; returning");
-        return;
-    }
-    else
+    if (stateManager.displayState == DisplayState::MENU)
     {
         // Get the current menu item
         MenuItem *item = nullptr;
@@ -381,8 +375,10 @@ void MenuManager::doExit(bool active)
     // Log.traceln("MenuManager::doExit - BEGIN");
     pop();
     // stateManager.configure = false;
+    Log.traceln("MenuManager::doExit - Exiting menu system");
     actionEventManager.postEvent(ActionEvent::WAITING);
-    displayManager.setRefresh(true);
+    //displayManager.clear();
+    // displayManager.setRefresh(true);
     Log.traceln("MenuManager::doExit - END");
 }
 
@@ -397,6 +393,6 @@ void MenuManager::doResetPush()
 void MenuManager::popAndDisplay()
 {
     pop();
-    display();
+    // display();
     displayManager.setRefresh(true);
 }

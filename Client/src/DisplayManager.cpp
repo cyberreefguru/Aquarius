@@ -5,6 +5,8 @@
  * @author cyberreefguru
  */
 #include "DisplayManager.h"
+#include "StateManager.h"
+#include "MenuManager.h"
 
 DisplayManager displayManager;
 
@@ -28,15 +30,13 @@ void DisplayManager::initialize()
     ssd1306.drawBitmap(0, 0, aquarius_boot_bitmap, 128, 64, WHITE);    
     ssd1306.display();
     delay(1000);
-    ssd1306.clearDisplay();
-    ssd1306.display();
 
     Log.infoln("DisplayManager::initialize - creating display task.");
     BaseType_t xReturned = xTaskCreate(
         [](void *pvParameters)
         { displayManager.displayTask(pvParameters); },
         "display_task",
-        1024,
+        2048,
         NULL,
         tskIDLE_PRIORITY + 1,
         &displayTaskHandle);
@@ -48,18 +48,39 @@ void DisplayManager::initialize()
     // Log.traceln("DisplayManager::initialize - END");
 }
 
+/**
+ * @brief sets the initial screen after booting
+ */
+void DisplayManager::setInitialScreen()
+{
+    stateManager.displayState = DisplayState::DETAILED;
+    setRefresh(true);
+}
+
 /***
  * DisplayManager task updates the display when things change.
  */
 void DisplayManager::displayTask(void *pvParameters)
 {
     Log.traceln("DisplayManager::displayTask - starting display task.");
-    uint8_t clicks = 0;
 
     for (;;)
     {
         if (refresh)
         {
+            DisplayState state = stateManager.displayState;
+            switch(state)
+            {
+                case DisplayState::DETAILED:
+                    stateManager.display();
+                break;
+                case DisplayState::LARGE:
+                    stateManager.display();
+                break;
+                case DisplayState::MENU:
+                    menuManager.display();
+                break;
+            }
             ssd1306.display();
             refresh = false;
         }
@@ -428,3 +449,4 @@ void DisplayManager::drawButton(const char *text, bool active)
     // Log.traceln("DisplayManager::drawButton - cursor (%d, %d), size (%d, %d)", x, y, h, w);
 
 }
+

@@ -197,7 +197,7 @@ void MenuItem::onLabelDisplay(bool active)
         }
         displayManager.println(menuLabel);
         displayManager.setTextColor(WHITE);
-        displayManager.setRefresh(true);
+        // displayManager.setRefresh(true);
     }
 
     // Log.traceln("MenuItem::onLabelDisplay - END");
