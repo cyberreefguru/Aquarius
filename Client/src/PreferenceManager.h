@@ -1,9 +1,10 @@
-/*
- * PreferenceManager.h
- *
- *  Created on: Nov 17, 2023
- *      Author: cyberreefguru
+/**
+ * @brief Manages preferences
+ * @file PreferenceManager.h
+ * @date Nov 17, 2023
+ * @author cyberreefguru
  */
+
 #ifndef PreferenceManager_H
 #define PreferenceManager_H
 

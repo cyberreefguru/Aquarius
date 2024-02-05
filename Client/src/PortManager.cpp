@@ -1,3 +1,9 @@
+/**
+ * @brief Manages IO ports
+ * @file PortManager.cpp
+ * @date Nov 19, 2023
+ * @author cyberreefguru
+ */
 #include "PortManager.h"
 
 PortManager portManager;
@@ -9,7 +15,7 @@ void PortManager::initialize()
     Log.traceln("PortManager::initialize - initializing GPIO...");
 
     // Set D0 on ESP to be interrupt input
-    pinMode(INTR_PIN, INPUT_PULLUP);
+    pinMode(GPIO_INTR_PIN, INPUT_PULLUP);
 
     // Initialize I2C bus for GPIO
     if (!gpio.begin_I2C())
@@ -31,11 +37,11 @@ void PortManager::initialize()
         gpio.setupInterruptPin(i, CHANGE);
     }
 
-    button[0].initialize(8, ButtonEvent::DOWN);
-    button[1].initialize(9, ButtonEvent::RIGHT);
-    button[2].initialize(10, ButtonEvent::UP);
-    button[3].initialize(11, ButtonEvent::PUSH);
-    button[4].initialize(12, ButtonEvent::LEFT);
+    button[2].initialize(UP_PIN, ButtonEvent::UP);
+    button[0].initialize(DOWN_PIN, ButtonEvent::DOWN);
+    button[4].initialize(LEFT_PIN, ButtonEvent::LEFT);
+    button[1].initialize(RIGHT_PIN, ButtonEvent::RIGHT);
+    button[3].initialize(PUSH_PIN, ButtonEvent::PUSH);
 
     // Enable GPIO interrupts
     gpio.setupInterrupts(true, false, CHANGE);
@@ -43,7 +49,7 @@ void PortManager::initialize()
     // Clear any pending interrupts
     gpio.clearInterrupts();
 
-    attachInterrupt(digitalPinToInterrupt(INTR_PIN), std::bind(&PortManager::isr, this), FALLING);
+    attachInterrupt(digitalPinToInterrupt(GPIO_INTR_PIN), std::bind(&PortManager::isr, this), FALLING);
 
     Log.infoln("PortManager::initialize - Creating debounce task.");
     BaseType_t xReturned = xTaskCreate(

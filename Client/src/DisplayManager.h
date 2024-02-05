@@ -17,6 +17,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
+#include "Hardware.h"
 #include "PreferenceManager.h"
 
 #include "images/boot_logo.h"

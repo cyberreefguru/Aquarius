@@ -1,7 +1,7 @@
 /**
- * @brief Controls displaying menu to the screen
+ * @brief Manages menu system
  * @file MenuManager.h
- * @date Dec  30, 2023
+ * @date Dec 30, 2023
  * @author cyberreefguru
  */
 #ifndef MM_H

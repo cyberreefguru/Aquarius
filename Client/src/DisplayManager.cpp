@@ -19,7 +19,7 @@ void DisplayManager::initialize()
     // Log.traceln("DisplayManager::initialize - BEGIN");
 
     ssd1306 = Adafruit_SSD1306(128, 64, &Wire);
-    ssd1306.begin(SSD1306_SWITCHCAPVCC, 0x3C); // Address 0x3C for 128x32
+    ssd1306.begin(SSD1306_SWITCHCAPVCC, DISPLAY_ADDRESS); // Address 0x3C for 128x32
     uint8_t b = prefManager.getScreenBrightness();
     Log.traceln("DisplayManager::initialize - Setting screen brightness - %d", b);
     setBrightness( prefManager.getScreenBrightness() );

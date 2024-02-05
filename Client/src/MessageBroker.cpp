@@ -1,9 +1,11 @@
-/*
- * MessageBroker.cpp
- *
- *  Created on: Nov 15, 2023
- *      Author: cyberreefguru
+/**
+ * @brief Manages message broker
+ * @file MessageBroker.cpp
+ * @date Nov 15, 2023
+ * @author cyberreefguru
  */
+
+
 #include "MessageBroker.h"
 
 MessageBroker messageBroker;

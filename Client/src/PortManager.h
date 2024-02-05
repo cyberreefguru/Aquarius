@@ -1,9 +1,12 @@
-/*
- * Button.h
- *
- *  Created on: Nov 19, 2023
- *      Author: cyberreefguru
+/**
+ * @brief Manages IO ports
+ * @file PortManager.cpp
+ * @date Nov 19, 2023
+ * @author cyberreefguru
  */
+#ifndef PortManager_H
+#define PortManager_H
+
 
 #pragma once
 
@@ -15,8 +18,7 @@
 // #include "ActionEvent.h"
 #include "InputEventManager.h"
 #include "Button.h"
-
-#define INTR_PIN D0
+#include "Hardware.h"
 
 extern "C"
 {
@@ -65,4 +67,6 @@ private:
 
 #ifdef __cplusplus
 } // extern "C"
+#endif
+
 #endif

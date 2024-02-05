@@ -7,7 +7,7 @@
 
 #include "IndicatorManager.h"
 
-Adafruit_NeoPixel indicators(2, D7, NEO_RGB + NEO_KHZ800);
+Adafruit_NeoPixel indicators(2, INDICTOR_PIN, NEO_RGB + NEO_KHZ800);
 
 IndicatorManager indicatorManager;
 

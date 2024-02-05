@@ -16,6 +16,7 @@
 #include "ActionEventManager.h"
 #include "StateManager.h"
 #include "Color.h"
+#include "Hardware.h"
 
 extern "C"
 {

@@ -1,8 +1,8 @@
-/*
- * PreferenceManager.cpp
- *
- *  Created on: Nov 17, 2023
- *      Author: cyberreefguru
+/**
+ * @brief Manages preferences
+ * @file PreferenceManager.cpp
+ * @date Nov 17, 2023
+ * @author cyberreefguru
  */
 #include "PreferenceManager.h"
 

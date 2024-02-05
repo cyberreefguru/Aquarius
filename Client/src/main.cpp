@@ -13,6 +13,7 @@
 #include "MenuManager.h"
 #include "TargetManager.h"
 #include "DisplayManager.h"
+#include "SensorManager.h"
 
 // IPAddress server(192, 168, 30, 210);
 
@@ -60,6 +61,9 @@ void setup()
 
   // Initialize menu
   menuManager.initialize();
+
+  // Initialize sensors
+  sensorManager.initialize();
 
   // Fire initialization event
   actionEventManager.postEvent(ActionEvent::INITIALIZING);

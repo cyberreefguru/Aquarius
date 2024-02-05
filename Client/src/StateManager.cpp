@@ -24,13 +24,9 @@ void StateManager::initialize()
         &stateTaskHandle);
     if (xReturned != pdPASS)
     {
-        Log.errorln("StateManager::initialize - FAILED TO CREATE STATE TASK");
+        Helper::fatal("StateManager::initialize - FAILED TO CREATE STATE TASK");
+
     }
-
-    actionEventManager.addEventHandler([](void *arg, esp_event_base_t base, int32_t id, void *data)
-                                       { stateManager.eventHandler(arg, base, id, data); });
-
-    startTime = millis(); // Capture current time
 }
 
 /**
@@ -40,6 +36,9 @@ void StateManager::initialize()
 void StateManager::stateTask(void *pvParameters)
 {
     Log.traceln("StateManager::stateTask - starting state task.");
+
+    // Initialize start time
+    startTime = millis(); // Capture current time
 
     // Add event handler
     actionEventManager.addEventHandler([](void *arg, esp_event_base_t base, int32_t id, void *data)
@@ -119,6 +118,7 @@ void StateManager::eventHandler(void *arg, esp_event_base_t base, int32_t id, vo
         displayState = DisplayState::MENU;
         displayManager.setRefresh(true);
         // configure = true;
+        break;
     case ActionEvent::NODE_ID_CHANGE:
         // setNode(true);
         break;

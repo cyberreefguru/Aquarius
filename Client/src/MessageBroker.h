@@ -1,9 +1,10 @@
-/*
- * MessageBroker.h
- *
- *  Created on: Nov 15, 2023
- *      Author: cyberreefguru
+/**
+ * @brief Manages message broker
+ * @file MessageBroker.h
+ * @date Nov 15, 2023
+ * @author cyberreefguru
  */
+
 #ifndef MessageBroker_H
 #define MessageBroker_H
 
