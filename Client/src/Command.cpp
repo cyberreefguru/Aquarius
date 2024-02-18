@@ -1,10 +1,9 @@
-/*
- * Command.cpp
- *
- *  Created on: Nov 26, 2023
- *      Author: cyberreefguru
+/**
+ * @brief Class encapsulating command information
+ * @file ServCommandoManager.cpp
+ * @date Nov 26, 2023
+ * @author cyberreefguru
  */
-
 #include "Command.h"
 
 Command::Command()
@@ -14,54 +13,58 @@ Command::Command()
     parameters.clear();
 }
 
-uint32_t Command::fromJson(char *buffer)
+/**
+ * @brief Serializes current command object into a JSON string 
+ * @param buffer where json is placed
+ * @return number of bytes placed into buffer
+ */
+uint32_t Command::serialize(char *buffer)
 {
-    //jsonDocument.clear();
     return serializeJson(jsonDocument, buffer, CMD_MAX_SIZE);
 }
 
-const JsonDocument &Command::toJson(char *buff)
+/**
+ * @brief parses buffer into command object
+ * @param buff buffer containing json
+ */
+void Command::parse(char *buff)
 {
-    Log.infoln("Creating json from buff: %d", buff);
+    Log.traceln("Command::parse - creating json from buff: %s", buff);
     if (buff != nullptr)
     {
         jsonDocument.clear();
-        Log.infoln("Cleared document, parsing");
         DeserializationError err = deserializeJson(jsonDocument, buff);
-        Log.infoln("Parsed!");
         if (err)
         {
-            Log.errorln("Failed to parse input: '%s'", buff);
+            Log.errorln("Command::parse - failed to parse input: '%s'", buff);
         }
         else
         {
-            Log.infoln("Checking for parameters");
+            // Check for parameters string
             if (jsonDocument.containsKey(KEY_CMD_PARAMS))
             {
-                Log.infoln("Parsing parameters");
+                Log.traceln("Command::parse - parsing parameters");
                 const char *params = jsonDocument[KEY_CMD_PARAMS];
                 err = deserializeJson(parameters, params);
                 if (err)
                 {
-                    Log.errorln("Failed to parse parameters: '%s'", params);
+                    Log.errorln("Command::parse - failed to parse parameters: '%s'", params);
                 }
                 else
                 {
-                    Log.infoln("Parsed parameters");
+                    Log.traceln("Command::parse - parsed parameters");
                 }
             }
             else
             {
-                Log.infoln("No parameters to parse");
+                Log.infoln("Command::parse - no parameters to parse");
             }
         }
     }
     else
     {
-        Log.errorln("Unable to parse -- buffer is null!");
+        Log.errorln("Command::parse - unable to parse -- buffer is null!");
     }
-
-    return jsonDocument;
 }
 
 CommandType Command::getType()

@@ -25,6 +25,8 @@ enum class ActionEvent
     PROCESSING,
     SENT,
     NODE_ID_CHANGE,
+    COMMAND_COMPLETE,
+    RESPONSE_COMPLETE,
     ERROR,
 };
 inline constexpr unsigned operator+ (ActionEvent const val) { return static_cast<unsigned>(val); }
@@ -70,6 +72,12 @@ inline const char* operator++(ActionEvent const e)
         break;
     case ActionEvent::NODE_ID_CHANGE:
         return "NODE_ID_CHANGE";
+        break;
+    case ActionEvent::COMMAND_COMPLETE:
+        return "COMMAND_COMPLETE";
+        break;
+    case ActionEvent::RESPONSE_COMPLETE:
+        return "RESPONSE_COMPLETE";
         break;
     case ActionEvent::ERROR:
         return "ERROR";

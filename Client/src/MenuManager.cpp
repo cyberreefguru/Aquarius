@@ -59,9 +59,9 @@ ActionNumberInput iLedBright = ActionNumberInput("LED    > ", std::bind(&MenuMan
 MenuItem *bis[2] = {&iScreenBright, &iLedBright};
 MultiActionItem mBrightnessItem = MultiActionItem("> Brightness", "Brightness:", "");
 
-ActionNumberInput iServoStart = ActionNumberInput("Start> ", std::bind(&MenuManager::doServoStart, menuManager), 3);
-ActionNumberInput iServoStop = ActionNumberInput("End  > ", std::bind(&MenuManager::doServoStop, menuManager), 3);
-MenuItem *amts[2] = {&iServoStart, &iServoStop};
+ActionNumberInput iServoActive = ActionNumberInput("Open  > ", std::bind(&MenuManager::doServoActive, menuManager), 3);
+ActionNumberInput iServoDeactive = ActionNumberInput( "Close > ", std::bind(&MenuManager::doServoDeactive, menuManager), 3);
+MenuItem *amts[2] = {&iServoActive, &iServoDeactive};
 MultiActionItem mServoItem = MultiActionItem("> Servo Settings", "Servo Values:", "");
 
 MenuItem mResetItem = MenuItem("> Factory Reset", "Factory Reset?", "Push to Reset");
@@ -152,8 +152,8 @@ void MenuManager::initialize()
     iScreenBright.setValue(prefManager.getScreenBrightness());
     iLedBright.setValue(prefManager.getLedBrightness());
     iSensorThres.setValue(prefManager.getSensorThreshold());
-    iServoStart.setValue(prefManager.getServoStart());
-    iServoStop.setValue(prefManager.getServoStop());
+    iServoActive.setValue(prefManager.getServoActivePosition());
+    iServoDeactive.setValue(prefManager.getServoDeactivePosition());
 
     // Initialize callbacks for reset item
     mResetItem.setActionCallback(std::bind(&MenuManager::doResetPush, this));
@@ -353,21 +353,13 @@ void MenuManager::doLedBrightness()
     // Log.traceln("MenuManager::doLedBrightness - END");
 }
 
-void MenuManager::doServoStart()
+void MenuManager::doServoActive()
 {
-    // Log.traceln("MenuManager::doServoStart - BEGIN");
-
-    prefManager.set(KEY_SERVO_START, iServoStart.getValue());
-
-    // Log.traceln("MenuManager::doServoStart - END");
+    prefManager.set(KEY_SERVO_ACTIVE, (float)iServoActive.getValue());
 }
-void MenuManager::doServoStop()
+void MenuManager::doServoDeactive()
 {
-    // Log.traceln("MenuManager::doServoStop - BEGIN");
-
-    prefManager.set(KEY_SERVO_START, iServoStop.getValue());
-
-    // Log.traceln("MenuManager::doServoStop - END");
+    prefManager.set(KEY_SERVO_DEACTIVE, (float)iServoDeactive.getValue());
 }
 
 void MenuManager::doExit(bool active)

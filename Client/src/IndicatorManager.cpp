@@ -122,15 +122,15 @@ void IndicatorManager::flashTask(void *pvParameters)
 
     for (;;)
     {
-        uint32_t t = millis();
-        if( t > (time + 1000))
-        {
-            int32_t rssi = WiFi.RSSI();
-            stateManager.rssi = rssi;
-            time = t;
-            // Log.infoln("Indicator Task Memory: %d", uxTaskGetStackHighWaterMark(NULL));
+        // uint32_t t = millis();
+        // if( t > (time + 1000))
+        // {
+        //     int32_t rssi = WiFi.RSSI();
+        //     stateManager.rssi = rssi;
+        //     time = t;
+        //     // Log.infoln("Indicator Task Memory: %d", uxTaskGetStackHighWaterMark(NULL));
 
-        }
+        // }
         if (flashMode == Mode::Solid)
         {
             show();

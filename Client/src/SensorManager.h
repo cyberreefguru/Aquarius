@@ -11,11 +11,10 @@
 
 #include <Arduino.h>
 #include <ArduinoLog.h>
-#include <Adafruit_NeoPixel.h>
 
+#include "Hardware.h"
 #include "ActionEvent.h"
-#include "DisplayManager.h"
-#include "IndicatorManager.h"
+#include "ActionEventManager.h"
 
 extern "C"
 {
@@ -24,7 +23,6 @@ extern "C"
 }
 
 #define SENSOR_HYSTERESIS 50
-
 
 #define MEASURED_VCC       3.318
 
@@ -62,7 +60,7 @@ inline const char* operator++(SensorState a)
         return "FALLING_EDGE";
         break;
     default:
-        return "UNkNOWN";
+        return "UNKNOWN";
         break;
     }
 }
@@ -79,7 +77,7 @@ protected:
     TaskHandle_t sensorTaskHandle = NULL;
     void eventHandler(void *arg, esp_event_base_t base, int32_t id, void *data);
     void sensorTask(void *pvParameters);
-    float getVoltagePeakToPeak();
+    float getSensorValue();
     
     SensorState state = SensorState::WAITING;
 

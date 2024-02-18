@@ -14,6 +14,7 @@
 #include "TargetManager.h"
 #include "DisplayManager.h"
 #include "SensorManager.h"
+#include "ServoManager.h"
 
 // IPAddress server(192, 168, 30, 210);
 
@@ -64,6 +65,9 @@ void setup()
 
   // Initialize sensors
   sensorManager.initialize();
+
+  // Initialize servo manager
+  servoManager.initialize();
 
   // Fire initialization event
   actionEventManager.postEvent(ActionEvent::INITIALIZING);

@@ -182,16 +182,12 @@ public:
     void setDelay(uint32_t delay);
     uint32_t getTime();
     void setTime(uint32_t time);
-    uint32_t fromJson(char* buffer); // turn into char[]
-    const JsonDocument& toJson(char* buff); // turn into jsondocument
+
+    void parse(char* buffer); /// parses string into command
+    uint32_t serialize(char *buffer); /// serializes command into provided buffer
     
 private:
     StaticJsonDocument<CMD_MAX_PARAM_SIZE> parameters;
     StaticJsonDocument<CMD_MAX_SIZE> jsonDocument;
-    // CommandType type = CommandType::NONE;
-    // ActionType action = ActionType::NONE;
-    // uint8_t sourceId = 0;
-    // uint8_t targetId = 0;
-    // uint32_t time = 0;
 
 };

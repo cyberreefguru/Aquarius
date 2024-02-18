@@ -38,25 +38,25 @@
 #define KEY_MQTT_DELAY "m.delay"
 #define KEY_MQTT_TIMEOUT "m.timeout"
 
-#define KEY_COLOR_INITIALIZE "c.init"
-#define KEY_COLOR_CONFIGURE "c.config"
-#define KEY_COLOR_CONNECT "c.connect"
-#define KEY_COLOR_RECEIVE "c.receive"
-#define KEY_COLOR_PROCESS "c.process"
-#define KEY_COLOR_SEND "c.send"
-#define KEY_COLOR_WAIT "c.wait"
+#define KEY_COLOR_INITIALIZE "c.i"
+#define KEY_COLOR_CONFIGURE "c.cf"
+#define KEY_COLOR_CONNECT "c.co"
+#define KEY_COLOR_RECEIVE "c.r"
+#define KEY_COLOR_PROCESS "c.p"
+#define KEY_COLOR_SEND "c.s"
+#define KEY_COLOR_WAIT "c.w"
+#define KEY_COLOR_ERROR "c.e"
+#define KEY_COLOR_WIFI_DOWN "c.w.d"
+#define KEY_COLOR_WIFI_UP "c.w.u"
+#define KEY_COLOR_MQTT_DOWN "c.m.d"
+#define KEY_COLOR_MQTT_UP "c.m.u"
+#define KEY_COLOR_ACTIVE "c.a"
+#define KEY_COLOR_DEACTIVE "c.d"
 
-#define KEY_COLOR_ERROR "c.error"
-#define KEY_COLOR_WIFI_DOWN "c.w.down"
-#define KEY_COLOR_WIFI_UP "c.w.up"
-#define KEY_COLOR_MQTT_DOWN "c.m.down"
-#define KEY_COLOR_MQTT_UP "c.m.up"
-
-#define KEY_COLOR_ACTIVE "c.active"
-#define KEY_COLOR_DEACTIVE "c.deactive"
-
-#define KEY_SERVO_START "s.start"
-#define KEY_SERVO_STOP "s.stop"
+#define KEY_SERVO_ACTIVE "s.a"
+#define KEY_SERVO_DEACTIVE "s.d"
+#define KEY_SERVO_POSITION "s.p"
+#define KEY_SERVO_SPEED "s.s"
 
 #define KEY_SENSOR_THRESHOLD "s.t"
 
@@ -90,12 +90,12 @@
 #define DEFAULT_MQTT_TIMEOUT 10 * 1000
 
 #define DEFAULT_COLOR_INITIALIZE (uint32_t)colorYellow.value
-#define DEFAULT_COLOR_CONFIGURE (uint32_t)colorCyan.value
+#define DEFAULT_COLOR_CONFIGURE (uint32_t)colorYellow.value
 #define DEFAULT_COLOR_SEND (uint32_t)colorBlue.value
 #define DEFAULT_COLOR_PROCESS (uint32_t)colorBlue.value
 #define DEFAULT_COLOR_RECEIVE (uint32_t)colorBlue.value
 #define DEFAULT_COLOR_CONNECT (uint32_t)colorBlue.value
-#define DEFAULT_COLOR_WAIT (uint32_t)colorGreen.value
+#define DEFAULT_COLOR_WAIT (uint32_t)colorPurple.value
 
 #define DEFAULT_COLOR_WIFI_DOWN (uint32_t)colorMagenta.value
 #define DEFAULT_COLOR_WIFI_UP (uint32_t)colorBlue.value
@@ -106,8 +106,10 @@
 #define DEFAULT_COLOR_ACTIVE (uint32_t)colorGreen.value
 #define DEFAULT_COLOR_DEACTIVE (uint32_t)colorBlack.value
 
-#define DEFAULT_SERVO_START 0
-#define DEFAULT_SERVO_STOP 180
+#define DEFAULT_SERVO_ACTIVE 0.0
+#define DEFAULT_SERVO_DEACTIVE 180.0
+#define DEFAULT_SERVO_POSITION 0.0
+#define DEFAULT_SERVO_SPEED 180.0
 
 #define DEFAULT_SENSOR_THRESHOLD 128
 
@@ -166,8 +168,10 @@ public:
     uint32_t getMqttDownColor();
     uint32_t getMqttUpColor();
 
-    uint8_t getServoStart();
-    uint8_t getServoStop();
+    uint8_t getServoActivePosition();
+    uint8_t getServoDeactivePosition();
+    uint8_t getServoPosition();
+    uint8_t getServoSpeed();
 
     uint8_t getSensorThreshold();
 
@@ -180,6 +184,8 @@ public:
 
     char *getTargetsBuffer();
 
+    void set(char const *key, float v);
+    void set(char const *key, double v);
     void set(char const *key, uint8_t v);
     void set(char const *key, uint16_t v);
     void set(char const *key, uint32_t v);

@@ -1,6 +1,6 @@
 /**
  * @brief Manages sensors
- * @file SensorManager.h
+ * @file SensorManager.cpp
  * @date Feb 2, 2024
  * @author cyberreefguru
  */
@@ -11,6 +11,9 @@ SensorManager sensorManager;
 
 SensorManager::SensorManager() {}
 
+/**
+ * @brief initializes the class for use.
+ */
 void SensorManager::initialize()
 {
     // Set D0 on ESP to be interrupt input
@@ -28,7 +31,7 @@ void SensorManager::initialize()
         &sensorTaskHandle);
     if (xReturned != pdPASS)
     {
-        Log.errorln("SensorManager::initialize - FAILED TO CREATE STATE TASK");
+        Helper::fatal("ServoManager::initialize - FAILED TO CREATE SENSOR TASK");
     }
 }
 
@@ -43,7 +46,7 @@ void SensorManager::sensorTask(void *pvParameters)
     uint16_t click = 0;
     uint16_t mvPerAmp = 66;
     uint32_t watt = 0;
-    double voltage = 0.0;
+    double sensorValue = 0.0;
     double vRMS = 0.0;
     double aRMS = 0.0;
 
@@ -63,14 +66,15 @@ void SensorManager::sensorTask(void *pvParameters)
     offset = (avg / 100);
     Log.traceln("SensorManager::sensorTask - offset=%d", offset);
 
+    // Start looping thread
     for (;;)
     {
-
-        voltage = getVoltagePeakToPeak();
-        vRMS = (voltage/2.0) * 0.707;
+        // Get current value of sensor input
+        sensorValue = getSensorValue();
+        vRMS = (sensorValue/2.0) * 0.707;
         aRMS = ((vRMS * 1000)/mvPerAmp)-0.3;
         watt = (aRMS*120/1.2);
-        Log.traceln("SensorManager::sensorTask - v=%F, vRMS=%F, aRMS=%F, w=%F", voltage, vRMS, aRMS, watt);
+        //Log.traceln("SensorManager::sensorTask - v=%F, vRMS=%F, aRMS=%F, w=%F", voltage, vRMS, aRMS, watt);
 
         switch (state)
         {
@@ -84,8 +88,11 @@ void SensorManager::sensorTask(void *pvParameters)
     }
 }
 
-
-float SensorManager::getVoltagePeakToPeak()
+/**
+ * @brief Reads sensor input for 1 second and sets the min and max voltage read
+ * @return returns the median voltage during the sample period
+ */
+float SensorManager::getSensorValue()
 {
     uint16_t clicks = 0;
     uint16_t minValue = 4095;
@@ -106,8 +113,8 @@ float SensorManager::getVoltagePeakToPeak()
         clicks++;
         vTaskDelay(pdMS_TO_TICKS(1));
     }
-    Log.traceln("SensorManager::getVoltagePeakToPeak - min=%d, max=%d", minValue, maxValue);
-    result = ((maxValue - minValue) * 3.318)/4096.0;
+    //Log.traceln("SensorManager::getSensorValue - min=%d, max=%d", minValue, maxValue);
+    result = ((maxValue - minValue) * MEASURED_VCC)/4096.0;
 
     return result;      
 }

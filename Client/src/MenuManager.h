@@ -64,8 +64,8 @@ public:
     void doScreenBrightness();
     void doLedBrightness();
     void doSensor();
-    void doServoStart();
-    void doServoStop();
+    void doServoActive();
+    void doServoDeactive();
 
 protected:
     ButtonEvent currentEvent = ButtonEvent::DOWN;

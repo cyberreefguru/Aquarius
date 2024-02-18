@@ -118,8 +118,11 @@ void PreferenceManager::reset()
     preferences.putULong(KEY_COLOR_ACTIVE, DEFAULT_COLOR_ACTIVE);
     preferences.putULong(KEY_COLOR_DEACTIVE, DEFAULT_COLOR_DEACTIVE);
 
-    preferences.putShort(KEY_SERVO_START, DEFAULT_SERVO_START);
-    preferences.putShort(KEY_SERVO_STOP, DEFAULT_SERVO_STOP);
+    preferences.putFloat(KEY_SERVO_ACTIVE, DEFAULT_SERVO_ACTIVE);
+    preferences.putFloat(KEY_SERVO_DEACTIVE, DEFAULT_SERVO_DEACTIVE);
+    preferences.putFloat(KEY_SERVO_POSITION, DEFAULT_SERVO_POSITION);
+    preferences.putFloat(KEY_SERVO_SPEED, DEFAULT_SERVO_SPEED);
+
     preferences.putShort(KEY_SENSOR_THRESHOLD, DEFAULT_SENSOR_THRESHOLD);
 
     preferences.putUChar(KEY_DISPLAY_SIZE, DEFAULT_DISPLAY_SIZE);
@@ -235,13 +238,17 @@ uint32_t PreferenceManager::getMqttUpColor()
 {
     return preferences.getULong(KEY_COLOR_MQTT_UP, DEFAULT_COLOR_MQTT_UP);
 }
-uint8_t PreferenceManager::getServoStart()
+uint8_t PreferenceManager::getServoActivePosition()
 {
-    return preferences.getUChar(KEY_SERVO_START, DEFAULT_SERVO_START);
+    return preferences.getFloat(KEY_SERVO_ACTIVE, DEFAULT_SERVO_ACTIVE);
 }
-uint8_t PreferenceManager::getServoStop()
+uint8_t PreferenceManager::getServoDeactivePosition()
 {
-    return preferences.getUChar(KEY_SERVO_STOP, DEFAULT_SERVO_STOP);
+    return preferences.getFloat(KEY_SERVO_DEACTIVE, DEFAULT_SERVO_DEACTIVE);
+}
+uint8_t PreferenceManager::getServoPosition()
+{
+    return preferences.getFloat(KEY_SERVO_POSITION, DEFAULT_SERVO_POSITION);
 }
 uint8_t PreferenceManager::getSensorThreshold()
 {
@@ -273,6 +280,16 @@ uint32_t PreferenceManager::getUnsignedLong(const char* key)
     return preferences.getULong(key, 0);
 }
 
+void PreferenceManager::set(char const *key, double v)
+{
+    Log.traceln("PreferenceManager::set - double(%s, %F)", key, v);
+    preferences.putDouble(key, v);
+}
+void PreferenceManager::set(char const *key, float v)
+{
+    Log.traceln("PreferenceManager::set - float(%s, %F)", key, v);
+    preferences.putFloat(key, v);
+}
 void PreferenceManager::set(char const *key, uint8_t v)
 {
     Log.traceln("PreferenceManager::set - char(%s, %d)", key, v);
