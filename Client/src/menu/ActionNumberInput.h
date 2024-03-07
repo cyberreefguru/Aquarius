@@ -17,11 +17,11 @@ class ActionNumberInput : public MenuItem
 {
 public:
     ActionNumberInput() {}
-    ActionNumberInput(menu_prompt_t prompt, ActionCallback onAction, uint8_t numDigits, uint8_t decimal=0);
+    ActionNumberInput(menu_prompt_t prompt, ActionCallback onAction, uint8_t numDigits, int32_t lowLimit=-1, int32_t highLimit=-1, uint8_t decimal=0);
     ~ActionNumberInput();
 
     void setValue(uint32_t v);
-    uint32_t getValue();
+    int32_t getValue();
 
     void onDisplay(bool active) override;
     //void onAction() override;
@@ -41,6 +41,8 @@ protected:
     uint8_t curDigit;
     uint8_t numDigits;
     uint8_t decimal;
+    int32_t highLimit;
+    int32_t lowLimit;
     uint8_t *inputBuff = nullptr;
 };
 

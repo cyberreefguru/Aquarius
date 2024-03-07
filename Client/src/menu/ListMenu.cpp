@@ -78,7 +78,7 @@ void ListMenu::setSelectedIndex(uint8_t index)
  * @brief Renders the list of menu item by displaying each item's label
  * @param active if true, highlight item (unused)
  */
-void ListMenu::onDisplay(bool active)
+void ListMenu::onDisplay(bool active)   
 {
     // Log.traceln("ListMenu::onDisplay - BEGIN");
 
@@ -91,7 +91,7 @@ void ListMenu::onDisplay(bool active)
     }
     else
     {
-        Log.errorln("ListMenu::onDisplay - display %d children", size);
+        Log.traceln("ListMenu::onDisplay - display %d children", size);
     }
 
     displayManager.clear();

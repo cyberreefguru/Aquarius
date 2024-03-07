@@ -16,7 +16,7 @@
  * @param numDigits
  * @param decimal
  */
-ActionNumberInput::ActionNumberInput(menu_prompt_t prompt, ActionCallback doAction, uint8_t numDigits, uint8_t decimal)
+ActionNumberInput::ActionNumberInput(menu_prompt_t prompt, ActionCallback onAction, uint8_t numDigits, int32_t lowLimit, int32_t highLimit, uint8_t decimal)
 {
     this->menuLabel = prompt;
     this->menuTitle = prompt;
@@ -27,6 +27,8 @@ ActionNumberInput::ActionNumberInput(menu_prompt_t prompt, ActionCallback doActi
     this->numDigits = numDigits;
     this->curDigit = 0;
     this->decimal = decimal;
+    this->lowLimit = lowLimit;
+    this->highLimit = highLimit;
     this->inputBuff = (uint8_t *)new uint8_t[numDigits];
 }
 
@@ -96,14 +98,15 @@ void ActionNumberInput::onButtonUp()
     else
     {
         increment(1);
-        // if (inputBuff[curDigit] == 9)
-        // {
-        //     inputBuff[curDigit] = 0;
-        // }
-        // else
-        // {
-        //     inputBuff[curDigit] = (inputBuff[curDigit] + 1);
-        // }
+        if (highLimit >= 0)
+        {
+            uint32_t v = getValue();
+            if (v > highLimit || v < lowLimit)
+            {
+                increment(-1);
+                Log.trace("increment limit - v=%d ul=%d", v, highLimit);
+            }
+        }
     }
     Log.traceln("ActionNumberInput::onButtonUp - END - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
 }
@@ -120,15 +123,19 @@ void ActionNumberInput::onButtonDown()
     }
     else
     {
+        // Decrement value
         increment(-1);
-        // if (inputBuff[curDigit] == 0)
-        // {
-        //     inputBuff[curDigit] = 9;
-        // }
-        // else
-        // {
-        //     inputBuff[curDigit] = (inputBuff[curDigit] - 1);
-        // }
+
+        // If we have a limit check, adjust the value
+        if (lowLimit >= 0)
+        {
+            uint32_t v = getValue();
+            if (v < lowLimit || v > highLimit) 
+            {
+                increment(+1);
+                Log.trace("decrement limit - v=%d ll=%d", v, lowLimit);
+            }
+        }
     }
     Log.traceln("ActionNumberInput::onButtonDown - END - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
 }
@@ -146,14 +153,6 @@ void ActionNumberInput::onButtonLeft()
     else
     {
         previousDigit();
-        // if (curDigit == (numDigits - 1))
-        // {
-        //     curDigit = 0;
-        // }
-        // else
-        // {
-        //     curDigit++;
-        // }
     }
     Log.traceln("ActionNumberInput::onButtonLeft - END - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
 }
@@ -171,14 +170,6 @@ void ActionNumberInput::onButtonRight()
     else
     {
         nextDigit();
-        // if (curDigit == 0)
-        // {
-        //     curDigit = numDigits - 1;
-        // }
-        // else
-        // {
-        //     curDigit--;
-        // }
     }
     Log.traceln("ActionNumberInput::onButtonRight - END - %s > curDigit=%d, v=%d", menuLabel, curDigit, inputBuff[curDigit]);
 }
@@ -207,8 +198,8 @@ bool ActionNumberInput::increment(int8_t amount)
     {
         b = true;
     }
-    i = i%10;
-    if( i<0 )
+    i = i % 10;
+    if (i < 0)
     {
         i = 10 + i;
     }
@@ -255,15 +246,14 @@ bool ActionNumberInput::previousDigit()
 //     curDigit = 0;
 // }
 
-
 /**
  * @brief returns value represented by inputs
  * @note returns INTEGER value; decimal is not acknowledged
  * @return integer value represented by inputs
  */
-uint32_t ActionNumberInput::getValue()
+int32_t ActionNumberInput::getValue()
 {
-    uint32_t v = 0;
+    int32_t v = 0;
     uint8_t base = 1;
     // Set value based on input
     for (uint8_t i = 0; i < numDigits; i++)

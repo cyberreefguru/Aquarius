@@ -44,23 +44,23 @@ MenuItem *cis[10] = {&colorInit, &colorConn, &colorConfig, &colorWait,
 
 ListMenu mColorsItem = ListMenu("> Colors", "Colors:", "> ");
 
-ActionNumberInput iNodeId = ActionNumberInput("> ", std::bind(&MenuManager::doNodeId, menuManager), 2);
+ActionNumberInput iNodeId = ActionNumberInput("> ", std::bind(&MenuManager::doNodeId, menuManager), 2, 1, 99);
 MenuItem *nis[1] = {&iNodeId};
 MultiActionItem mNodeIdItem = MultiActionItem("> Node ID", "Node ID:", "");
 
 TargetListMenuItem mTargetListItem = TargetListMenuItem("> Targets", "Select Target", "> ");
 
-ActionNumberInput iSensorThres = ActionNumberInput("> ", std::bind(&MenuManager::doSensor, menuManager), 3);
+ActionNumberInput iSensorThres = ActionNumberInput("> ", std::bind(&MenuManager::doSensor, menuManager), 3, 0, 255);
 MenuItem *sis[1] = {&iSensorThres};
 MultiActionItem mSensorItem = MultiActionItem("> Sensor Threshold", "Sensor Threshold:", "");
 
-ActionNumberInput iScreenBright = ActionNumberInput("Screen > ", std::bind(&MenuManager::doScreenBrightness, menuManager), 3);
-ActionNumberInput iLedBright = ActionNumberInput("LED    > ", std::bind(&MenuManager::doLedBrightness, menuManager), 3);
+ActionNumberInput iScreenBright = ActionNumberInput("Screen > ", std::bind(&MenuManager::doScreenBrightness, menuManager), 3, 1, 255);
+ActionNumberInput iLedBright = ActionNumberInput("LED    > ", std::bind(&MenuManager::doLedBrightness, menuManager), 3, 1, 255);
 MenuItem *bis[2] = {&iScreenBright, &iLedBright};
 MultiActionItem mBrightnessItem = MultiActionItem("> Brightness", "Brightness:", "");
 
-ActionNumberInput iServoActive = ActionNumberInput("Open  > ", std::bind(&MenuManager::doServoActive, menuManager), 3);
-ActionNumberInput iServoDeactive = ActionNumberInput( "Close > ", std::bind(&MenuManager::doServoDeactive, menuManager), 3);
+ActionNumberInput iServoActive = ActionNumberInput("Open  > ", std::bind(&MenuManager::doServoActive, menuManager), 3, 0, 180);
+ActionNumberInput iServoDeactive = ActionNumberInput( "Close > ", std::bind(&MenuManager::doServoDeactive, menuManager), 3, 0, 180);
 MenuItem *amts[2] = {&iServoActive, &iServoDeactive};
 MultiActionItem mServoItem = MultiActionItem("> Servo Settings", "Servo Values:", "");
 
@@ -317,7 +317,7 @@ void MenuManager::doNodeId()
 {
     // Log.traceln("MultiActionItem::doNodeId - setting node ID to %d", iNodeId.getValue());
 
-    prefManager.set(KEY_NODE_ID, iNodeId.getValue());
+    prefManager.set(KEY_NODE_ID, (uint8_t)iNodeId.getValue());
 
     // Log.traceln("MenuManager::doNodeId - END");
 }
@@ -326,7 +326,7 @@ void MenuManager::doSensor()
 {
     // Log.traceln("MenuManager::doSensor - BEGIN");
 
-    prefManager.set(KEY_SENSOR_THRESHOLD, iSensorThres.getValue());
+    prefManager.set(KEY_SENSOR_THRESHOLD, (uint8_t)iSensorThres.getValue());
 
     // Log.traceln("MenuManager::doSensor - END");
 }
